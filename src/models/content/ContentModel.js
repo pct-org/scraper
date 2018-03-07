@@ -51,6 +51,12 @@ export default class ContentModel extends Model {
    * @type {string}
    */
   imdb_id: string
+  
+  /**
+   * The tmdb id of the content.
+   * @type {string}
+   */
+  tmdb_id: string
 
   /**
    * The title of the content.
@@ -110,6 +116,7 @@ export default class ContentModel extends Model {
    * Create a new Content object.
    * @param {!Object} config - The configuration object for the content.
    * @param {!string} imdb_id - The imdb id of the content.
+   * @param {!string} tmdb_id - The tmdb id of the content.
    * @param {!string} title - The title of the content.
    * @param {!number} year - The year of the content.
    * @param {!string} slug - The slug of the content.
@@ -122,6 +129,7 @@ export default class ContentModel extends Model {
    */
   constructor({
     imdb_id,
+    tmdb_id,
     title,
     year,
     slug,
