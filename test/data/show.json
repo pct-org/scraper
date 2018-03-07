@@ -1,5 +1,6 @@
 {
   "imdb_id": "show",
+  "tmdb_id": "show",
   "title": "String",
   "year": 0,
   "slug": "String",
