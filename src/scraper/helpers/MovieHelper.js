@@ -125,26 +125,29 @@ export default class MovieHelper extends AbstractHelper {
    * Get movie images from TMDB.
    * @param {!string} tmdbId - The tmdb id of the movie you want the images
    * from.
-   * @returns {Object} - Object with banner, fanart and poster images.
+   * @returns {Object} - Object with backdrop and poster images.
    */
   _getTmdbImages(tmdbId: string): Promise<Object | Error> {
     return tmdb.movie.images({
       movie_id: tmdbId
     }).then(i => {
-      const baseUrl = 'http://image.tmdb.org/t/p/w500'
+      const baseUrl = 'http://image.tmdb.org/t/p/w'
 
       const tmdbPoster = i.posters.filter(
         poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null
-      )[0].file_path
+      )[0]
+      const tmdbPosterUrl = tmdbPoster.file_path
+      const tmdbPosterWidth = tmdbPoster.width
+      
       const tmdbBackdrop = i.backdrops.filter(
         backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null
-      )[0].file_path
+      )[0]
+      const tmdbBackdropUrl = tmdbPoster.file_path
+      const tmdbBackdropWidth = tmdbPoster.width
 
-      const { Holder } = AbstractHelper
       const images = {
-        banner: tmdbPoster ? `${baseUrl}${tmdbPoster}` : Holder,
-        fanart: tmdbBackdrop ? `${baseUrl}${tmdbBackdrop}` : Holder,
-        poster: tmdbPoster ? `${baseUrl}${tmdbPoster}` : Holder
+        backdrop: tmdbBackdrop ? `${baseUrl}${tmdbBackdropWidth}${tmdbBackdropUrl}` : null,
+        poster: tmdbPoster ? `${baseUrl}${tmdbPosterWidth}${tmdbPosterUrl}` : null
       }
 
       return this.checkImages(images)
@@ -155,18 +158,16 @@ export default class MovieHelper extends AbstractHelper {
    * Get movie images from OMDB.
    * @param {!string} imdbId - The imdb id of the movie you want the images
    * from.
-   * @returns {Object} - Object with banner, fanart and poster images.
+   * @returns {Object} - Object with backdrop and poster images.
    */
   _getOmdbImages(imdbId: string): Promise<Object | Error> {
     return omdb.byId({
       imdb: imdbId,
       type: 'movie'
     }).then(i => {
-      const { Holder } = AbstractHelper
       const images = {
-        banner: i.Poster ? i.Poster : Holder,
-        fanart: i.Poster ? i.Poster : Holder,
-        poster: i.Poster ? i.Poster : Holder
+        backdrop: i.Poster,
+        poster: i.Poster
       }
 
       return this.checkImages(images)
@@ -177,19 +178,16 @@ export default class MovieHelper extends AbstractHelper {
    * Get movie images from Fanart.
    * @param {!number} tmdbId - The tvdb id of the movie you want the images
    * from.
-   * @returns {Object} - Object with banner, fanart and poster images.
+   * @returns {Object} - Object with backdrop and poster images.
    */
   _getFanartImages(tmdbId: number): Promise<Object | Error> {
     return fanart.getMovieImages(tmdbId).then(i => {
-      const { Holder } = AbstractHelper
       const images = {
-        banner: i.moviebanner ? i.moviebanner[0].url : Holder,
-        fanart: i.moviebackground
+        backdrop: i.moviebackground
           ? i.moviebackground[0].url
           : i.hdmovieclearart
-            ? i.hdmovieclearart[0].url
-            : Holder,
-        poster: i.movieposter ? i.movieposter[0].url : Holder
+            ? i.hdmovieclearart[0].url,
+        poster: i.movieposter[0].url
       }
 
       return this.checkImages(images)
