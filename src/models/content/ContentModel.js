@@ -153,6 +153,11 @@ export default class ContentModel extends Model {
      */
     this.imdb_id = imdb_id
     /**
+     * [
+     * @type {string}
+     */
+    this.tmdb_id = tmdb_id
+    /**
      * The title of the content.
      * @type {string}
      */
