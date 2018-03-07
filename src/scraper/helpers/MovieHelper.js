@@ -238,6 +238,7 @@ export default class MovieHelper extends AbstractHelper {
 
         return {
           imdb_id: imdb,
+          tmdb_id: tmdb,
           title: traktMovie.title,
           year: traktMovie.year,
           slug,
