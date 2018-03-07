@@ -25,11 +25,11 @@ export default class IHelper {
    * Get images for the content you want.
    * @abstract
    * @protected
-   * @param {!number} tmdbId - The tmdb id of the content you want the images
+   * @param {!string} tmdbId - The tmdb id of the content you want the images
    * from.
    * @param {!string} imdbId - The imdb id of the content you want the images
    * from.
-   * @param {!number} tvdbId - The tvdb id of the content you want the images
+   * @param {!string} tvdbId - The tvdb id of the content you want the images
    * from.
    * @throws {Error} - Using default method: '_getImages'.
    * @returns {Promise<Object>} - Object with banner, fanart and poster
