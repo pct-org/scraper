@@ -11,7 +11,6 @@ import { contentSchema } from '../content/contentSchema'
 export const movieSchema: Object = {
   ...contentSchema,
   language: String,
-  released: Number,
   trailer: {
     type: String,
     default: null
