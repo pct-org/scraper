@@ -1,5 +1,6 @@
 {
   "imdb_id": "movie",
+  "tmdb_id": "movie",
   "title": "String",
   "year": 0,
   "slug": "String",
@@ -26,16 +27,16 @@
         "provider": "String",
         "filesize": "String",
         "size": 0,
-        "peer": 0,
-        "seed": 0,
+        "peers": 0,
+        "seeds": 0,
         "url": "String"
       },
       "720p": {
         "provider": "String",
         "filesize": "String",
         "size": 0,
-        "peer": 0,
-        "seed": 0,
+        "peers": 0,
+        "seeds": 0,
         "url": "String"
       }
     }
