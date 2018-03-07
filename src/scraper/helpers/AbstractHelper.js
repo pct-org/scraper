@@ -60,7 +60,7 @@ export default class AbstractHelper extends IHelper {
    */
   checkImages(images: Object): Object | void {
     for (const i in images) {
-      if (images[i] == null) {
+      if (images[i] === null) {
         throw new Error('An image could not be found!')
       }
     }
