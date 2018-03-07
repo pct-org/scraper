@@ -1,6 +1,6 @@
 {
   "imdb_id": "movie",
-  "tmdb_id": "movie",
+  "tmdb_id": 0,
   "title": "String",
   "year": 0,
   "slug": "String",
@@ -12,8 +12,7 @@
     "votes": 0
   },
   "images": {
-    "banner": "String",
-    "fanart": "String",
+    "backdrop": "String",
     "poster": "String"
   },
   "genres": ["string", "science-fiction"],
