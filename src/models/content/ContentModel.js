@@ -67,6 +67,12 @@ export default class ContentModel extends Model {
    * @type {number}
    */
   released: number
+  
+  /**
+   * The certification of the content.
+   * @type {string}
+   */
+  certification: string
 
   /**
    * The slug of the content.
@@ -117,6 +123,7 @@ export default class ContentModel extends Model {
    * @param {!number} tmdb_id - The tmdb id of the content.
    * @param {!string} title - The title of the content.
    * @param {!number} released - The released date of the content.
+   * @param {!string} certification - The certification of the content.
    * @param {!string} slug - The slug of the content.
    * @param {!string} synopsis - The synopsis of the content.
    * @param {!number} runtime - The runtime of the content.
@@ -130,6 +137,7 @@ export default class ContentModel extends Model {
     tmdb_id,
     title,
     released,
+    certification,
     slug,
     synopsis,
     runtime,
@@ -165,6 +173,11 @@ export default class ContentModel extends Model {
      * @type {number}
      */
     this.released = released
+    /**
+     * The certification of the content.
+     * @type {string}
+   */
+    this.certification = certification
     /**
      * The slug of the content.
      * @type {string}
