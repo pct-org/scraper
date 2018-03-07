@@ -43,6 +43,7 @@ export default class MovieModel extends ContentModel {
    * Create a new Movie object.
    * @param {!Object} config={} - The configuration object for the movie.
    * @param {!string} imdb_id - The imdb id of the movie.
+   * @param {!string} tmdb_id - The tmdb id of the movie.
    * @param {!string} title - The title of the movie.
    * @param {!number} year - The year of the movie.
    * @param {!string} slug - The slug of the movie.
@@ -60,6 +61,7 @@ export default class MovieModel extends ContentModel {
    */
   constructor({
     imdb_id, // eslint-disable-line camelcase
+    tmdb_id,
     title,
     year,
     slug,
@@ -77,6 +79,7 @@ export default class MovieModel extends ContentModel {
   }: Object = {}): void {
     super({
       imdb_id,
+      tmdb_id,
       title,
       year,
       slug,
