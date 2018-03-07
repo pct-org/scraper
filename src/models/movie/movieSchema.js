@@ -15,7 +15,6 @@ export const movieSchema: Object = {
     type: String,
     default: null
   },
-  certification: String,
   torrents: {}
 }
 
