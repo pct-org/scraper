@@ -10,7 +10,7 @@ import { contentSchema } from '../content/contentSchema'
  */
 export const showSchema: Object = {
   ...contentSchema,
-  tvdb_id: Number,
+  tvdb_id: String,
   country: String,
   network: String,
   air_day: String,
@@ -24,7 +24,8 @@ export const showSchema: Object = {
   },
   episodes: {
     type: [{
-      tvdb_id: Number,
+      tvdb_id: String,
+      tmdb_id: String,
       season: Number,
       episode: Number,
       title: String,
