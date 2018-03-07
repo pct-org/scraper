@@ -7,6 +7,7 @@ import ContentModel from '../content/ContentModel'
  * The episode model type.
  * @typedef {Object} Episode
  * @property {!string} tvdb_id The tvdb_id of the episode.
+ * @property {!string} tmdb_id The tmdb_id of the episode.
  * @property {!number} season The season of the episode.
  * @property {!number} episode The episode of the episode.
  * @property {!string} title The title of the episode.
@@ -17,6 +18,7 @@ import ContentModel from '../content/ContentModel'
  */
 type Episode = {
   tvdb_id: string,
+  tmdb_id: string,
   season: number,
   episode: number,
   title: string,
@@ -37,7 +39,7 @@ export default class ShowModel extends ContentModel {
    * The tvdb id of the show.
    * @type {number}
    */
-  tvdb_id: number
+  tvdb_id: string
 
   /**
    * The country of the show.
@@ -97,6 +99,7 @@ export default class ShowModel extends ContentModel {
    * Create a new Show object.
    * @param {!Object} config={} - The configuration object for the show.
    * @param {!string} imdb_id - The imdb id of the show.
+   * @param {!string} tmdb_id - The tmdb id of the show.
    * @param {!string} title - The title of the show.
    * @param {!number} year - The year of the show.
    * @param {!string} slug - The slug of the show.
@@ -119,6 +122,7 @@ export default class ShowModel extends ContentModel {
    */
   constructor({
     imdb_id,
+    tmdb_id,
     title,
     year,
     slug,
@@ -141,6 +145,7 @@ export default class ShowModel extends ContentModel {
   }: Object = {}): void {
     super({
       imdb_id,
+      tmdb_id,
       title,
       year,
       slug,
