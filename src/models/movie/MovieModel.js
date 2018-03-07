@@ -22,12 +22,6 @@ export default class MovieModel extends ContentModel {
   trailer: string
 
   /**
-   * The certification of the movie.
-   * @type {string}
-   */
-  certification: string
-
-  /**
    * The torrents of the movie.
    * @type {Object}
    */
@@ -74,6 +68,7 @@ export default class MovieModel extends ContentModel {
       tmdb_id,
       title,
       released,
+      certification,
       slug,
       synopsis,
       runtime,
@@ -93,11 +88,6 @@ export default class MovieModel extends ContentModel {
      * @type {string}
      */
     this.trailer = trailer
-    /**
-     * The certification of the movie.
-     * @type {string}
-     */
-    this.certification = certification
     /**
      * The torrents of the movie.
      * @type {Object}
