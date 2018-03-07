@@ -29,10 +29,7 @@ export const contentSchema: Object = {
     }
   },
   images: {
-    banner: {
-      type: String
-    },
-    fanart: {
+    backdrop: {
       type: String
     },
     poster: {
