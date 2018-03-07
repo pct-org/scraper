@@ -16,24 +16,6 @@ import type {
 export default class AbstractHelper extends IHelper {
 
   /**
-   * The default image link.
-   * @protected
-   * @type {string}
-   */
-  static Holder: string = 'images/posterholder.png'
-
-  /**
-   * The default image object.
-   * @protected
-   * @type {Object}
-   */
-  static DefaultImages: Object = {
-    banner: AbstractHelper.Holder,
-    fanart: AbstractHelper.Holder,
-    poster: AbstractHelper.Holder
-  }
-
-  /**
    * The name of the torrent provider.
    * @type {string}
    */
@@ -68,18 +50,18 @@ export default class AbstractHelper extends IHelper {
   }
 
   /**
-   * Method to check the given images against the default ones.
+   * Method to check whether or not the given images are null.
    * @override
    * @protected
    * @param {Object} images - The images to check.
-   * @throws {Error} - An image could not been found!
+   * @throws {Error} - An image could not be found!
    * @returns {Object|undefined} - Throws an error if the given images are the
    * same, otherwise it will return the given images.
    */
   checkImages(images: Object): Object | void {
     for (const i in images) {
-      if (images[i] === AbstractHelper.Holder) {
-        throw new Error('An image could not been found!')
+      if (images[i] == null) {
+        throw new Error('An image could not be found!')
       }
     }
 
