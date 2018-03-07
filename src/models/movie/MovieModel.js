@@ -16,12 +16,6 @@ export default class MovieModel extends ContentModel {
   language: string
 
   /**
-   * The release date of the movie.
-   * @type {number}
-   */
-  released: number
-
-  /**
    * The trailer of the movie.
    * @type {string}
    */
@@ -43,9 +37,8 @@ export default class MovieModel extends ContentModel {
    * Create a new Movie object.
    * @param {!Object} config={} - The configuration object for the movie.
    * @param {!string} imdb_id - The imdb id of the movie.
-   * @param {!string} tmdb_id - The tmdb id of the movie.
+   * @param {!number} tmdb_id - The tmdb id of the movie.
    * @param {!string} title - The title of the movie.
-   * @param {!number} year - The year of the movie.
    * @param {!string} slug - The slug of the movie.
    * @param {!string} synopsis - The synopsis of the movie.
    * @param {!number} runtime - The runtime of the movie.
@@ -63,7 +56,6 @@ export default class MovieModel extends ContentModel {
     imdb_id, // eslint-disable-line camelcase
     tmdb_id,
     title,
-    year,
     slug,
     synopsis,
     runtime,
@@ -81,7 +73,7 @@ export default class MovieModel extends ContentModel {
       imdb_id,
       tmdb_id,
       title,
-      year,
+      released,
       slug,
       synopsis,
       runtime,
@@ -96,11 +88,6 @@ export default class MovieModel extends ContentModel {
      * @type {string}
      */
     this.language = language
-    /**
-     * The release date of the movie.
-     * @type {number}
-     */
-    this.released = released
     /**
      * The trailer of the movie.
      * @type {string}
