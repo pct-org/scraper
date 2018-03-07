@@ -11,6 +11,7 @@ export const contentSchema: Object = {
     required: true
   },
   imdb_id: String,
+  tmdb_id: String
   title: String,
   year: Number,
   slug: String,
