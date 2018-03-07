@@ -88,7 +88,7 @@ export default class ShowHelper extends AbstractHelper {
   }
 
   /**
-   * Update a given show with it's associated episodes.
+   * Update a given show with its associated episodes.
    * @param {!AnimeShow|Show} show - The show to update its episodes.
    * @returns {AnimeShow|Show} - A newly updated show.
    */
@@ -131,39 +131,35 @@ export default class ShowHelper extends AbstractHelper {
   }
 
   /**
-   * Adds one seasonal season to a show.
+   * Adds one season to a show.
    * @param {!AnimeShow|Show} show - The show to add the torrents to.
    * @param {!Object} episodes - The episodes containing the torrents.
    * @param {!number} season - The season number.
-   * @param {!string} slug - The slug of the show.
    * @returns {undefined}
    */
-  _addSeasonalSeason(
+  _addSeason(
     show: AnimeShow | Show,
     episodes: Object,
     season: number,
-    slug: string
+    tmdb_id: string
   ): void {
-    return trakt.seasons.season({
-      id: slug,
-      season,
-      extended: 'full'
-    }).then(traktEpisodes => {
-      traktEpisodes.map(e => {
-        if (!episodes[season][e.number]) {
-          return
-        }
-
+    return tmdb.seasons.season({
+      id: show.tmdb_id,
+      season
+    }).then(season => {
+      season.episodes.map(e => {
         const episode = {
-          tvdb_id: parseInt(e.ids['tvdb'], 10),
-          tmdb_id: parseInt(e.ids['tmdb'], 10),
-          season: parseInt(e.season, 10),
-          episode: parseInt(e.number, 10),
+          tmdb_id: parseInt(e.id, 10),
+          season: parseInt(e.season_number, 10),
+          episode: parseInt(e.episode_number, 10),
           title: e.title,
           overview: e.overview,
-          date_based: false,
-          first_aired: new Date(e.first_aired).getTime() / 1000.0,
-          torrents: episodes[season][e.number]
+          first_aired: new Date(e.air_date).getTime() / 1000.0,
+          torrents: episodes[season][episode],
+          images: {
+            season: season.poster_path ? `https://image.tmdb.org/t/p/w500/${season.poster_path}` : null,
+            still: e.still_path ? `https://image.tmdb.org/t/p/w300/${e.still_path}` : null
+          }
         }
 
         if (episode.first_aired > show.latest_episode) {
@@ -181,18 +177,14 @@ export default class ShowHelper extends AbstractHelper {
    * Adds episodes to a show.
    * @param {!AnimeShow|Show} show - The show to add the torrents to.
    * @param {!Object} episodes - The episodes containing the torrents.
-   * @param {!string} slug - The slug of the show.
    * @returns {Show} - A show with updated torrents.
    */
   addEpisodes(
     show: AnimeShow | Show,
-    episodes: Object,
-    slug: string
+    episodes: Object
   ): Show {
-    delete episodes.dateBased
-
     return pMap(Object.keys(episodes), season => {
-      return this._addSeasonalSeason(show, episodes, season, slug)
+      return this._addSeason(show, episodes, season)
     }).then(() => this._updateEpisodes(show))
       .catch(err => logger.error(err))
   }
@@ -283,7 +275,7 @@ export default class ShowHelper extends AbstractHelper {
     return this._getTmdbImages(tmdbId)
       .catch(() => this._getTvdbImages(tvdbId))
       .catch(() => this._getFanartImages(tmdbId))
-      .catch(() => AbstractHelper.DefaultImages)
+      .catch(() => null)
   }
 
   /**
