@@ -164,6 +164,7 @@ export default class ShowHelper extends AbstractHelper {
 
         const episode = {
           tvdb_id: parseInt(e.ids['tvdb'], 10),
+          tmdb_id: parseInt(e.ids['tmdb'], 10),
           season: parseInt(e.season, 10),
           episode: parseInt(e.number, 10),
           title: e.title,
@@ -189,65 +190,6 @@ export default class ShowHelper extends AbstractHelper {
   }
 
   /**
-   * Adds one datebased season to a show.
-   * @param {!AnimeShow|Show} show - The show to add the torrents to.
-   * @param {!Object} episodes - The episodes containing the torrents.
-   * @param {!number} season - The season number.
-   * @returns {Promise<AnimeShow|Show|undefined>} - The show with a datebased
-   * season attached.
-   */
-  async _addDateBasedSeason(
-    show: AnimeShow | Show,
-    episodes: Object,
-    season: number
-  ): Promise<AnimeShow | Show | void> {
-    try {
-      if (!show.tvdb_id || !episodes[season]) {
-        return
-      }
-
-      const tvdbShow = await tvdb.getSeriesAllById(show.tvdb_id)
-      tvdbShow.episodes.map(tvdbEpisode => {
-        Object.keys(episodes[season]).map(e => {
-          const d = new Date(tvdbEpisode.firstAired)
-            .toISOString()
-            .substring(0, 10)
-          if (`${season}-${e.replace(/\./, '-')}` !== d) {
-            return
-          }
-
-          const episode = {
-            tvdb_id: parseInt(tvdbEpisode.id, 10),
-            season: parseInt(tvdbEpisode.airedEpisodeNumber, 10),
-            episode: parseInt(tvdbEpisode.airedSeason, 10),
-            title: tvdbEpisode.episodeName,
-            overview: tvdbEpisode.overview,
-            date_based: true,
-            first_aired: new Date(tvdbEpisode.firstAired).getTime() / 1000.0,
-            torrents: episodes[season][e]
-          }
-
-          if (episode.first_aired > show.latest_episode) {
-            show.latest_episode = episode.first_aired
-          }
-
-          if (!episode.season) {
-            return
-          }
-
-          episode.torrents[0] = episodes[season][e]['480p']
-            ? episodes[season][e]['480p']
-            : episodes[season][e]['720p']
-
-          show.episodes.push(episode)
-        })
-      })
-    } catch (err) {
-      logger.error(`TVDB: Could not find any data on: ${err.path || err} with tvdb_id: '${show.tvdb_id}'`)
-    }
-  }
-
-  /**
    * Adds episodes to a show.
    * @param {!AnimeShow|Show} show - The show to add the torrents to.
    * @param {!Object} episodes - The episodes containing the torrents.
@@ -259,15 +201,9 @@ export default class ShowHelper extends AbstractHelper {
     episodes: Object,
     slug: string
   ): Show {
-    let { dateBased } = episodes
     delete episodes.dateBased
-    dateBased = dateBased || show.dateBased
 
     return pMap(Object.keys(episodes), season => {
-      if (dateBased) {
-        return this._addDateBasedSeason(show, episodes, season)
-      }
-
       return this._addSeasonalSeason(show, episodes, season, slug)
     }).then(() => this._updateEpisodes(show))
       .catch(err => logger.error(err))
@@ -277,26 +213,29 @@ export default class ShowHelper extends AbstractHelper {
    * Get TV show images from TMDB.
    * @param {!number} tmdbId - The tmdb id of the show you want the images
    * from.
-   * @returns {Object} - Object with banner, fanart and poster images.
+   * @returns {Object} - Object with backdrop and poster images.
    */
   _getTmdbImages(tmdbId: number): Object {
     return tmdb.tv.images({
       tv_id: tmdbId
     }).then(i => {
-      const baseUrl = 'http://image.tmdb.org/t/p/w500'
+      const baseUrl = 'http://image.tmdb.org/t/p/w'
 
       const tmdbPoster = i.posters.filter(
         poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null
-      )[0].file_path
+      )[0]
+      const tmdbPosterUrl = tmdbPoster.file_path
+      const tmdbPosterWidth = tmdbPoster.width
+      
       const tmdbBackdrop = i.backdrops.filter(
         backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null
-      )[0].file_path
+      )[0]
+      const tmdbBackdropUrl = tmdbPoster.file_path
+      const tmdbBackdropWidth = tmdbPoster.width
 
-      const { Holder } = AbstractHelper
       const images = {
-        banner: tmdbPoster ? `${baseUrl}${tmdbPoster}` : Holder,
-        fanart: tmdbBackdrop ? `${baseUrl}${tmdbBackdrop}` : Holder,
-        poster: tmdbPoster ? `${baseUrl}${tmdbPoster}` : Holder
+        backdrop: tmdbBackdrop ? `${baseUrl}${tmdbBackdropWidth}${tmdbBackdropUrl}` : null,
+        poster: tmdbPoster ? `${baseUrl}${tmdbPosterWidth}${tmdbPosterUrl}` : null
       }
 
       return this.checkImages(images)
@@ -307,7 +246,7 @@ export default class ShowHelper extends AbstractHelper {
    * Get TV show images from TVDB.
    * @param {!number} tvdbId - The tvdb id of the show you want the images
    * from.
-   * @returns {Object} - Object with banner, fanart and poster images.
+   * @returns {Object} - Object with backdrop images.
    */
   _getTvdbImages(tvdbId: number): Object {
     return tvdb.getSeriesById(tvdbId).then(i => {
@@ -315,9 +254,8 @@ export default class ShowHelper extends AbstractHelper {
 
       const { Holder } = AbstractHelper
       const images = {
-        banner: i.banner ? `${baseUrl}${i.banner}` : Holder,
-        fanart: i.banner ? `${baseUrl}${i.banner}` : Holder,
-        poster: i.banner ? `${baseUrl}${i.banner}` : Holder
+        backdrop: i.banner ? `${baseUrl}${i.banner}` : null,
+        poster: null
       }
 
       return this.checkImages(images)
@@ -328,19 +266,17 @@ export default class ShowHelper extends AbstractHelper {
    * Get TV show images from Fanart.
    * @param {!number} tvdbId - The tvdb id of the show you want the images
    * from.
-   * @returns {Object} - Object with banner, fanart and poster images.
+   * @returns {Object} - Object with backdrop and poster images.
    */
   _getFanartImages(tvdbId: number): Object {
     return fanart.getShowImages(tvdbId).then(i => {
       const { Holder } = AbstractHelper
       const images = {
-        banner: i.tvbanner ? i.tvbanner[0].url : Holder,
-        fanart: i.showbackground
+        poster: i.tvposter[0].url,
+        backdrop: i.showbackground
           ? i.showbackground[0].url
           : i.clearart
             ? i.clearart[0].url
-            : Holder,
-        poster: i.tvposter ? i.tvposter[0].url : Holder
       }
 
       return this.checkImages(images)
@@ -395,6 +331,7 @@ export default class ShowHelper extends AbstractHelper {
 
       return {
         imdb_id: imdb,
+        tmdb_id: tmdb,
         title: traktShow.title,
         year: traktShow.year,
         slug,
@@ -413,6 +350,7 @@ export default class ShowHelper extends AbstractHelper {
         air_day: traktShow.airs.day,
         air_time: traktShow.airs.time,
         status: traktShow.status,
+        released: new Date(traktShow.released).getTime() / 1000.0,
         num_seasons: 0,
         last_updated: Number(new Date()),
         latest_episode: 0,
