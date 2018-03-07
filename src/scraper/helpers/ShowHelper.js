@@ -77,17 +77,9 @@ export default class ShowHelper extends AbstractHelper {
       }
 
       if (update) {
-        if (quality === '480p') {
-          matching.torrents['0'] = foundTorrents
-        }
-
         matchingTorrents = foundTorrents
       }
     } else if (foundTorrents && !matchingTorrents) {
-      if (quality === '480p') {
-        matching.torrents['0'] = foundTorrents
-      }
-
       matchingTorrents = foundTorrents
     }
 
@@ -178,10 +170,6 @@ export default class ShowHelper extends AbstractHelper {
           show.latest_episode = episode.first_aired
         }
 
-        episode.torrents[0] = episodes[season][e.number]['480p']
-          ? episodes[season][e.number]['480p']
-          : episodes[season][e.number]['720p']
-
         show.episodes.push(episode)
       })
     }).catch(err =>
@@ -251,8 +239,7 @@ export default class ShowHelper extends AbstractHelper {
   _getTvdbImages(tvdbId: number): Object {
     return tvdb.getSeriesById(tvdbId).then(i => {
       const baseUrl = 'http://thetvdb.com/banners/'
-
-      const { Holder } = AbstractHelper
+      
       const images = {
         backdrop: i.banner ? `${baseUrl}${i.banner}` : null,
         poster: null
@@ -270,7 +257,6 @@ export default class ShowHelper extends AbstractHelper {
    */
   _getFanartImages(tvdbId: number): Object {
     return fanart.getShowImages(tvdbId).then(i => {
-      const { Holder } = AbstractHelper
       const images = {
         poster: i.tvposter[0].url,
         backdrop: i.showbackground
