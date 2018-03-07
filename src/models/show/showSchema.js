@@ -30,7 +30,6 @@ export const showSchema: Object = {
       episode: Number,
       title: String,
       overview: String,
-      date_based: Boolean,
       first_aired: Number,
       torrents: {}
     }]
