@@ -12,7 +12,6 @@ import ContentModel from '../content/ContentModel'
  * @property {!number} episode The episode of the episode.
  * @property {!string} title The title of the episode.
  * @property {!string} overview The overview of the episode.
- * @property {!boolean} date_based The date based of the episode.
  * @property {!number} first_aired The first aired time of the episode.
  * @property {!Object} torrents The torrents of the episode.
  */
@@ -23,7 +22,6 @@ type Episode = {
   episode: number,
   title: string,
   overview: string,
-  date_based: boolean,
   first_aired: number,
   torrents: Object
 }
@@ -102,6 +100,7 @@ export default class ShowModel extends ContentModel {
    * @param {!number} tmdb_id - The tmdb id of the show.
    * @param {!string} title - The title of the show.
    * @param {!number} released - The release date of the show.
+   * @param {!string} certification - The certification of the show.
    * @param {!string} slug - The slug of the show.
    * @param {!string} synopsis - The synopsis of the show.
    * @param {!number} runtime - The runtime of the show.
@@ -125,6 +124,7 @@ export default class ShowModel extends ContentModel {
     tmdb_id,
     title,
     released,
+    certification,
     slug,
     synopsis,
     runtime,
@@ -148,6 +148,7 @@ export default class ShowModel extends ContentModel {
       tmdb_id,
       title,
       released,
+      certification,
       slug,
       synopsis,
       runtime,
