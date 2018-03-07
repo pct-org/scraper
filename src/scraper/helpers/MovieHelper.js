@@ -123,11 +123,11 @@ export default class MovieHelper extends AbstractHelper {
 
   /**
    * Get movie images from TMDB.
-   * @param {!string} tmdbId - The tmdb id of the movie you want the images
+   * @param {!number} tmdbId - The tmdb id of the movie you want the images
    * from.
    * @returns {Object} - Object with backdrop and poster images.
    */
-  _getTmdbImages(tmdbId: string): Promise<Object | Error> {
+  _getTmdbImages(tmdbId: number): Promise<Object | Error> {
     return tmdb.movie.images({
       movie_id: tmdbId
     }).then(i => {
