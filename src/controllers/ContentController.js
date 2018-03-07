@@ -73,7 +73,6 @@ export default class ContentController extends BaseContentController {
           'rating.percentage': order
         }
       case 'released':
-      case 'updated':
         return {
           ...sortObj,
           latest_episode: order,
@@ -123,7 +122,7 @@ export default class ContentController extends BaseContentController {
     }
 
     if (typeof genre === 'string' && genre.toLowerCase() !== 'all') {
-      if (genre.match(/science[-\s]fuction/i) || genre.match(/sci[-\s]fi/i)) {
+      if (genre.match(/science[-\s]fiction/i) || genre.match(/sci[-\s]fi/i)) {
         query.genres = 'science-fiction'
       } else {
         query.genres = genre.toLowerCase()
