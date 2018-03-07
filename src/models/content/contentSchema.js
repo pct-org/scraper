@@ -14,6 +14,7 @@ export const contentSchema: Object = {
   tmdb_id: Number
   title: String,
   released: Number,
+  certification: String,
   slug: String,
   synopsis: String,
   runtime: Number,
