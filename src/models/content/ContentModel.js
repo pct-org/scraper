@@ -23,11 +23,11 @@ type Rating = {
 /**
  * The images model type.
  * @typedef {Object} Images
- * @property {!string} fanart The fanart of the images.
+ * @property {!string} backdrop The backdrop of the images.
  * @property {!string} poster The poster of the images.
  */
 type Images = {
-  fanart: string,
+  backdrop: string,
   poster: string
 }
 
