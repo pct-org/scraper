@@ -10,28 +10,51 @@ import { contentSchema } from '../content/contentSchema'
  */
 export const showSchema: Object = {
   ...contentSchema,
-  tvdb_id: String,
-  country: String,
-  network: String,
-  air_day: String,
-  air_time: String,
-  status: String,
-  num_seasons: Number,
-  last_updated: Number,
-  latest_episode: {
-    type: Number,
-    default: 0
+  air_info: {
+    type: {
+      network: String,
+      country: String,
+      day: String,
+      time: String,
+      status: String
+    }
   },
-  episodes: {
+  last_updated: Number,
+  seasons: {
     type: [{
-      tvdb_id: String,
-      tmdb_id: String,
-      season: Number,
-      episode: Number,
+      tmdb_id: Number,
+      number: Number,
       title: String,
-      overview: String,
+      synopsis: String,
       first_aired: Number,
-      torrents: {}
+      image: {
+        type: String
+        default: null
+      },
+      episodes: {
+        type: [{
+          tmdb_id: Number,
+          number: Number,
+          title: String,
+          synopsis: String,
+          first_aired: Number,
+          image: {
+            type: String
+            default: null
+          },
+          torrents: {
+            type: [{
+              quality: String,
+              provider: String,
+              language: String,
+              size: Number,
+              seeds: Number,
+              peers: Number,
+              url: String
+            }]
+          }
+        }]
+      }
     }]
   }
 }

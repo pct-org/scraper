@@ -10,12 +10,21 @@ import { contentSchema } from '../content/contentSchema'
  */
 export const movieSchema: Object = {
   ...contentSchema,
-  language: String,
   trailer: {
     type: String,
     default: null
   },
-  torrents: {}
+  torrents: {
+    type: [{
+      quality: String,
+      provider: String,
+      language: String,
+      size: Number,
+      seeds: Number,
+      peers: Number,
+      url: String
+    }]
+  }
 }
 
 /**

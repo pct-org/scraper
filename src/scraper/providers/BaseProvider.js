@@ -68,14 +68,13 @@ export default class BaseProvider extends AbstractProvider {
   regexps: Array<Object>
 
   /**
-   * Gets information about a movie from Trakt.tv and insert the movie into the
+   * Gets information about a show from Trakt.tv and insert the show into the
    * MongoDB database.
    * @protected
-   * @param {!Object} content - The content information.
-   * @throws {Error} - 'movie' is not a valid value for Types!
-   * @returns {Promise<Object, Error>} - A movie object.
+   * @param {!Object} content - The show information.
+   * @returns {Promise<Object | Error>} - A show object.
    */
-  _getMovieContent(content: Object): Promise<Object> {
+  _getShowContent(content: Object): Promise<Object> {
     const { episodes, slug } = content
     if (episodes && episodes[0]) {
       delete episodes[0]
@@ -88,17 +87,16 @@ export default class BaseProvider extends AbstractProvider {
     })
   }
 
-  /**
-   * Gets information about a show from Trakt.tv and insert the show into the
-   * MongoDB database.
-   * @protected
-   * @param {!Object} content - The show information.
-   * @throws {Error} - 'show' is not a valid value for Types!
-   * @returns {Promise<Object, Error>} - A show object.
-   */
-  _getShowContent(content: Object): Promise<Object> {
-    const { slugYear, torrents } = content
-    return this.helper.getTraktInfo(slugYear).then(res => {
+   /**
+    * Gets information about a movie from Trakt.tv and insert the movie into the
+    * MongoDB database.
+    * @protected
+    * @param {!Object} content - The content information.
+    * @returns {Promise<Object | Error>} - A movie object.
+    */
+  _getMovieContent(content: Object): Promise<Object | Error> {
+    const { slug, torrents } = content
+    return this.helper.getTraktInfo(slug).then(res => {
       if (res && res.imdb_id) {
         return this.helper.addTorrents(res, torrents)
       }
@@ -114,9 +112,9 @@ export default class BaseProvider extends AbstractProvider {
    * @returns {Promise<Object>} - A content object.
    */
   getContent(content: Object): Promise<Object> {
-    if (this.contentType === BaseProvider.ContentTypes.Movie) {
+    if (this.contentType === BaseProvider.ContentTypes.Show) {
       return this._getShowContent(content)
-    } else if (this.contentType === BaseProvider.ContentTypes.Show) {
+    } else if (this.contentType === BaseProvider.ContentTypes.Movie) {
       return this._getMovieContent(content)
     }
 
@@ -166,31 +164,6 @@ export default class BaseProvider extends AbstractProvider {
     }
 
     logger.warn(`${this.name}: Could not find data from torrent: '${torrent.title}'`)
-  }
-
-  /**
-   * Attach the torrent object to the content.
-   * @abstract
-   * @protected
-   * @param {!Object} options - The options to attach a torrent to the content.
-   * @param {!Object} options.content - The content to attach a torrent to.
-   * @param {!Object} options.torrent - The torrent object ot attach.
-   * @param {!string} options.quality - The quality of the torrent.
-   * @param {?number} options.season - The season number for the torrent.
-   * @param {?number} options.episode - The episode number for the torrent.
-   * @param {!string} [options.lang] - The language of the torrent.
-   * @throws {Error} - Using default method: 'attachTorrent'
-   * @returns {Object} - The content with the newly attached torrent.
-   */
-  attachTorrent({
-    content,
-    torrent,
-    quality,
-    season,
-    episode,
-    lang
-  }: Object): Object {
-    throw new Error('Using default method: \'attachTorrent\'')
   }
 
   /**

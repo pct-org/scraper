@@ -31,14 +31,22 @@ export const contentSchema: Object = {
   },
   images: {
     backdrop: {
-      type: String
+      type: String,
+      default: null
     },
     poster: {
       type: String
+      default: null
+    },
+    logo: {
+      type: String
+      default: null
+    },
+    thumb: {
+      type: String
+      default: null
     }
   },
   genres: [String],
-  type: {
-    type: String
-  }
+  type: String
 }

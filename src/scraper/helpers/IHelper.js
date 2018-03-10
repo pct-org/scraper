@@ -10,32 +10,15 @@ import type ContentModel from '../../models/content/ContentModel'
 export default class IHelper {
 
   /**
-   * Method to check the given images against the default ones.
-   * @abstract
-   * @param {Object} images - The images to check.
-   * @throws {Error} - An image could not been found!
-   * @returns {Object|undefined} - Throws an error if the given images are the
-   * same, otherwise it will return the given images.
-   */
-  checkImages(images: Object): Object | void {
-    throw new Error('Using default method: \'checkImages\'')
-  }
-
-  /**
    * Get images for the content you want.
    * @abstract
    * @protected
-   * @param {!number} tmdbId - The tmdb id of the content you want the images
-   * from.
-   * @param {!string} imdbId - The imdb id of the content you want the images
-   * from.
-   * @param {!number} tvdbId - The tvdb id of the content you want the images
-   * from.
+   * @param {!number} tmdbId - The tmdb id of the movie for which you want the images.
    * @throws {Error} - Using default method: '_getImages'.
    * @returns {Promise<Object>} - Object with banner, fanart and poster
    * images.
    */
-  getImages({tmdbId, imdbId, tvdbId}: Object): Promise<Object> {
+  async getImages(tmdbId: Number): Promise<Object> {
     throw new Error('Using default method: \'getImages\'')
   }
 

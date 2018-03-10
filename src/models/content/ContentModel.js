@@ -8,11 +8,11 @@
 import { Model } from 'mongoose'
 
 /**
- * The images model type.
+ * The rating model type.
  * @typedef {Object} Rating
- * @property {!number} votes The votes of the rating.
- * @property {!number} watching The watching of the rating.
- * @property {!number} percentage The percentage of the rating.
+ * @property {!number} votes How many people rated the content.
+ * @property {!number} watching How many people are currently watching the content.
+ * @property {!number} percentage The rating of the content, expressed as a percentage.
  */
 type Rating = {
   votes: number,
@@ -23,12 +23,37 @@ type Rating = {
 /**
  * The images model type.
  * @typedef {Object} Images
- * @property {!string} backdrop The backdrop of the images.
- * @property {!string} poster The poster of the images.
+ * @property {!string} backdrop A backdrop image for the content.
+ * @property {!string} poster A poster image for the content.
+ * @property {!string} logo A hd clear logo image for the content.
+ * @property {!string} thumb A background thumb image for the content.
  */
 type Images = {
   backdrop: string,
-  poster: string
+  poster: string,
+  logo: string,
+  thumb: string
+}
+
+/**
+ * The torrent model type.
+ * @typedef {Object} Torrent
+ * @property {!string} quality The quality of the video (1080p, 720p, 480p).
+ * @property {!string} provider The website from which the torrent was obtained.
+ * @property {!string} language The language code describing the audio language of the video.
+ * @property {!number} size The size of the video to which the torrent points (in bytes).
+ * @property {!number} seeds The number of people seeding the torrent currently.
+ * @property {!number} peers The number of peers the torrent has.
+ * @property {!string} url The url pointing to the torrent.
+ */
+type Torrent = {
+  quality: string,
+  provider: string,
+  language: string,
+  size: number,
+  seeds: number,
+  peers: number,
+  url: string
 }
 
 /**
@@ -39,7 +64,7 @@ type Images = {
 export default class ContentModel extends Model {
 
   /**
-   * The id of the content.
+   * The imdb id of the content.
    * @type {string}
    */
   _id: any
@@ -49,7 +74,7 @@ export default class ContentModel extends Model {
    * @type {string}
    */
   imdb_id: string
-  
+
   /**
    * The tmdb id of the content.
    * @type {number}
@@ -67,7 +92,7 @@ export default class ContentModel extends Model {
    * @type {number}
    */
   released: number
-  
+
   /**
    * The certification of the content.
    * @type {string}
@@ -81,13 +106,13 @@ export default class ContentModel extends Model {
   slug: string
 
   /**
-   * The synopsis of the content.
+   * A brief summary of the content.
    * @type {string}
    */
   synopsis: string
 
   /**
-   * The runtime of the content.
+   * How long the content is (in minutes).
    * @type {number}
    */
   runtime: number
@@ -99,13 +124,13 @@ export default class ContentModel extends Model {
   rating: Rating
 
   /**
-   * The images of the content.
+   * The images for the content.
    * @type {Images}
    */
   images: Images
 
   /**
-   * The genres of the content.
+   * The genres describing the content.
    * @type {Array<string>}
    */
   genres: Array<string>
@@ -122,14 +147,14 @@ export default class ContentModel extends Model {
    * @param {!string} imdb_id - The imdb id of the content.
    * @param {!number} tmdb_id - The tmdb id of the content.
    * @param {!string} title - The title of the content.
-   * @param {!number} released - The released date of the content.
+   * @param {!number} released - The release date of the content.
    * @param {!string} certification - The certification of the content.
    * @param {!string} slug - The slug of the content.
-   * @param {!string} synopsis - The synopsis of the content.
-   * @param {!number} runtime - The runtime of the content.
+   * @param {!string} synopsis - A brief summary of the content.
+   * @param {!number} runtime - How long the content is (in minutes).
    * @param {!Rating} rating - The rating of the content.
-   * @param {!Images} images - The images of the content.
-   * @param {!Array<string>} genres - The genres of the content.
+   * @param {!Images} images - The images for the content.
+   * @param {!Array<string>} genres - The genres describing the content.
    * @param {!string} type - The type of the content.
    */
   constructor({
@@ -148,70 +173,18 @@ export default class ContentModel extends Model {
   }: Object): void {
     super()
 
-    /**
-     * The id of the content.
-     * @type {string}
-     */
     this._id = imdb_id
-    /**
-     * [
-     * @type {string}
-     */
     this.imdb_id = imdb_id
-    /**
-     * [
-     * @type {string}
-     */
     this.tmdb_id = tmdb_id
-    /**
-     * The title of the content.
-     * @type {string}
-     */
     this.title = title
-    /**
-     * The release date of the content.
-     * @type {number}
-     */
     this.released = released
-    /**
-     * The certification of the content.
-     * @type {string}
-   */
     this.certification = certification
-    /**
-     * The slug of the content.
-     * @type {string}
-     */
     this.slug = slug
-    /**
-     * The synopsis of the content.
-     * @type {string}
-     */
     this.synopsis = synopsis
-    /**
-     * The runtime of the content.
-     * @type {number}
-     */
     this.runtime = runtime
-    /**
-     * The rating of the content.
-     * @type {Rating}
-     */
     this.rating = rating
-    /**
-     * The images of the content.
-     * @type {Images}
-     */
     this.images = images
-    /**
-     * The genres of the content.
-     * @type {Array<string>}
-     */
     this.genres = genres
-    /**
-     * The type of the content.
-     * @type {string}
-     */
     this.type = type
   }
 

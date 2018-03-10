@@ -21,10 +21,10 @@ export default class ShowProvider extends BaseProvider {
    * information.
    * @param {!Object} options.regex - The regex object to extract the content
    * information.
-   * @returns {Object|undefined} - Information about the content from the
+   * @returns {Object} - Information about the content from the
    * torrent.
    */
-  extractContent({torrent, regex}: Object): Object | void {
+  extractContent({torrent, regex}: Object): Object {
     let episode
     let season
     let slug
@@ -58,69 +58,23 @@ export default class ShowProvider extends BaseProvider {
       ? t.match(/(\d{3,4})p/)[0]
       : '480p'
 
-    const torrentObj = {
-      url: torrent.magnet ? torrent.magnet : torrent.torrent_link,
-      seeds: torrent.seeds ? torrent.seeds : 0,
-      peers: torrent.peers ? torrent.peers : 0,
-      provider: this.name
-    }
-
-    const show = {
+    return {
       showTitle,
       slug,
       season,
       episode,
-      quality,
-      dateBased: regex.dateBased,
       episodes: {},
-      type: this.contentType
+      type: this.contentType,
+      torrent: {
+        quality,
+        provider: this.name,
+        language: torrent.language || 'en',
+        size: torrent.size_bytes || 0,
+        seeds: torrent.seeds || 0,
+        peers: torrent.peers || 0
+        url: torrent.magnet ? torrent.magnet : torrent.torrent_link
+      }
     }
-
-    return this.attachTorrent({
-      show,
-      season,
-      episode,
-      quality,
-      torrent: torrentObj
-    })
-  }
-
-  /**
-   * Attach the torrent object to the content.
-   * @override
-   * @protected
-   * @param {!Object} options - The options to attach a torrent to the content.
-   * @param {!Object} options.show - The content to attach a torrent to.
-   * @param {!Object} options.torrent - The torrent object ot attach.
-   * @param {!string} options.quality - The quality of the torrent.
-   * @param {?number} options.season - The season number for the torrent.
-   * @param {?number} options.episode - The episode number for the torrent.
-   * @throws {Error} - Using default method: 'attachTorrent'
-   * @returns {Object} - The content with the newly attached torrent.
-   */
-  attachTorrent({
-    show,
-    torrent,
-    season,
-    episode,
-    quality
-  }: Object): Object {
-    if (!show.episodes[season]) {
-      show.episodes[season] = {}
-    }
-    if (!show.episodes[season][episode]) {
-      show.episodes[season][episode] = {}
-    }
-
-    const qualityObj = show.episodes[season][episode][quality]
-    if (
-      (!qualityObj || show.showTitle.toLowerCase().indexOf('repack') > -1) ||
-      (qualityObj && qualityObj.seeds < torrent.seeds)
-    ) {
-      show.episodes[season][episode][quality] = torrent
-    }
-
-    return show
   }
 
   /**
@@ -130,7 +84,7 @@ export default class ShowProvider extends BaseProvider {
    * @param {!Object} options - The options to get the content.
    * @param {!Array<Object>} options.torrents - A list of torrents to extract
    * content information from.
-   * @returns {Promise<Array<Object>, Error>} - A list of object with
+   * @returns {Promise<Array<Object>>} - A list of object with
    * content information extracted from the torrents.
    */
   getAllContent({torrents}: Object): Promise<Array<Object>> {
@@ -154,13 +108,16 @@ export default class ShowProvider extends BaseProvider {
       }
 
       const torrent = show.episodes[season][episode][quality]
-      const created = this.attachTorrent({
-        torrent,
+
+      const created = {
+        showTitle: show.showTitle,
+        slug,
         season,
         episode,
-        quality,
-        show
-      })
+        episodes: {},
+        type: this.contentType,
+        torrent
+      }
 
       return shows.set(slug, created)
     }, {

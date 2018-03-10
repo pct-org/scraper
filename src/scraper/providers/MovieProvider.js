@@ -51,53 +51,21 @@ export default class MovieProvider extends BaseProvider {
     const year = parseInt(title.match(regex.regex)[2], 10)
     const quality = title.match(regex.regex)[3]
 
-    const torrentObj = {
-      url: magnet || torrentLink,
-      seeds: seeds || 0,
-      peers: peers || 0,
-      size: bytes(size),
-      filesize: size || fileSize,
-      provider: this.name
-    }
-    const movie = {
+    return {
       movieTitle,
       slug,
       slugYear: `${slug}-${year}`,
       year,
-      quality,
-      language: lang,
       type: this.contentType,
-      torrents: {}
+      torrent: {
+        quality: quality,
+        provider: this.name,
+        size: bytes(size),
+        seeds: seeds || 0,
+        peers: peers || 0,
+        url: magnet || torrentLink
+      }
     }
-
-    return this.attachTorrent({
-      movie,
-      quality,
-      lang,
-      torrent: torrentObj
-    })
-  }
-
-  /**
-   * Attach the torrent object to the content.
-   * @overridd
-   * @protected
-   * @param {!Object} options - The options to attach a torrent to the content.
-   * @param {!Object} options.movie - The content to attach a torrent to.
-   * @param {!Object} options.torrent - The torrent object ot attach.
-   * @param {!string} options.quality - The quality of the torrent.
-   * @param {!string} [options.lang] - The language of the torrent.
-   * @returns {Object} - The content with the newly attached torrent.
-   */
-  attachTorrent({movie, torrent, quality, lang}: Object): Object {
-    if (!movie.torrents[lang]) {
-      movie.torrents[lang] = {}
-    }
-    if (!movie.torrents[lang][quality]) {
-      movie.torrents[lang][quality] = torrent
-    }
-
-    return movie
   }
 
   /**
@@ -136,13 +104,18 @@ export default class MovieProvider extends BaseProvider {
         return movies.set(slug, movie)
       }
 
-      const torrent = movie.torrents[language][quality]
-      const created = this.attachTorrent({
-        torrent,
-        quality,
-        language,
-        movie
-      })
+      const torrent = movie.torrents.filter(
+        torrent => torrent.language === language && torrent.quality === quality
+      )[0]
+
+      const created = {
+        movieTitle: movie.movieTitle,
+        slug: movie.slug,
+        slugYear: movie.slugYear,
+        year: movie.year,
+        type: this.contentType,
+        torrent
+      }
 
       return movies.set(slug, created)
     }, {

@@ -48,24 +48,4 @@ export default class AbstractHelper extends IHelper {
      */
     this.Model = Model
   }
-
-  /**
-   * Method to check whether or not the given images are null.
-   * @override
-   * @protected
-   * @param {Object} images - The images to check.
-   * @throws {Error} - An image could not be found!
-   * @returns {Object|undefined} - Throws an error if the given images are the
-   * same, otherwise it will return the given images.
-   */
-  checkImages(images: Object): Object | void {
-    for (const i in images) {
-      if (images[i] === null) {
-        throw new Error('An image could not be found!')
-      }
-    }
-
-    return images
-  }
-
 }
