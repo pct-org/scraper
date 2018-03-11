@@ -7,6 +7,7 @@
     "dotenv": "^4.0.0",
     "eztv-api-pt": "^1.3.1",
     "fanart.tv-api": "^2.0.1",
+    "gulp": "^3.9.1",
     "horriblesubs-api": "^1.0.8",
     "inquirer": "^4.0.1",
     "kat-api-pt": "^3.0.0",

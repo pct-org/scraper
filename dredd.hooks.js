@@ -1,6 +1,5 @@
 // Import the neccesary modules.
 // @flow
-import 'dotenv/config'
 // @flow-ignore
 import hooks from 'hooks'
 import pMap from 'p-map'

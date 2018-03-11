@@ -87,7 +87,7 @@ export default class BaseProvider extends AbstractProvider {
     })
   }
 
-   /**
+  /**
     * Gets information about a movie from Trakt.tv and insert the movie into the
     * MongoDB database.
     * @protected

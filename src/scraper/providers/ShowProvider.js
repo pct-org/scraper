@@ -21,6 +21,7 @@ export default class ShowProvider extends BaseProvider {
    * information.
    * @param {!Object} options.regex - The regex object to extract the content
    * information.
+   * @throws {Error} - 'Invalid title'.
    * @returns {Object} - Information about the content from the
    * torrent.
    */
@@ -36,7 +37,7 @@ export default class ShowProvider extends BaseProvider {
         ? name
         : null
     if (!t) {
-      return
+      throw new Error('Invalid title')
     }
     const match = t.match(regex.regex)
 
@@ -71,7 +72,7 @@ export default class ShowProvider extends BaseProvider {
         language: torrent.language || 'en',
         size: torrent.size_bytes || 0,
         seeds: torrent.seeds || 0,
-        peers: torrent.peers || 0
+        peers: torrent.peers || 0,
         url: torrent.magnet ? torrent.magnet : torrent.torrent_link
       }
     }

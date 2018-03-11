@@ -1,13 +1,13 @@
 // Import the necessary modules.
 // @flow
+/* eslint-disable camelcase */
 import pMap from 'p-map'
 
 import AbstractHelper from './AbstractHelper'
 import {
   fanart,
   tmdb,
-  trakt,
-  tvdb
+  trakt
 } from '../apiModules'
 import type {
   AnimeShow,
@@ -135,18 +135,20 @@ export default class ShowHelper extends AbstractHelper {
    * @param {!AnimeShow|Show} show - The show to add the torrents to.
    * @param {!Object} episodes - The episodes containing the torrents.
    * @param {!number} season - The season number.
+   * @returns {Promise<AnimeShow | Show>} - A newly updated show.
    */
   _addSeason(
     show: AnimeShow | Show,
     episodes: Object,
-    season: number,
-    tmdb_id: string
-  ) {
+    season: number
+  ): Promise<AnimeShow | Show> {
     return tmdb.seasons.season({
       id: show.tmdb_id,
       season
     }).then(s => {
-      var episode = [];
+      const updatedEpisodes = []
+
+      const baseUrl = 'https://image.tmdb.org/t/p'
 
       s.episodes.map(e => {
         const episode = {
@@ -155,11 +157,11 @@ export default class ShowHelper extends AbstractHelper {
           title: e.title,
           synopsis: e.overview,
           first_aired: new Date(e.air_date).getTime() / 1000.0,
-          image: e.still_path ? `https://image.tmdb.org/t/p/w300/${e.still_path}` : null,
+          image: e.still_path ? `${baseUrl}/w300/${e.still_path}` : null,
           torrents: episodes[season][e.episode_number]
         }
 
-        episodes.push(episode)
+        updatedEpisodes.push(episode)
       })
 
       const season = {
@@ -168,13 +170,14 @@ export default class ShowHelper extends AbstractHelper {
         title: s.name,
         synopsis: s.overview,
         first_aired: new Date(s.air_date).getTime() / 1000.0,
-        image: s.poster_path ? `https://image.tmdb.org/t/p/w500/${s.poster_path}` : null,
-        episodes: episodes
+        image: s.poster_path ? `${baseUrl}/w500/${s.poster_path}` : null,
+        episodes: updatedEpisodes
       }
 
       show.seasons.push(season)
+      return show
     }).catch(err =>
-      logger.error(`Trakt: Could not find any data on: ${err.path || err} with slug: '${slug}'`)
+      logger.error(`Trakt: Could not find any data on: ${err.path || err}`)
     )
   }
 
@@ -196,7 +199,8 @@ export default class ShowHelper extends AbstractHelper {
 
   /**
    * Get TV show images from TMDB.
-   * @param {!number} tmdbId - The tmdb id of the show for which you want the images.
+   * @param {!number} tmdbId - The tmdb id of the show for which you want the
+   * images.
    * @returns {Promise<Object>} - Object with backdrop and poster images.
    */
   _getTmdbImages(tmdbId: number): Promise<Object> {
@@ -205,32 +209,33 @@ export default class ShowHelper extends AbstractHelper {
     }).then(i => {
       const baseUrl = 'http://image.tmdb.org/t/p/w'
 
-      const tmdbPoster = i.posters.filter(
+      const poster = i.posters.filter(
         poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null
       )[0]
-      const tmdbPosterUrl = tmdbPoster.file_path
-      const tmdbPosterWidth = tmdbPoster.width
+      const posterPath = poster.file_path
+      const posterWidth = poster.width
 
-      const tmdbBackdrop = i.backdrops.filter(
+      const backdrop = i.backdrops.filter(
         backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null
       )[0]
-      const tmdbBackdropUrl = tmdbPoster.file_path
-      const tmdbBackdropWidth = tmdbPoster.width
+      const backdropPath = backdrop.file_path
+      const backdropWidth = backdrop.width
 
       return {
-        backdrop: tmdbBackdrop ? `${baseUrl}${tmdbBackdropWidth}${tmdbBackdropUrl}` : null,
-        poster: tmdbPoster ? `${baseUrl}${tmdbPosterWidth}${tmdbPosterUrl}` : null
+        backdrop: backdrop ? `${baseUrl}${backdropWidth}${backdropPath}` : null,
+        poster: poster ? `${baseUrl}${posterWidth}${posterPath}` : null
       }
     })
   }
 
   /**
    * Get TV show images from Fanart.
-   * @param {!number} tmdbId - The tmdb id of the show for which you want the images.
+   * @param {!number} tvdbId - The tvdb id of the show for which to fetch
+   * images.
    * @returns {Promise<Object>} - Object with backdrop and poster images.
    */
-  _getFanartImages(tmdbId: number): Promise<Object> {
-    return fanart.getShowImages(tmdbId).then(i => {
+  _getFanartImages(tvdbId: number): Promise<Object> {
+    return fanart.getShowImages(tvdbId).then(i => {
       return {
         backdrop: i.showbackground[0].url,
         poster: i.tvposter[0].url,
@@ -244,18 +249,22 @@ export default class ShowHelper extends AbstractHelper {
    * Get TV show images.
    * @override
    * @protected
-   * @param {!number} tmdbId - The tmdb id of the show for which you want the images.
-   * @returns {Promise<Object>} - Object with backdrop, poster, logo and thumb images.
+   * @param {!number} tmdbId - The tmdb id of the show for which to fetch
+   * images.
+   * @param {!number} tvdbId - The tvdb id of the show for which you to fetch
+   * images.
+   * @returns {Promise<Object>} - Object with backdrop, poster, logo and thumb
+   * images.
    */
-  async getImages(tmdbId: Number): Promise<Object> {
-    const tmdbImages = this._getTmdbImages(tmdbId)
-    let images = this._getFanartImages(tmdbId)
+  async getImages({ tmdbId, tvdbId }: Object): Promise<Object> {
+    const tmdbImages = await this._getTmdbImages(tmdbId)
+    const images = await this._getFanartImages(tvdbId)
 
-    if (await tmdbImages.backdrop !=== null) {
-      await images.backdrop = tmdbImages.backdrop // TMDB ones are better
+    if (tmdbImages.backdrop !== null) {
+      images.backdrop = tmdbImages.backdrop // TMDB ones are better
     }
 
-    if (tmdbImages.poster !=== null) {
+    if (tmdbImages.poster !== null) {
       images.poster = tmdbImages.poster // TMDB ones are better
     }
 
@@ -266,7 +275,8 @@ export default class ShowHelper extends AbstractHelper {
    * Get info from Trakt and make a new show object.
    * @override
    * @param {!string} slug - The slug to query https://trakt.tv/.
-   * @returns {Promise<AnimeShow | Show | Error>} - A new show without the episodes attached.
+   * @returns {Promise<AnimeShow | Show | Error>} - A new show without the
+   * episodes attached.
    */
   async getTraktInfo(slug: string): Promise<AnimeShow | Show | Error> {
     try {
@@ -278,11 +288,13 @@ export default class ShowHelper extends AbstractHelper {
         id: slug
       })
 
-      if (await traktShow && traktShow.ids.imdb && traktShow.ids.tmdb && traktShow.ids.tvdb) {
+      const { imdb, tmdb, tvdb } = traktShow.ids
+
+      if (traktShow && imdb && tmdb && tvdb) {
         return Promise.resolve(
           {
-            imdb_id: traktShow.ids.imdb,
-            tmdb_id: traktShow.ids.tmdb,
+            imdb_id: imdb,
+            tmdb_id: tmdb,
             title: traktShow.title,
             released: new Date(traktShow.released).getTime() / 1000.0,
             certification: traktShow.certification,
@@ -291,12 +303,15 @@ export default class ShowHelper extends AbstractHelper {
             runtime: traktShow.runtime,
             rating: {
               votes: traktShow.votes,
-              watching: await traktWatchers ? traktWatchers.length : 0,
+              watching: traktWatchers ? traktWatchers.length : 0,
               percentage: Math.round(traktShow.rating * 10)
             },
-            images: await this.getImages(traktShow.ids.tmdb),
+            images: await this.getImages({
+              tmdbId: tmdb,
+              tvdbId: tvdb
+            }),
             genres: traktShow.genres ? traktShow.genres : ['unknown'],
-            tvdb_id: traktShow.ids.tvdb,
+            tvdb_id: tvdb,
             air_info: {
               network: traktShow.network,
               country: traktShow.country,
@@ -310,7 +325,7 @@ export default class ShowHelper extends AbstractHelper {
         )
       }
     } catch (err) {
-      logger.error(`Trakt: Could not find any data on: ${err.path || err} with slug: '${slug}'`)
+      logger.error(`Trakt: Could not find any data on: ${err.path || err}`)
       return Promise.reject(err)
     }
   }

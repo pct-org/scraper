@@ -2,7 +2,7 @@
 // @flow
 /* eslint-disable no-unused-expressions */
 import { expect } from 'chai'
-import type ContentModel from '../../src/models/content/ContentModel'
+import { ContentModel } from '../../src/models/content/ContentModel'
 
 /**
  * It should check the attributes of a content object.

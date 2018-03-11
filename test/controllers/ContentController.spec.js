@@ -1,7 +1,6 @@
 // Import the necessary modules.
 // @flow
 /* eslint-disable no-unused-expressions */
-import 'dotenv/config'
 import { expect } from 'chai'
 import express, { type $Application } from 'express'
 import request from 'supertest'

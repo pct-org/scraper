@@ -1,7 +1,7 @@
 // Import the necessary modules.
 // @flow
 /* eslint-disable camelcase */
-import ContentModel from '../content/ContentModel'
+import { ContentModel, type Torrent } from '../content/ContentModel'
 
 /**
  * The episode model type.
@@ -10,7 +10,8 @@ import ContentModel from '../content/ContentModel'
  * @property {!number} number The episode number of the current episode.
  * @property {!string} title The title of the episode.
  * @property {!string} synopsis A brief summary of the episode
- * @property {!number} first_aired The date on which the episode was first aired.
+ * @property {!number} first_aired The date on which the episode was first
+ * aired.
  * @property {!string} image The still for the current episode.
  * @property {!Object} torrents The episode's torrent.
  */
@@ -21,7 +22,7 @@ type Episode = {
   synopsis: string,
   first_aired: number,
   image: string,
-  torrents: [Torrent]
+  torrents: Array<Torrent>
 }
 
 /**
@@ -31,7 +32,8 @@ type Episode = {
  * @property {!number} number The season number.
  * @property {!string} title The title of the season.
  * @property {!string} synopsis A brief summary of the season.
- * @property {!number} first_aired The date on which the first episode of the season first aired.
+ * @property {!number} first_aired The date on which the first episode of the
+ * season first aired.
  * @property {!string} image The season poster for the current season.
  * @property {!Array<Episode>} episodes The episodes in the season.
  */
@@ -50,9 +52,12 @@ type Season = {
  * @typedef {Object} AirInformation
  * @property {!string} network The name of the network on which the show airs.
  * @property {!string} country The country in which the show airs.
- * @property {!string} day The name of the day (in English), on which the show airs. (Will be null if the show has stopped airing).
- * @property {!string} time The time at which the show airs. (Will be null if the show has stopped airing).
- * @property {!string} status The status of the show's airing (returning series, in production, planned, cancelled, ended).
+ * @property {!string} day The name of the day (in English), on which the show
+ * airs. (Will be null if the show has stopped airing).
+ * @property {!string} time The time at which the show airs. (Will be null if
+ * the show has stopped airing).
+ * @property {!string} status The status of the show's airing (returning
+ * series, in production, planned, cancelled, ended).
  */
 type AirInformation = {
   network: string,
@@ -103,7 +108,8 @@ export default class ShowModel extends ContentModel {
    * @param {!string} certification - The certification of the show.
    * @param {!string} slug - The slug of the show.
    * @param {!string} synopsis - A brief summary of the show.
-   * @param {!number} runtime - How long each episode in the show is, approximately (in minutes).
+   * @param {!number} runtime - How long each episode in the show is,
+   * approximately (in minutes).
    * @param {!Rating} rating - The rating of the show.
    * @param {!Images} images - The images for the show.
    * @param {!Array<string>} genres - The genres describing the show.
@@ -126,6 +132,7 @@ export default class ShowModel extends ContentModel {
     images,
     genres,
     type = 'tvshow',
+    tvdb_id,
     air_info,
     num_seasons,
     last_updated,

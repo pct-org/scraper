@@ -1,6 +1,7 @@
 // Import the necessary modules.
+/* eslint-disable camelcase */
 // @flow
-import ContentModel from '../content/ContentModel'
+import { ContentModel, type Torrent } from '../content/ContentModel'
 
 /**
  * Class for movie attributes and methods.
@@ -37,7 +38,7 @@ export default class MovieModel extends ContentModel {
    * @param {!Array<string>} genres - The genres describing the movie.
    * @param {!string} [type=movie] - The type of the movie.
    * @param {!string} trailer - The movie's trailer.
-   * @param {!Object} torrents - The movie's torrents.
+   * @param {!Array<Torrent>} torrents - The movie's torrents.
    */
   constructor({
     imdb_id, // eslint-disable-line camelcase

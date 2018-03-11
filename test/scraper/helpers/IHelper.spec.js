@@ -26,16 +26,4 @@ describe('IHelper', () => {
     expect(iHelper.getTraktInfo).to
       .throw('Using default method: \'getTraktInfo\'')
   })
-
-  /** @test {IHelper#checkImages} */
-  it('should throw an error when calling the checkImages method', () => {
-    expect(iHelper.checkImages).to
-      .throw('Using default method: \'checkImages\'')
-  })
-
-  /** @test {IHelper#getImages} */
-  it('should throw an error when calling the getImages method', () => {
-    expect(iHelper.getImages.bind({}, {})).to
-      .throw('Using default method: \'getImages\'')
-  })
 })

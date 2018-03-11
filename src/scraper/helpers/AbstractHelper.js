@@ -48,4 +48,5 @@ export default class AbstractHelper extends IHelper {
      */
     this.Model = Model
   }
+
 }

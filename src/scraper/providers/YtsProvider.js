@@ -31,7 +31,7 @@ export default class YtsProvider extends MovieProvider {
 
     torrent.torrents.map(t => {
       // eslint-disable-next-line camelcase
-      const { hash, peers, quality, seeds, size, size_bytes } = t
+      const { hash, peers, quality, seeds, size_bytes } = t
 
       const torrentObj = {
         quality,

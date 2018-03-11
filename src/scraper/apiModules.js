@@ -1,6 +1,5 @@
 // Import the necessary modules.
 // @flow
-import 'dotenv/config'
 /**
  * An EZTV API wrapper to get data from eztv.ag.
  * @external {Eztv} https://github.com/ChrisAlderson/eztv-api-pt

@@ -31,7 +31,7 @@ export default class MovieProvider extends BaseProvider {
     let slug
 
     const {
-      title, size, seeds, peers, magnet, torrentLink, fileSize
+      title, size, seeds, peers, magnet, torrentLink
     } = torrent
 
     movieTitle = title.match(regex.regex)[1]
@@ -58,7 +58,7 @@ export default class MovieProvider extends BaseProvider {
       year,
       type: this.contentType,
       torrent: {
-        quality: quality,
+        quality,
         provider: this.name,
         size: bytes(size),
         seeds: seeds || 0,

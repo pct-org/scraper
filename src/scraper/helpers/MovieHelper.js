@@ -5,7 +5,6 @@ import pMap from 'p-map'
 import AbstractHelper from './AbstractHelper'
 import {
   fanart,
-  omdb,
   tmdb,
   trakt
 } from '../apiModules'
@@ -123,7 +122,8 @@ export default class MovieHelper extends AbstractHelper {
 
   /**
    * Get movie images from TMDB.
-   * @param {!number} tmdbId - The tmdb id of the movie for which you want the images.
+   * @param {!number} tmdbId - The tmdb id of the movie for which you want the
+   * images.
    * @returns {Promise<Object>} - Object with backdrop and poster images.
    */
   _getTmdbImages(tmdbId: number): Promise<Object> {
@@ -153,8 +153,10 @@ export default class MovieHelper extends AbstractHelper {
 
   /**
    * Get movie images from Fanart.
-   * @param {!number} tmdbId - The tmdb id of the movie for which you want the images.
-   * @returns {Promise<Object>} - Object with backdrop, poster, logo and thumb images.
+   * @param {!number} tmdbId - The tmdb id of the movie for which you want the
+   * images.
+   * @returns {Promise<Object>} - Object with backdrop, poster, logo and thumb
+   * images.
    */
   _getFanartImages(tmdbId: number): Promise<Object> {
     return fanart.getMovieImages(tmdbId).then(i => {
@@ -171,18 +173,20 @@ export default class MovieHelper extends AbstractHelper {
    * Get movie images.
    * @override
    * @protected
-   * @param {!number} tmdbId - The tmdb id of the movie for which you want the images.
-   * @returns {Promise<Object>} - Object with backdrop, poster, logo and thumb images.
+   * @param {!number} tmdbId - The tmdb id of the movie for which you want the
+   * images.
+   * @returns {Promise<Object>} - Object with backdrop, poster, logo and thumb
+   * images.
    */
-  async getImages(tmdbId: Number): Promise<Object> {
-    const tmdbImages = this._getTmdbImages(tmdbId)
-    let images = this._getFanartImages(tmdbId)
+  async getImages(tmdbId: number): Promise<Object> {
+    const tmdbImages = await this._getTmdbImages(tmdbId)
+    const images = await this._getFanartImages(tmdbId)
 
-    if (await tmdbImages.backdrop !=== null) {
-      await images.backdrop = tmdbImages.backdrop // TMDB ones are better
+    if (tmdbImages.backdrop !== null) {
+      images.backdrop = tmdbImages.backdrop // TMDB ones are better
     }
 
-    if (tmdbImages.poster !=== null) {
+    if (tmdbImages.poster !== null) {
       images.poster = tmdbImages.poster // TMDB ones are better
     }
 
@@ -229,7 +233,8 @@ export default class MovieHelper extends AbstractHelper {
         )
       }
     } catch (err) {
-      logger.error(`Trakt: Could not find any data on: ${err.path || err} with slug: '${slug}'`)
+      logger.error(`Trakt: Could not find any data on: ${err.path || err} with
+        slug: '${slug}'`)
       return Promise.reject(err)
     }
   }

@@ -28,7 +28,7 @@ export const showSchema: Object = {
       synopsis: String,
       first_aired: Number,
       image: {
-        type: String
+        type: String,
         default: null
       },
       episodes: {
@@ -39,7 +39,7 @@ export const showSchema: Object = {
           synopsis: String,
           first_aired: Number,
           image: {
-            type: String
+            type: String,
             default: null
           },
           torrents: {

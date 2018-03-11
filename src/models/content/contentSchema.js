@@ -11,7 +11,7 @@ export const contentSchema: Object = {
     required: true
   },
   imdb_id: String,
-  tmdb_id: Number
+  tmdb_id: Number,
   title: String,
   released: Number,
   certification: String,
@@ -35,15 +35,15 @@ export const contentSchema: Object = {
       default: null
     },
     poster: {
-      type: String
+      type: String,
       default: null
     },
     logo: {
-      type: String
+      type: String,
       default: null
     },
     thumb: {
-      type: String
+      type: String,
       default: null
     }
   },

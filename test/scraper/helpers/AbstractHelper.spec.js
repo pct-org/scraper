@@ -34,8 +34,9 @@ export function checkHelperAttributes(
  */
 export function testImages(images: Object, done: Function): void {
   expect(images).to.be.an('object')
-  expect(images.banner).to.be.a('string')
-  expect(images.fanart).to.be.a('string')
+  expect(images.backdrop).to.be.a('string')
+  expect(images.logo).to.be.a('string')
+  expect(images.thumb).to.be.a('string')
   expect(images.poster).to.be.a('string')
   done()
 }
@@ -91,37 +92,5 @@ describe('AbstractHelper', () => {
   /** @test {AbstractHelper#constructor} */
   it('should check the attributes of the BaseHelper', () => {
     checkHelperAttributes(abstractHelper, 'AbstractHelper', Show)
-  })
-
-  /** @test {AbstractHelper.Holder} */
-  it('should check if AbstractHelper has a static Holder attribute', () => {
-    expect(AbstractHelper.Holder).to.exist
-    expect(AbstractHelper.Holder).to.be.a('string')
-  })
-
-  /** @test {AbstractHelper.DefaultImages} */
-  it('should check if AbstractHelper has a static DefaultImages attribute', () => {
-    expect(AbstractHelper.DefaultImages).to.exist
-    expect(AbstractHelper.DefaultImages).to.be.an('object')
-  })
-
-  /** @test {AbstractHelper#checkImages} */
-  it('should check if all the images are found', () => {
-    const input = {
-      poster: 'poster'
-    }
-    const res = abstractHelper.checkImages(input)
-
-    expect(res).to.be.an('object')
-    expect(res).to.be.equal(input)
-  })
-
-  /** @test {AbstractHelper#checkImages} */
-  it('should throw an error when not all images are found', () => {
-    const input = {
-      poster: AbstractHelper.Holder
-    }
-    expect(abstractHelper.checkImages.bind(abstractHelper.checkImages, input))
-      .to.throw('An image could not been found!')
   })
 })

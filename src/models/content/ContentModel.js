@@ -1,6 +1,6 @@
 // Import the necessary modules.
 // @flow
-/* eslint-disable camelcase */
+/* eslint-disable camelcase, no-unused-vars */
 /**
  * MongoDB object modeling designed to work in an asynchronous environment.
  * @external {Model} http://mongoosejs.com
@@ -11,8 +11,10 @@ import { Model } from 'mongoose'
  * The rating model type.
  * @typedef {Object} Rating
  * @property {!number} votes How many people rated the content.
- * @property {!number} watching How many people are currently watching the content.
- * @property {!number} percentage The rating of the content, expressed as a percentage.
+ * @property {!number} watching How many people are currently watching the
+ * content.
+ * @property {!number} percentage The rating of the content, expressed as a
+ * percentage.
  */
 type Rating = {
   votes: number,
@@ -40,13 +42,15 @@ type Images = {
  * @typedef {Object} Torrent
  * @property {!string} quality The quality of the video (1080p, 720p, 480p).
  * @property {!string} provider The website from which the torrent was obtained.
- * @property {!string} language The language code describing the audio language of the video.
- * @property {!number} size The size of the video to which the torrent points (in bytes).
+ * @property {!string} language The language code describing the audio language
+ * of the video.
+ * @property {!number} size The size of the video to which the torrent points
+ * (in bytes).
  * @property {!number} seeds The number of people seeding the torrent currently.
  * @property {!number} peers The number of peers the torrent has.
  * @property {!string} url The url pointing to the torrent.
  */
-type Torrent = {
+export type Torrent = {
   quality: string,
   provider: string,
   language: string,
@@ -61,7 +65,7 @@ type Torrent = {
  * @extends {Model}
  * @type {ContentModel}
  */
-export default class ContentModel extends Model {
+export class ContentModel extends Model {
 
   /**
    * The imdb id of the content.

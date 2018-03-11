@@ -1,6 +1,5 @@
 // Import the necessary modules.
 // @flow
-import 'dotenv/config'
 import { isMaster } from 'cluster'
 import { join } from 'path'
 import {
