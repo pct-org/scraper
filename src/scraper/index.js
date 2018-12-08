@@ -29,13 +29,13 @@ export default [{
     maxWebRequests,
     configs: bulkConfigs
   }
-}, {
+}, /*{
   Provider: MovieProvider,
   args: {
     maxWebRequests,
     configs: movieConfigs
   }
-}, {
+}, */{
   Provider: ShowProvider,
   args: {
     maxWebRequests,

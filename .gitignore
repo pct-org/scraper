@@ -43,3 +43,6 @@ build
 
 # dotevn
 .env
+
+.idea
+data/db

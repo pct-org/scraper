@@ -54,43 +54,32 @@ export default class ContentController extends BaseContentController {
    */
   sortContent(sort: string, order: number): Object {
     const s = sort.toLowerCase()
-    const sortObj = {
-      score: {
-        $meta: 'textScore'
-      }
-    }
 
     switch (s) {
       case 'name':
         return {
-          ...sortObj,
           title: order
         }
       case 'rating':
         return {
-          ...sortObj,
           'rating.votes': order,
           'rating.percentage': order
         }
       case 'released':
         return {
-          ...sortObj,
           latest_episode: order,
           released: order
         }
       case 'trending':
         return {
-          ...sortObj,
           'rating.watching': order
         }
       case 'year':
         return {
-          ...sortObj,
           year: order
         }
       default:
         return {
-          ...sortObj,
           'rating.votes': order,
           'rating.precentage': order,
           'rating.watching': order

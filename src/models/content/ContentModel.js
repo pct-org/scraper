@@ -146,6 +146,12 @@ export class ContentModel extends Model {
   type: string
 
   /**
+   * The content's trailer
+   * @type {string}
+   */
+  trailer: string
+
+  /**
    * Create a new Content object.
    * @param {!Object} config - The configuration object for the content.
    * @param {!string} imdb_id - The imdb id of the content.
@@ -173,7 +179,8 @@ export class ContentModel extends Model {
     rating,
     images,
     genres,
-    type
+    type,
+    trailer
   }: Object): void {
     super()
 
@@ -190,6 +197,7 @@ export class ContentModel extends Model {
     this.images = images
     this.genres = genres
     this.type = type
+    this.trailer = trailer
   }
 
 }

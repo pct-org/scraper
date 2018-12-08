@@ -11,12 +11,6 @@ import { ContentModel, type Torrent } from '../content/ContentModel'
 export default class MovieModel extends ContentModel {
 
   /**
-   * The movie's trailer.
-   * @type {string}
-   */
-  trailer: string
-
-  /**
    * The movie's torrents.
    * @type {Array<Torrent>}
    */
@@ -68,10 +62,10 @@ export default class MovieModel extends ContentModel {
       rating,
       images,
       genres,
-      type
+      type,
+      trailer
     })
 
-    this.trailer = trailer
     this.torrents = torrents
   }
 

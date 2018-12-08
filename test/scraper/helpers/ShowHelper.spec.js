@@ -169,7 +169,7 @@ describe('ShowHelper', () => {
     const foundStub = sinon.stub(showHelper.Model, 'findOne')
     foundStub.returns(null)
 
-    showHelper._updateEpisodes(testShow).then(res => {
+    showHelper._updateShow(testShow).then(res => {
       expect(res).to.be.an('object')
       foundStub.restore()
 
@@ -184,7 +184,7 @@ describe('ShowHelper', () => {
     const updateStub = sinon.stub(showHelper.Model, 'findOneAndUpdate')
     updateStub.returns(testShow)
 
-    showHelper._updateEpisodes(testShow).then(res => {
+    showHelper._updateShow(testShow).then(res => {
       expect(res).to.be.an('object')
       foundStub.restore()
       updateStub.restore()
@@ -204,7 +204,7 @@ describe('ShowHelper', () => {
     const updateStub = sinon.stub(showHelper.Model, 'findOneAndUpdate')
     updateStub.returns(testShow)
 
-    showHelper._updateEpisodes(testShow).then(res => {
+    showHelper._updateShow(testShow).then(res => {
       expect(res).to.be.an('object')
       foundStub.restore()
       updateStub.restore()
@@ -218,7 +218,7 @@ describe('ShowHelper', () => {
     const foundStub = sinon.stub(showHelper.Model, 'findOne')
     foundStub.throws()
 
-    showHelper._updateEpisodes(testShow).then(res => {
+    showHelper._updateShow(testShow).then(res => {
       expect(res).to.be.undefined
       foundStub.restore()
 

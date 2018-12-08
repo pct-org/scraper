@@ -7,7 +7,8 @@ import AbstractHelper from './AbstractHelper'
 import {
   fanart,
   tmdb,
-  trakt
+  trakt,
+  tvdb
 } from '../apiModules'
 import type {
   AnimeShow,
@@ -26,7 +27,7 @@ export default class ShowHelper extends AbstractHelper {
    * @param {!AnimeShow|Show} show - The show to update the number of seasons.
    * @returns {Promise<AnimeShow|Show>} - A newly updated show.
    */
-  async _updateNumSeasons(show: AnimeShow | Show): Promise<AnimeShow | Show> {
+  async _updateShowInDb(show: AnimeShow | Show): Promise<AnimeShow | Show> {
     const saved = await this.Model.findOneAndUpdate({
       _id: show.imdb_id
     }, new this.Model(show), {
@@ -34,9 +35,10 @@ export default class ShowHelper extends AbstractHelper {
       upsert: true
     })
 
-    const distinct = await this.Model.distinct('episodes.season', {
+    const distinct = await this.Model.distinct('seasons', {
       _id: saved.imdb_id
     }).exec()
+
     saved.num_seasons = distinct.length
 
     return this.Model.findOneAndUpdate({
@@ -49,22 +51,20 @@ export default class ShowHelper extends AbstractHelper {
 
   /**
    * Update the torrents for an existing show.
-   * @param {!Object} matching - The matching episode of new the show.
-   * @param {!Object} found - The matching episode existing show.
+   * @param {!Object} matchingEpisode - The matching episode of new the show.
+   * @param {!Object} foundEpisode - The matching episode existing show.
    * @param {!AnimeShow|Show} show - The show to merge the episodes to.
    * @param {!string} quality - The quality of the torrent.
    * @returns {AnimeShow|Show} - A show with merged torrents.
    */
   _updateEpisode(
-    matching: Object,
-    found: Object,
-    show: AnimeShow | Show,
+    matchingEpisode: Object,
+    foundEpisode: Object,
     quality: string
   ): AnimeShow | Show {
-    const index = show.episodes.indexOf(matching)
 
-    const foundTorrents = found.torrents[quality]
-    let matchingTorrents = matching.torrents[quality]
+    const foundTorrents = foundEpisode.torrents.find(torrent => torrent.qualtity === quality)
+    const matchingTorrents = matchingEpisode.torrents.find(torrent => torrent.qualtity === quality)
 
     if (foundTorrents && matchingTorrents) {
       let update = false
@@ -77,14 +77,13 @@ export default class ShowHelper extends AbstractHelper {
       }
 
       if (update) {
-        matchingTorrents = foundTorrents
+        matchingEpisode.torrents = foundTorrents
       }
     } else if (foundTorrents && !matchingTorrents) {
-      matchingTorrents = foundTorrents
+      matchingEpisode.torrents = foundTorrents
     }
 
-    show.episodes.splice(index, 1, matching)
-    return show
+    return matchingEpisode
   }
 
   /**
@@ -92,41 +91,70 @@ export default class ShowHelper extends AbstractHelper {
    * @param {!AnimeShow|Show} show - The show to update its episodes.
    * @returns {Promise<AnimeShow|Show>} - A newly updated show.
    */
-  async _updateEpisodes(show: AnimeShow | Show): Promise<AnimeShow | Show> {
+  async _updateShow(show: AnimeShow | Show): Promise<AnimeShow | Show> {
     try {
-      let s = show
+      const s = show
       const found = await this.Model.findOne({
         _id: s.imdb_id
       })
+
       if (!found) {
         logger.info(`${this.name}: '${s.title}' is a new show!`)
         const newShow = await new this.Model(s).save()
-        return await this._updateNumSeasons(newShow)
+
+        return await this._updateShowInDb(newShow)
       }
 
       logger.info(`${this.name}: '${found.title}' is an existing show.`)
 
-      found.episodes.map(e => {
-        const matching = s.episodes.find(
-          s => s.season === e.season && s.episode === e.episode
-        )
+      found.seasons.forEach(foundSeason => {
+        const matchingSeason = s.seasons.find(season => season.number === foundSeason)
 
-        if (e.first_aired > s.latest_episode) {
-          s.latest_episode = e.first_aired
+        if (!matchingSeason) {
+          s.seasons.push(foundSeason)
+
+        } else {
+          s.seasons.map(season => {
+            if (season.number !== foundSeason.number) {
+              return season
+            }
+
+            const episodes = []
+
+            foundSeason.episodes.forEach(e => {
+              let matchingEpisode = matchingSeason.episodes.find(
+                s => s.season === e.season && s.episode === e.episode
+              )
+
+              if (e.first_aired > s.latest_episode) {
+                s.latest_episode = e.first_aired
+              }
+
+              if (!matchingEpisode) {
+                episodes.push(e)
+
+              } else {
+                matchingEpisode = this._updateEpisode(matchingEpisode, e, '480p')
+                matchingEpisode = this._updateEpisode(matchingEpisode, e, '720p')
+
+                episodes.push(this._updateEpisode(matchingEpisode, e, '1080p'))
+              }
+            })
+
+            return {
+              ...season,
+              episodes: episodes.sort((a, b) => a.number - b.number)
+            }
+          })
         }
-
-        if (!matching) {
-          return s.episodes.push(e)
-        }
-
-        s = this._updateEpisode(matching, e, s, '480p')
-        s = this._updateEpisode(matching, e, s, '720p')
-        s = this._updateEpisode(matching, e, s, '1080p')
       })
 
-      return await this._updateNumSeasons(s)
+      // Sort the seasons
+      s.seasons = s.seasons.sort((a, b) => a.number - b.number)
+
+      return await this._updateShowInDb(s)
     } catch (err) {
-      logger.error(err)
+      logger.error(`_updateEpisodes: ${err.message || err}`)
     }
   }
 
@@ -142,8 +170,8 @@ export default class ShowHelper extends AbstractHelper {
     episodes: Object,
     season: number
   ): Promise<AnimeShow | Show> {
-    return tmdb.seasons.season({
-      id: show.tmdb_id,
+    return tmdb.tv.season.details({
+      tv_id: show.tmdb_id,
       season
     }).then(s => {
       const updatedEpisodes = []
@@ -157,27 +185,39 @@ export default class ShowHelper extends AbstractHelper {
           title: e.title,
           synopsis: e.overview,
           first_aired: new Date(e.air_date).getTime() / 1000.0,
-          image: e.still_path ? `${baseUrl}/w300/${e.still_path}` : null,
-          torrents: episodes[season][e.episode_number]
+          images: {
+            full: !e.still_path ? null
+              : `${baseUrl}/original/${e.still_path}`,
+            high: !e.still_path ? null : `${baseUrl}/w1280/${e.still_path}`,
+            medium: !e.still_path ? null : `${baseUrl}/w780/${e.still_path}`,
+            thumb: !e.still_path ? null : `${baseUrl}/w342/${e.still_path}`
+          },
+          torrents: this._formatTorrents(episodes[season][e.episode_number])
         }
 
         updatedEpisodes.push(episode)
       })
 
-      const season = {
+      show.seasons.push({
         tmdb_id: s.id,
         number: s.season_number,
         title: s.name,
         synopsis: s.overview,
         first_aired: new Date(s.air_date).getTime() / 1000.0,
-        image: s.poster_path ? `${baseUrl}/w500/${s.poster_path}` : null,
+        images: {
+          full: !s.poster_path ? null
+            : `${baseUrl}/original/${s.poster_path}`,
+          high: !s.poster_path ? null : `${baseUrl}/w1280/${s.poster_path}`,
+          medium: !s.poster_path ? null : `${baseUrl}/w780/${s.poster_path}`,
+          thumb: !s.poster_path ? null : `${baseUrl}/w342/${s.poster_path}`
+        },
         episodes: updatedEpisodes
-      }
+      })
 
-      show.seasons.push(season)
       return show
+
     }).catch(err =>
-      logger.error(`Trakt: Could not find any data on: ${err.path || err}`)
+      logger.error(`TheMovieDB: Could not find any data on: ${err.path || err}`)
     )
   }
 
@@ -193,55 +233,84 @@ export default class ShowHelper extends AbstractHelper {
   ): Show {
     return pMap(Object.keys(episodes), season => {
       return this._addSeason(show, episodes, season)
-    }).then(() => this._updateEpisodes(show))
-      .catch(err => logger.error(err))
+
+    }).then(() => this._updateShow(show))
+      .catch(err => logger.error(`addEpisodes: ${err.message || err}`))
   }
 
   /**
    * Get TV show images from TMDB.
-   * @param {!number} tmdbId - The tmdb id of the show for which you want the
-   * images.
-   * @returns {Promise<Object>} - Object with backdrop and poster images.
+   * @param {!number} tmdbId - The tmdb id of the show you want the images
+   * from.
+   * @returns {Object} - Object with banner, fanart and poster images.
    */
-  _getTmdbImages(tmdbId: number): Promise<Object> {
+  _getTmdbImages(tmdbId: number): Object {
     return tmdb.tv.images({
       tv_id: tmdbId
     }).then(i => {
-      const baseUrl = 'http://image.tmdb.org/t/p/w'
+      const baseUrl = 'http://image.tmdb.org/t/p/w500'
 
-      const poster = i.posters.filter(
+      const tmdbPoster = i.posters.filter(
         poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null
-      )[0]
-      const posterPath = poster.file_path
-      const posterWidth = poster.width
+      )[0].file_path
 
-      const backdrop = i.backdrops.filter(
+      const tmdbBackdrop = i.backdrops.filter(
         backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null
-      )[0]
-      const backdropPath = backdrop.file_path
-      const backdropWidth = backdrop.width
+      )[0].file_path
 
-      return {
-        backdrop: backdrop ? `${baseUrl}${backdropWidth}${backdropPath}` : null,
-        poster: poster ? `${baseUrl}${posterWidth}${posterPath}` : null
+      const { Holder } = AbstractHelper
+      const images = {
+        banner: tmdbPoster ? `${baseUrl}${tmdbPoster}` : Holder,
+        backdrop: tmdbBackdrop ? `${baseUrl}${tmdbBackdrop}` : Holder,
+        poster: tmdbPoster ? `${baseUrl}${tmdbPoster}` : Holder
       }
+
+      return images
+    })
+  }
+
+  /**
+   * Get TV show images from TVDB.
+   * @param {!number} tvdbId - The tvdb id of the show you want the images
+   * from.
+   * @returns {Object} - Object with banner, fanart and poster images.
+   */
+  _getTvdbImages(tvdbId: number): Object {
+    return tvdb.getSeriesById(tvdbId).then(i => {
+      const baseUrl = 'http://thetvdb.com/banners/'
+
+      const { Holder } = AbstractHelper
+      const images = {
+        banner: i.banner ? `${baseUrl}${i.banner}` : Holder,
+        backdrop: i.banner ? `${baseUrl}${i.banner}` : Holder,
+        poster: i.banner ? `${baseUrl}${i.banner}` : Holder
+      }
+
+      return this.checkImages(images)
     })
   }
 
   /**
    * Get TV show images from Fanart.
-   * @param {!number} tvdbId - The tvdb id of the show for which to fetch
-   * images.
-   * @returns {Promise<Object>} - Object with backdrop and poster images.
+   * @param {!number} tvdbId - The tvdb id of the show you want the images
+   * from.
+   * @returns {Object} - Object with banner, fanart and poster images.
    */
-  _getFanartImages(tvdbId: number): Promise<Object> {
+  _getFanartImages(tvdbId: number): Object {
     return fanart.getShowImages(tvdbId).then(i => {
-      return {
-        backdrop: i.showbackground[0].url,
-        poster: i.tvposter[0].url,
-        logo: i.hdtvlogo[0].url,
-        thumb: i.tvthumb[0].url
+      const { Holder } = AbstractHelper
+
+      const images = {
+        banner: i.tvbanner ? i.tvbanner[0].url : Holder,
+        backdrop: i.showbackground
+          ? i.showbackground[0].url
+          : i.clearart
+            ? i.clearart[0].url
+            : Holder,
+        poster: i.tvposter ? i.tvposter[0].url : Holder
       }
+
+      return this.checkImages(images)
     })
   }
 
@@ -249,26 +318,17 @@ export default class ShowHelper extends AbstractHelper {
    * Get TV show images.
    * @override
    * @protected
-   * @param {!number} tmdbId - The tmdb id of the show for which to fetch
-   * images.
-   * @param {!number} tvdbId - The tvdb id of the show for which you to fetch
-   * images.
-   * @returns {Promise<Object>} - Object with backdrop, poster, logo and thumb
-   * images.
+   * @param {!number} tmdbId - The tmdb id of the show you want the images
+   * from.
+   * @param {!number} tvdbId - The tvdb id of the show you want the images
+   * from.
+   * @returns {Promise<Object>} - Object with banner, fanart and poster images.
    */
-  async getImages({ tmdbId, tvdbId }: Object): Promise<Object> {
-    const tmdbImages = await this._getTmdbImages(tmdbId)
-    const images = await this._getFanartImages(tvdbId)
-
-    if (tmdbImages.backdrop !== null) {
-      images.backdrop = tmdbImages.backdrop // TMDB ones are better
-    }
-
-    if (tmdbImages.poster !== null) {
-      images.poster = tmdbImages.poster // TMDB ones are better
-    }
-
-    return images
+  getImages({ tmdbId, tvdbId }: Object): Promise<Object> {
+    return this._getTmdbImages(tmdbId)
+      .catch(() => this._getTvdbImages(tvdbId))
+      .catch(() => this._getFanartImages(tmdbId))
+      .catch(() => AbstractHelper.DefaultImages)
   }
 
   /**
@@ -278,29 +338,33 @@ export default class ShowHelper extends AbstractHelper {
    * @returns {Promise<AnimeShow | Show | Error>} - A new show without the
    * episodes attached.
    */
-  async getTraktInfo(slug: string): Promise<AnimeShow | Show | Error> {
+  async getTraktInfo(slug: string): Show {
     try {
       const traktShow = await trakt.shows.summary({
-        slug,
+        id: slug,
         extended: 'full'
       })
-      const traktWatchers = await trakt.shows.watching({
-        id: slug
-      })
+      const traktWatchers = await trakt.shows.watching({ id: slug })
+
+      if (!traktShow) {
+        return logger.warn(`No show found for slug: '${slug}'`)
+      }
 
       const { imdb, tmdb, tvdb } = traktShow.ids
 
       if (traktShow && imdb && tmdb && tvdb) {
         return Promise.resolve(
           {
+            slug: traktShow.ids.slug,
             imdb_id: imdb,
             tmdb_id: tmdb,
+            tvdb_id: tvdb,
             title: traktShow.title,
-            released: new Date(traktShow.released).getTime() / 1000.0,
+            released: new Date(traktShow.first_aired).getTime() / 1000.0,
             certification: traktShow.certification,
-            slug: traktShow.ids.slug,
             synopsis: traktShow.overview,
             runtime: traktShow.runtime,
+            trailer: traktShow.trailer,
             rating: {
               votes: traktShow.votes,
               watching: traktWatchers ? traktWatchers.length : 0,
@@ -311,7 +375,6 @@ export default class ShowHelper extends AbstractHelper {
               tvdbId: tvdb
             }),
             genres: traktShow.genres ? traktShow.genres : ['unknown'],
-            tvdb_id: tvdb,
             air_info: {
               network: traktShow.network,
               country: traktShow.country,
@@ -325,7 +388,8 @@ export default class ShowHelper extends AbstractHelper {
         )
       }
     } catch (err) {
-      logger.error(`Trakt: Could not find any data on: ${err.path || err}`)
+      logger.error(`Trakt: Could not find any data on: ${err.path || err} with slug: '${slug}'`)
+
       return Promise.reject(err)
     }
   }

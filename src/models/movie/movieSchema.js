@@ -2,7 +2,7 @@
 // @flow
 import { Schema } from 'mongoose'
 
-import { contentSchema } from '../content/contentSchema'
+import { contentSchema, torrentSchema } from '../content/contentSchema'
 
 /**
  * The schema object for the movie model.
@@ -10,20 +10,8 @@ import { contentSchema } from '../content/contentSchema'
  */
 export const movieSchema: Object = {
   ...contentSchema,
-  trailer: {
-    type: String,
-    default: null
-  },
   torrents: {
-    type: [{
-      quality: String,
-      provider: String,
-      language: String,
-      size: Number,
-      seeds: Number,
-      peers: Number,
-      url: String
-    }]
+    type: [torrentSchema]
   }
 }
 

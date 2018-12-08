@@ -136,7 +136,7 @@ describe('MovieHelper', () => {
     const foundStub = sinon.stub(movieHelper.Model, 'findOne')
     foundStub.returns(null)
 
-    movieHelper._updateMovie(testMovie).then(res => {
+    movieHelper._updateMovieInDb(testMovie).then(res => {
       expect(res).to.be.an('object')
       foundStub.restore()
 
@@ -151,7 +151,7 @@ describe('MovieHelper', () => {
     const updateStub = sinon.stub(movieHelper.Model, 'findOneAndUpdate')
     updateStub.returns(testMovie)
 
-    movieHelper._updateMovie(testMovie).then(res => {
+    movieHelper._updateMovieInDb(testMovie).then(res => {
       expect(res).to.be.an('object')
       foundStub.restore()
       updateStub.restore()
@@ -168,7 +168,7 @@ describe('MovieHelper', () => {
     delete testMovie.torrents
     updateStub.returns(testMovie)
 
-    movieHelper._updateMovie(testMovie).then(res => {
+    movieHelper._updateMovieInDb(testMovie).then(res => {
       expect(res).to.be.an('object')
       foundStub.restore()
       updateStub.restore()
@@ -182,7 +182,7 @@ describe('MovieHelper', () => {
     const foundStub = sinon.stub(movieHelper.Model, 'findOne')
     foundStub.throws()
 
-    movieHelper._updateMovie(testMovie).then(res => {
+    movieHelper._updateMovieInDb(testMovie).then(res => {
       expect(res).to.be.undefined
       foundStub.restore()
 

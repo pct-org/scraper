@@ -114,6 +114,7 @@ export default class BaseProvider extends AbstractProvider {
   getContent(content: Object): Promise<Object> {
     if (this.contentType === BaseProvider.ContentTypes.Show) {
       return this._getShowContent(content)
+
     } else if (this.contentType === BaseProvider.ContentTypes.Movie) {
       return this._getMovieContent(content)
     }
@@ -320,7 +321,7 @@ export default class BaseProvider extends AbstractProvider {
         concurrency: this.maxWebRequests
       })
     } catch (err) {
-      logger.error(err)
+      logger.error(`BaseProvider.scrapeConfig: ${err.message || err}`)
     }
   }
 

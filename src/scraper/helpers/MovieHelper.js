@@ -1,12 +1,11 @@
 // Import the necessary modules.
 // @flow
-import pMap from 'p-map'
-
 import AbstractHelper from './AbstractHelper'
 import {
   fanart,
   tmdb,
-  trakt
+  trakt,
+  omdb
 } from '../apiModules'
 import type {
   AnimeMovie,
@@ -22,47 +21,36 @@ export default class MovieHelper extends AbstractHelper {
 
   /**
    * Update the torrents for an existing movie.
-   * @param {!AnimeMovie|Movie} movie - The new movie.
-   * @param {!AnimeMovie|Movie} found - The existing movie.
-   * @param {!string} language - The language of the torrent.
-   * @param {!string} quality - The quality of the torrent.
-   * @returns {AnimeMovie|Movie} - A movie with merged torrents.
+   *
+   * @param torrents
+   * @param foundTorrents
+   * @returns {Array<Object>}
+   * @private
    */
-  _updateTorrent(
-    movie: AnimeMovie | Movie,
-    found: AnimeMovie | Movie,
-    language: string,
-    quality: string
-  ): AnimeMovie | Movie {
-    let update = false
-    let movieTorrent = movie.torrents[language]
+  _updateTorrents(
+    torrents: Array<Object>,
+    foundTorrents: Array<Object>
+  ): Object {
+    let newTorrents = torrents
 
-    const foundTorrent = found.torrents[language]
+    foundTorrents.forEach(torrent => {
+      const match = torrents.find(
+        t => t.quality === torrent.quality && t.language === torrent.language
+      )
 
-    if (foundTorrent && movieTorrent) {
-      const foundQuality = foundTorrent[quality]
-      const movieQuality = movieTorrent[quality]
+      if (!match) {
+        newTorrents.push(torrent)
 
-      if (foundQuality && movieQuality) {
-        if (foundQuality.seeds > movieQuality.seeds ||
-            foundQuality.url === movieQuality.url) {
-          update = true
-        }
-      } else if (foundQuality && !movieQuality) {
-        update = true
+      } else if (match.seeds > torrent.seeds) {
+        newTorrents = newTorrents.filter(
+          t => t.quality === torrent.quality && t.language === torrent.language
+        )
+
+        newTorrents.push(match)
       }
-    } else if (foundTorrent && !movieTorrent) {
-      if (foundTorrent[quality]) {
-        movieTorrent = {}
-        update = true
-      }
-    }
+    })
 
-    if (update) {
-      movieTorrent[quality] = foundTorrent[quality]
-    }
-
-    return movie
+    return newTorrents
   }
 
   /**
@@ -70,25 +58,22 @@ export default class MovieHelper extends AbstractHelper {
    * @param {!AnimeMovie|Movie} movie - The movie to update its torrent.
    * @returns {AnimeMovie|Movie} - A newly updated movie.
    */
-  async _updateMovie(movie: AnimeMovie | Movie): AnimeMovie | Movie {
+  async _updateMovieInDb(movie: AnimeMovie | Movie): AnimeMovie | Movie {
     try {
-      let m = movie
+      const m = movie
       const found = await this.Model.findOne({
-        imdb_id: m._id
+        _id: m.imdb_id
       })
 
       if (found) {
         logger.info(`${this.name}: '${found.title}' is an existing movie.`)
 
         if (found.torrents) {
-          Object.keys(found.torrents).map(language => {
-            m = this._updateTorrent(m, found, language, '720p')
-            m = this._updateTorrent(m, found, language, '1080p')
-          })
+          m.torrents = this._updateTorrents(m.torrents, found.torrents)
         }
 
         return await this.Model.findOneAndUpdate({
-          _id: m._id
+          _id: m.imdb_id
         }, m, {
           upsert: true,
           new: true
@@ -98,7 +83,7 @@ export default class MovieHelper extends AbstractHelper {
       logger.info(`${this.name}: '${m.title}' is a new movie!`)
       return await new this.Model(m).save()
     } catch (err) {
-      logger.error(err)
+      logger.error(`_updateMovie: ${err.message || err}`)
     }
   }
 
@@ -112,60 +97,84 @@ export default class MovieHelper extends AbstractHelper {
     movie: AnimeMovie | Movie,
     torrents: Object
   ): Promise<AnimeMovie | Movie> {
-    return pMap(
-      Object.keys(torrents),
-      torrent => {
-        movie.torrents[torrent] = torrents[torrent]
-      }
-    ).then(() => this._updateMovie(movie))
+
+    movie.torrents = torrents
+
+    return this._updateMovieInDb(movie)
   }
 
   /**
    * Get movie images from TMDB.
-   * @param {!number} tmdbId - The tmdb id of the movie for which you want the
-   * images.
-   * @returns {Promise<Object>} - Object with backdrop and poster images.
+   * @param {!string} tmdbId - The tmdb id of the movie you want the images
+   * from.
+   * @returns {Object} - Object with banner, fanart and poster images.
    */
-  _getTmdbImages(tmdbId: number): Promise<Object> {
+  _getTmdbImages(tmdbId: string): Promise<Object | Error> {
     return tmdb.movie.images({
       movie_id: tmdbId
     }).then(i => {
-      const baseUrl = 'http://image.tmdb.org/t/p/w'
+      const baseUrl = 'http://image.tmdb.org/t/p/w500'
 
       const tmdbPoster = i.posters.filter(
         poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null
-      )[0]
-      const tmdbPosterUrl = tmdbPoster.file_path
-      const tmdbPosterWidth = tmdbPoster.width
-
+      )[0].file_path
       const tmdbBackdrop = i.backdrops.filter(
         backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null
-      )[0]
-      const tmdbBackdropUrl = tmdbPoster.file_path
-      const tmdbBackdropWidth = tmdbPoster.width
+      )[0].file_path
 
-      return {
-        backdrop: tmdbBackdrop ? `${baseUrl}${tmdbBackdropWidth}${tmdbBackdropUrl}` : null,
-        poster: tmdbPoster ? `${baseUrl}${tmdbPosterWidth}${tmdbPosterUrl}` : null
+      const { Holder } = AbstractHelper
+      const images = {
+        banner: tmdbPoster ? `${baseUrl}${tmdbPoster}` : Holder,
+        backdrop: tmdbBackdrop ? `${baseUrl}${tmdbBackdrop}` : Holder,
+        poster: tmdbPoster ? `${baseUrl}${tmdbPoster}` : Holder
       }
+
+      return this.checkImages(images)
+    })
+  }
+
+  /**
+   * Get movie images from OMDB.
+   * @param {!string} imdbId - The imdb id of the movie you want the images
+   * from.
+   * @returns {Object} - Object with banner, fanart and poster images.
+   */
+  _getOmdbImages(imdbId: string): Promise<Object | Error> {
+    return omdb.byId({
+      imdb: imdbId,
+      type: 'movie'
+    }).then(i => {
+      const { Holder } = AbstractHelper
+      const images = {
+        banner: i.Poster ? i.Poster : Holder,
+        backdrop: i.Poster ? i.Poster : Holder,
+        poster: i.Poster ? i.Poster : Holder
+      }
+
+      return this.checkImages(images)
     })
   }
 
   /**
    * Get movie images from Fanart.
-   * @param {!number} tmdbId - The tmdb id of the movie for which you want the
-   * images.
-   * @returns {Promise<Object>} - Object with backdrop, poster, logo and thumb
-   * images.
+   * @param {!number} tmdbId - The tvdb id of the movie you want the images
+   * from.
+   * @returns {Object} - Object with banner, fanart and poster images.
    */
-  _getFanartImages(tmdbId: number): Promise<Object> {
+  _getFanartImages(tmdbId: number): Promise<Object | Error> {
     return fanart.getMovieImages(tmdbId).then(i => {
-      return {
-        backdrop: i.moviebackground[0].url,
-        poster: i.movieposter[0].url,
-        logo: i.hdmovielogo[0].url,
-        thumb: i.moviethumb[0].url
+      const { Holder } = AbstractHelper
+      const images = {
+        banner: i.moviebanner ? i.moviebanner[0].url : Holder,
+        backdrop: i.moviebackground
+          ? i.moviebackground[0].url
+          : i.hdmovieclearart
+            ? i.hdmovieclearart[0].url
+            : Holder,
+        poster: i.movieposter ? i.movieposter[0].url : Holder
       }
+
+      return this.checkImages(images)
     })
   }
 
@@ -173,24 +182,17 @@ export default class MovieHelper extends AbstractHelper {
    * Get movie images.
    * @override
    * @protected
-   * @param {!number} tmdbId - The tmdb id of the movie for which you want the
-   * images.
-   * @returns {Promise<Object>} - Object with backdrop, poster, logo and thumb
-   * images.
+   * @param {!number} tmdbId - The tmdb id of the movie you want the images
+   * from.
+   * @param {!string} imdbId - The imdb id of the movie you want the images
+   * from.
+   * @returns {Promise<Object>} - Object with banner, fanart and poster images.
    */
-  async getImages(tmdbId: number): Promise<Object> {
-    const tmdbImages = await this._getTmdbImages(tmdbId)
-    const images = await this._getFanartImages(tmdbId)
-
-    if (tmdbImages.backdrop !== null) {
-      images.backdrop = tmdbImages.backdrop // TMDB ones are better
-    }
-
-    if (tmdbImages.poster !== null) {
-      images.poster = tmdbImages.poster // TMDB ones are better
-    }
-
-    return images
+  getImages({ tmdbId, imdbId }: Object): Promise<Object> {
+    return this._getTmdbImages(tmdbId)
+      .catch(() => this._getOmdbImages(tmdbId))
+      .catch(() => this._getFanartImages(tmdbId))
+      .catch(() => AbstractHelper.DefaultImages)
   }
 
   /**
@@ -201,23 +203,23 @@ export default class MovieHelper extends AbstractHelper {
    */
   async getTraktInfo(slug: string): Promise<AnimeMovie | Movie | Error> {
     try {
-      const traktMovie = trakt.movies.summary({
+      const traktMovie = await trakt.movies.summary({
         id: slug,
         extended: 'full'
       })
-      const traktWatchers = trakt.movies.watching({
+      const traktWatchers = await trakt.movies.watching({
         id: slug
       })
 
-      if (await traktMovie && traktMovie.ids.imdb && traktMovie.ids.tmdb) {
+      if (traktMovie && traktMovie.ids.imdb && traktMovie.ids.tmdb) {
         return Promise.resolve(
           {
             imdb_id: traktMovie.ids.imdb,
             tmdb_id: traktMovie.ids.tmdb,
+            slug: traktMovie.ids.slug,
             title: traktMovie.title,
             released: new Date(traktMovie.released).getTime() / 1000.0,
             certification: traktMovie.certification,
-            slug: traktMovie.ids.slug,
             synopsis: traktMovie.overview,
             runtime: traktMovie.runtime,
             rating: {
@@ -225,7 +227,10 @@ export default class MovieHelper extends AbstractHelper {
               watching: await traktWatchers ? traktWatchers.length : 0,
               percentage: Math.round(traktMovie.rating * 10)
             },
-            images: await this.getImages(traktMovie.ids.tmdb),
+            images: await this.getImages({
+              tmdbId: traktMovie.ids.tmdb,
+              imdb: traktMovie.ids.imdb
+            }),
             genres: traktMovie.genres ? traktMovie.genres : ['unknown'],
             trailer: traktMovie.trailer,
             torrents: []
@@ -233,8 +238,7 @@ export default class MovieHelper extends AbstractHelper {
         )
       }
     } catch (err) {
-      logger.error(`Trakt: Could not find any data on: ${err.path || err} with
-        slug: '${slug}'`)
+      logger.error(`Trakt: Could not find any data on: ${err.path || err} with slug: '${slug}'`)
       return Promise.reject(err)
     }
   }

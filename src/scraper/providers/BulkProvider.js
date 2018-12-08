@@ -41,7 +41,7 @@ export default class BulkProvider extends BaseProvider {
       return pMap(contents, c => {
         return this.api.getData(c)
           .then(content => this.getContent(content))
-          .catch(err => logger.error(err))
+          .catch(err => logger.error(`BulkProvider.scrapeConfig: ${err.message || err}`))
       }, {
         concurrency: this.maxWebRequests
       })

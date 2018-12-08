@@ -4,6 +4,21 @@
 import { ContentModel, type Torrent } from '../content/ContentModel'
 
 /**
+ * The images model type.
+ * @typedef {Object} Images
+ * @property {!string} full
+ * @property {!string} high
+ * @property {!string} medium
+ * @property {!string} thumb
+ */
+type Images = {
+  full: string,
+  high: string,
+  medium: string,
+  thumb: string
+}
+
+/**
  * The episode model type.
  * @typedef {Object} Episode
  * @property {!number} tmdb_id The tmdb_id of the episode.
@@ -21,7 +36,7 @@ type Episode = {
   title: string,
   synopsis: string,
   first_aired: number,
-  image: string,
+  image: Images,
   torrents: Array<Torrent>
 }
 
@@ -43,7 +58,7 @@ type Season = {
   title: string,
   synopsis: string,
   first_aired: number,
-  image: string,
+  image: Images,
   episodes: Array<Episode>
 }
 
@@ -136,7 +151,8 @@ export default class ShowModel extends ContentModel {
     air_info,
     num_seasons,
     last_updated,
-    seasons
+    seasons,
+    trailer
   }: Object = {}): void {
     super({
       imdb_id,
@@ -150,7 +166,8 @@ export default class ShowModel extends ContentModel {
       rating,
       images,
       genres,
-      type
+      type,
+      trailer
     })
 
     this.tvdb_id = tvdb_id

@@ -2,7 +2,7 @@
 // @flow
 import { Schema } from 'mongoose'
 
-import { contentSchema } from '../content/contentSchema'
+import { contentSchema, torrentSchema } from '../content/contentSchema'
 
 /**
  * The schema object for the show model.
@@ -27,9 +27,25 @@ export const showSchema: Object = {
       title: String,
       synopsis: String,
       first_aired: Number,
-      image: {
-        type: String,
-        default: null
+      images: {
+        type: {
+          full: {
+            type: String,
+            default: null
+          },
+          high: {
+            type: String,
+            default: null
+          },
+          medium: {
+            type: String,
+            default: null
+          },
+          thumb: {
+            type: String,
+            default: null
+          }
+        }
       },
       episodes: {
         type: [{
@@ -38,20 +54,28 @@ export const showSchema: Object = {
           title: String,
           synopsis: String,
           first_aired: Number,
-          image: {
-            type: String,
-            default: null
+          images: {
+            type: {
+              full: {
+                type: String,
+                default: null
+              },
+              high: {
+                type: String,
+                default: null
+              },
+              medium: {
+                type: String,
+                default: null
+              },
+              thumb: {
+                type: String,
+                default: null
+              }
+            }
           },
           torrents: {
-            type: [{
-              quality: String,
-              provider: String,
-              language: String,
-              size: Number,
-              seeds: Number,
-              peers: Number,
-              url: String
-            }]
+            type: [torrentSchema]
           }
         }]
       }

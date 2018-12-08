@@ -1,5 +1,15 @@
 // @flow
 
+export const torrentSchema: Object = {
+  quality: String,
+  provider: String,
+  seeds: Number,
+  peers: Number,
+  url: String,
+  language: String,
+  size: Number
+}
+
 /**
  * Base structure of the database content.
  * @type {Object}
@@ -30,23 +40,29 @@ export const contentSchema: Object = {
     }
   },
   images: {
-    backdrop: {
-      type: String,
-      default: null
-    },
-    poster: {
-      type: String,
-      default: null
-    },
-    logo: {
-      type: String,
-      default: null
-    },
-    thumb: {
-      type: String,
-      default: null
+    type: {
+      backdrop: {
+        type: String,
+        default: null
+      },
+      poster: {
+        type: String,
+        default: null
+      },
+      logo: {
+        type: String,
+        default: null
+      },
+      thumb: {
+        type: String,
+        default: null
+      }
     }
   },
   genres: [String],
-  type: String
+  type: String,
+  trailer: {
+    type: String,
+    default: null
+  }
 }
