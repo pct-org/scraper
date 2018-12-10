@@ -20,6 +20,7 @@ export const showSchema: Object = {
     }
   },
   last_updated: Number,
+  num_seasons: Number,
   seasons: {
     type: [{
       tmdb_id: Number,

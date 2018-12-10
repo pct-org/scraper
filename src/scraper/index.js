@@ -35,13 +35,13 @@ export default [{
     maxWebRequests,
     configs: movieConfigs
   }
-}, */{
+}, {
   Provider: ShowProvider,
   args: {
     maxWebRequests,
     configs: showConfigs
   }
-}, {
+}, */{
   Provider: YtsProvider,
   args: {
     maxWebRequests,

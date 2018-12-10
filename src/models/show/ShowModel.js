@@ -114,6 +114,12 @@ export default class ShowModel extends ContentModel {
   seasons: Array<Season>
 
   /**
+   * The total amount of seasons
+   * @type {number}
+   */
+  num_seasons: number
+
+  /**
    * Create a new Show object.
    * @param {!Object} config = {} - The configuration object for the show.
    * @param {!string} imdb_id - The imdb id of the show.
@@ -152,7 +158,7 @@ export default class ShowModel extends ContentModel {
     num_seasons,
     last_updated,
     seasons,
-    trailer
+    trailer,
   }: Object = {}): void {
     super({
       imdb_id,
@@ -174,6 +180,7 @@ export default class ShowModel extends ContentModel {
     this.air_info = air_info
     this.last_updated = last_updated
     this.seasons = seasons
+    this.num_seasons = num_seasons
   }
 
 }
