@@ -6,7 +6,7 @@ import { AbstractProvider } from 'pop-api-scraper'
 
 import type {
   MovieHelper,
-  ShowHelper
+  ShowHelper,
 } from '../helpers'
 
 /**
@@ -22,7 +22,7 @@ export default class BaseProvider extends AbstractProvider {
    */
   static ContentTypes: Object = {
     Movie: 'movie',
-    Show: 'show'
+    Show : 'show',
   }
 
   /**
@@ -88,14 +88,15 @@ export default class BaseProvider extends AbstractProvider {
   }
 
   /**
-    * Gets information about a movie from Trakt.tv and insert the movie into the
-    * MongoDB database.
-    * @protected
-    * @param {!Object} content - The content information.
-    * @returns {Promise<Object | Error>} - A movie object.
-    */
+   * Gets information about a movie from Trakt.tv and insert the movie into the
+   * MongoDB database.
+   * @protected
+   * @param {!Object} content - The content information.
+   * @returns {Promise<Object | Error>} - A movie object.
+   */
   _getMovieContent(content: Object): Promise<Object | Error> {
     const { slug, torrents } = content
+
     return this.helper.getTraktInfo(slug).then(res => {
       if (res && res.imdb_id) {
         return this.helper.addTorrents(res, torrents)
@@ -137,7 +138,7 @@ export default class BaseProvider extends AbstractProvider {
    * @returns {Object|undefined} - Information about the content from the
    * torrent.
    */
-  extractContent({torrent, regex, lang}: Object): Object | void {
+  extractContent({ torrent, regex, lang }: Object): Object | void {
     throw new Error('Using default method: \'extractContent\'')
   }
 
@@ -151,16 +152,16 @@ export default class BaseProvider extends AbstractProvider {
    * @returns {Object|undefined} - Information about the content from the
    * torrent.
    */
-  getContentData({torrent, lang = 'en'}: Object): Object | void {
+  getContentData({ torrent, lang = 'en' }: Object): Object | void {
     const regex = this.regexps.find(
-      r => r.regex.test(torrent.title) || r.regex.test(torrent.name)
+      r => r.regex.test(torrent.title) || r.regex.test(torrent.name),
     )
 
     if (regex) {
       return this.extractContent({
         torrent,
         regex,
-        lang
+        lang,
       })
     }
 
@@ -181,7 +182,7 @@ export default class BaseProvider extends AbstractProvider {
    */
   getAllContent({
     torrents,
-    lang = 'en'
+    lang = 'en',
   }: Object): Promise<Array<Object>> {
     throw new Error('Using default method: \'getAllContent\'')
   }
@@ -209,7 +210,7 @@ export default class BaseProvider extends AbstractProvider {
 
       torrents = torrents.concat(data)
     }, {
-      concurrency: 1
+      concurrency: 1,
     }).then(() => {
       logger.info(`${this.name}: Found ${torrents.length} torrents.`)
       return torrents
@@ -257,14 +258,14 @@ export default class BaseProvider extends AbstractProvider {
     Model,
     Helper,
     query,
-    regexps
+    regexps,
   }: Object): void {
     this.name = name
     this.api = api
     this.contentType = contentType
     this.helper = new Helper({
       Model,
-      name
+      name,
     })
     this.query = query
     this.regexps = regexps
@@ -295,15 +296,15 @@ export default class BaseProvider extends AbstractProvider {
     Model,
     Helper,
     query,
-    regexps
+    regexps,
   }: Object): Promise<Array<Object> | void> {
     try {
-      this.setConfig({name, api, contentType, Model, Helper, query, regexps})
+      this.setConfig({ name, api, contentType, Model, Helper, query, regexps })
 
       const totalPages = await this.getTotalPages()
       if (!totalPages) {
         return logger.error(
-          `${this.name}: totalPages returned: '${totalPages}'`
+          `${this.name}: totalPages returned: '${totalPages}'`,
         )
       }
 
@@ -314,12 +315,17 @@ export default class BaseProvider extends AbstractProvider {
       const { language } = this.query
       const allContent = await this.getAllContent({
         torrents,
-        language
+        language,
       })
 
-      return await pMap(allContent, content => this.getContent(content), {
-        concurrency: this.maxWebRequests
-      })
+      return await pMap(
+        allContent,
+        content => this.getContent(content)
+          .catch(err => logger.error(`BaseProvider.scrapeConfig: ${err.message || err}`)),
+        {
+          concurrency: this.maxWebRequests,
+        },
+      )
     } catch (err) {
       logger.error(`BaseProvider.scrapeConfig: ${err.message || err}`)
     }
