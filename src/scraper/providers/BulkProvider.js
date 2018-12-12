@@ -28,14 +28,14 @@ export default class BulkProvider extends BaseProvider {
     api,
     contentType,
     Model,
-    Helper
+    Helper,
   }: Object): Promise<Array<Object>> {
-    this.setConfig({name, api, contentType, Model, Helper})
+    this.setConfig({ name, api, contentType, Model, Helper })
 
     logger.info(`${this.name}: Started scraping...`)
     return this.api.getAll().then(contents => {
       logger.info(
-        `${this.name}: Found ${contents.length} ${this.contentType}s.`
+        `${this.name}: Found ${contents.length} ${this.contentType}s.`,
       )
 
       return pMap(contents, c => {
@@ -43,7 +43,7 @@ export default class BulkProvider extends BaseProvider {
           .then(content => this.getContent(content))
           .catch(err => logger.error(`BulkProvider.scrapeConfig: ${err.message || err}`))
       }, {
-        concurrency: this.maxWebRequests
+        concurrency: this.maxWebRequests,
       })
     })
   }

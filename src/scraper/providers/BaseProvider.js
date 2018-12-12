@@ -22,7 +22,7 @@ export default class BaseProvider extends AbstractProvider {
    */
   static ContentTypes: Object = {
     Movie: 'movie',
-    Show : 'show',
+    Show: 'show',
   }
 
   /**

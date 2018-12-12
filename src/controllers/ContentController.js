@@ -88,6 +88,26 @@ export default class ContentController extends BaseContentController {
   }
 
   /**
+   * Get all the available pages.
+   * @override
+   * @param {!IncomingMessage} req - The incoming message request object.
+   * @param {!ServerResponse} res - The server response object.
+   * @param {!Function} next - The next function to move to the next
+   * middleware.
+   * @returns {Promise<Array<string>, Error>} - A list of pages which are
+   * available.
+   */
+  getContents(
+    req: $Request,
+    res: $Response,
+    next: NextFunction
+  ): Promise<Array<string> | mixed> {
+    return this.service.getContents(`/${this.basePath}s`)
+      .then(content => this.checkEmptyContent(res, content))
+      .catch(err => next(err))
+  }
+
+  /**
    * Get content from one page.
    * @param {!Object} req - The ExpressJS request object.
    * @param {!Object} res - The ExpressJS response object.
@@ -113,6 +133,7 @@ export default class ContentController extends BaseContentController {
     if (typeof genre === 'string' && genre.toLowerCase() !== 'all') {
       if (genre.match(/science[-\s]fiction/i) || genre.match(/sci[-\s]fi/i)) {
         query.genres = 'science-fiction'
+
       } else {
         query.genres = genre.toLowerCase()
       }
