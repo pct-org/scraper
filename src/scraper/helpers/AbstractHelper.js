@@ -5,7 +5,7 @@ import type {
   AnimeMovie,
   AnimeShow,
   Movie,
-  Show
+  Show,
 } from '../../models'
 
 /**
@@ -30,7 +30,7 @@ export default class AbstractHelper extends IHelper {
   static DefaultImages: Object = {
     banner: AbstractHelper.Holder,
     backdrop: AbstractHelper.Holder,
-    poster: AbstractHelper.Holder
+    poster: AbstractHelper.Holder,
   }
 
   /**
@@ -71,19 +71,18 @@ export default class AbstractHelper extends IHelper {
    * Method to check the given images against the default ones.
    * @override
    * @protected
-   * @param {Object} images - The images to check.
-   * @throws {Error} - An image could not been found!
+   * @param {!Show|AnimeShow} show - The show to check the images for
    * @returns {Object|undefined} - Throws an error if the given images are the
    * same, otherwise it will return the given images.
    */
-  checkImages(images: Object): Object | void {
-    for (const i in images) {
-      if (images[i] === AbstractHelper.Holder) {
-        return false
+  checkImages(show: Show | AnimeShow): Promise<Show | AnimeShow> {
+    for (const i in show.images) {
+      if (show.images[i] === AbstractHelper.Holder) {
+        return Promise.reject(show)
       }
     }
 
-    return images
+    return Promise.resolve(show)
   }
 
   /**
@@ -93,17 +92,36 @@ export default class AbstractHelper extends IHelper {
    * @private
    */
   _formatTorrents(torrents: Object) {
-    const formattedTorrents = []
+    let formattedTorrents = []
 
     if (!torrents) {
       return formattedTorrents
     }
 
     Object.keys(torrents).forEach(quality => {
-      formattedTorrents.push({
-        ...torrents[quality],
-        quality
-      })
+      let add = true
+      const sameQuality = formattedTorrents.find(
+        torrent => torrent.quality === quality,
+      )
+
+      if (sameQuality) {
+        if (torrents[quality].seeds > sameQuality.seeds) {
+          // Remove the quality from the array
+          formattedTorrents = formattedTorrents.filter(
+            torrent => torrent.quality === quality,
+          )
+
+        } else {
+          add = false
+        }
+      }
+
+      if (add) {
+        formattedTorrents.push({
+          ...torrents[quality],
+          quality,
+        })
+      }
     })
 
     return formattedTorrents

@@ -8,11 +8,11 @@ import {
   fanart,
   tmdb,
   trakt,
-  tvdb
+  tvdb,
 } from '../apiModules'
 import type {
   AnimeShow,
-  Show
+  Show,
 } from '../../models'
 
 /**
@@ -29,42 +29,54 @@ export default class ShowHelper extends AbstractHelper {
    */
   async _updateShowInDb(show: AnimeShow | Show): Promise<AnimeShow | Show> {
     const saved = await this.Model.findOneAndUpdate({
-      _id: show.imdb_id
+      _id: show.imdb_id,
     }, new this.Model(show), {
       new: true,
-      upsert: true
+      upsert: true,
     })
 
     const distinct = await this.Model.distinct('seasons', {
-      _id: saved.imdb_id
+      _id: saved.imdb_id,
     }).exec()
 
     saved.num_seasons = distinct.length
 
     return this.Model.findOneAndUpdate({
-      _id: saved.imdb_id
+      _id: saved.imdb_id,
     }, new this.Model(saved), {
       new: true,
-      upsert: true
+      upsert: true,
     })
+  }
+
+  /**
+   * Sorts the content like seasons and episodes
+   * @param {Array} seasonsOrEpisodes - Seasons or episodes to sort
+   * @returns {Array<T>} - Sorted seasons or episodes
+   */
+  sortSeasonsOrEpisodes(seasonsOrEpisodes: Array<Object>): Array {
+    return seasonsOrEpisodes.sort((a, b) => a.number - b.number)
   }
 
   /**
    * Update the torrents for an existing show.
    * @param {!Object} matchingEpisode - The matching episode of new the show.
    * @param {!Object} foundEpisode - The matching episode existing show.
-   * @param {!AnimeShow|Show} show - The show to merge the episodes to.
    * @param {!string} quality - The quality of the torrent.
    * @returns {AnimeShow|Show} - A show with merged torrents.
    */
   _updateEpisode(
     matchingEpisode: Object,
     foundEpisode: Object,
-    quality: string
+    quality: string,
   ): AnimeShow | Show {
 
-    const foundTorrents = foundEpisode.torrents.find(torrent => torrent.qualtity === quality)
-    const matchingTorrents = matchingEpisode.torrents.find(torrent => torrent.qualtity === quality)
+    const foundTorrents = foundEpisode.torrents.find(
+      torrent => torrent.qualtity === quality,
+    )
+    const matchingTorrents = matchingEpisode.torrents.find(
+      torrent => torrent.qualtity === quality,
+    )
 
     if (foundTorrents && matchingTorrents) {
       let update = false
@@ -95,7 +107,7 @@ export default class ShowHelper extends AbstractHelper {
     try {
       const s = show
       const found = await this.Model.findOne({
-        _id: s.imdb_id
+        _id: s.imdb_id,
       })
 
       if (!found) {
@@ -108,7 +120,9 @@ export default class ShowHelper extends AbstractHelper {
       logger.info(`${this.name}: '${found.title}' is an existing show.`)
 
       found.seasons.forEach(foundSeason => {
-        const matchingSeason = s.seasons.find(season => season.number === foundSeason)
+        const matchingSeason = s.seasons.find(
+          season => season.number === foundSeason.number,
+        )
 
         if (!matchingSeason) {
           s.seasons.push(foundSeason)
@@ -123,7 +137,7 @@ export default class ShowHelper extends AbstractHelper {
 
             foundSeason.episodes.forEach(e => {
               let matchingEpisode = matchingSeason.episodes.find(
-                s => s.season === e.season && s.episode === e.episode
+                s => s.season === e.season && s.episode === e.episode,
               )
 
               if (e.first_aired > s.latest_episode) {
@@ -143,14 +157,14 @@ export default class ShowHelper extends AbstractHelper {
 
             return {
               ...season,
-              episodes: episodes.sort((a, b) => a.number - b.number)
+              episodes: this.sortSeasonsOrEpisodes(episodes),
             }
           })
         }
       })
 
       // Sort the seasons
-      s.seasons = s.seasons.sort((a, b) => a.number - b.number)
+      s.seasons = this.sortSeasonsOrEpisodes(s.seasons)
 
       return await this._updateShowInDb(s)
     } catch (err) {
@@ -168,11 +182,11 @@ export default class ShowHelper extends AbstractHelper {
   _addSeason(
     show: AnimeShow | Show,
     episodes: Object,
-    season: number
+    season: number,
   ): Promise<AnimeShow | Show> {
     return tmdb.tv.season.details({
       tv_id: show.tmdb_id,
-      season
+      season,
     }).then(s => {
       const updatedEpisodes = []
 
@@ -186,13 +200,12 @@ export default class ShowHelper extends AbstractHelper {
           synopsis: e.overview,
           first_aired: new Date(e.air_date).getTime() / 1000.0,
           images: {
-            full: !e.still_path ? null
-              : `${baseUrl}/original/${e.still_path}`,
-            high: !e.still_path ? null : `${baseUrl}/w1280/${e.still_path}`,
-            medium: !e.still_path ? null : `${baseUrl}/w780/${e.still_path}`,
-            thumb: !e.still_path ? null : `${baseUrl}/w342/${e.still_path}`
+            full: !e.still_path ? null : `${baseUrl}/original${e.still_path}`,
+            high: !e.still_path ? null : `${baseUrl}/w1280${e.still_path}`,
+            medium: !e.still_path ? null : `${baseUrl}/w780${e.still_path}`,
+            thumb: !e.still_path ? null : `${baseUrl}/w342${e.still_path}`,
           },
-          torrents: this._formatTorrents(episodes[season][e.episode_number])
+          torrents: this._formatTorrents(episodes[season][e.episode_number]),
         }
 
         updatedEpisodes.push(episode)
@@ -205,19 +218,20 @@ export default class ShowHelper extends AbstractHelper {
         synopsis: s.overview,
         first_aired: new Date(s.air_date).getTime() / 1000.0,
         images: {
-          full: !s.poster_path ? null
-            : `${baseUrl}/original/${s.poster_path}`,
-          high: !s.poster_path ? null : `${baseUrl}/w1280/${s.poster_path}`,
-          medium: !s.poster_path ? null : `${baseUrl}/w780/${s.poster_path}`,
-          thumb: !s.poster_path ? null : `${baseUrl}/w342/${s.poster_path}`
+          full: !s.poster_path ? null : `${baseUrl}/original${s.poster_path}`,
+          high: !s.poster_path ? null : `${baseUrl}/w1280${s.poster_path}`,
+          medium: !s.poster_path ? null : `${baseUrl}/w780${s.poster_path}`,
+          thumb: !s.poster_path ? null : `${baseUrl}/w342${s.poster_path}`,
         },
-        episodes: updatedEpisodes
+        episodes: this.sortSeasonsOrEpisodes(updatedEpisodes),
       })
+
+      show.seasons = this.sortSeasonsOrEpisodes(show.seasons)
 
       return show
 
     }).catch(err =>
-      logger.error(`TheMovieDB: Could not find any data on: ${err.path || err}`)
+      logger.error(`TheMovieDB: Could not find any data on: ${err.path || err}`),
     )
   }
 
@@ -229,7 +243,7 @@ export default class ShowHelper extends AbstractHelper {
    */
   addEpisodes(
     show: AnimeShow | Show,
-    episodes: Object
+    episodes: Object,
   ): Show {
     return pMap(Object.keys(episodes), season => {
       return this._addSeason(show, episodes, season)
@@ -342,8 +356,9 @@ export default class ShowHelper extends AbstractHelper {
     try {
       const traktShow = await trakt.shows.summary({
         id: slug,
-        extended: 'full'
+        extended: 'full',
       })
+
       const traktWatchers = await trakt.shows.watching({ id: slug })
 
       if (!traktShow) {
