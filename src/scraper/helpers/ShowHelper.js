@@ -425,6 +425,8 @@ export default class ShowHelper extends AbstractHelper {
       const { imdb, tmdb, tvdb } = traktShow.ids
 
       if (traktShow && imdb && tmdb && tvdb) {
+        const ratingPercentage = Math.round(traktShow.rating * 10)
+
         return this.addImages({
           slug: traktShow.ids.slug,
           imdb_id: imdb,
@@ -434,12 +436,13 @@ export default class ShowHelper extends AbstractHelper {
           released: new Date(traktShow.first_aired).getTime() / 1000.0,
           certification: traktShow.certification,
           synopsis: traktShow.overview,
-          runtime: traktShow.runtime,
+          runtime: this._formatRuntime(traktShow.runtime),
           trailer: traktShow.trailer,
           rating: {
+            stars: (ratingPercentage / 100) * 5,
             votes: traktShow.votes,
             watching: traktWatchers ? traktWatchers.length : 0,
-            percentage: Math.round(traktShow.rating * 10)
+            percentage: ratingPercentage
           },
           images: {
             banner: null,

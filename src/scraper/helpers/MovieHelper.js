@@ -264,6 +264,8 @@ export default class MovieHelper extends AbstractHelper {
       const traktWatchers = await trakt.movies.watching({ id: traktId })
 
       if (traktMovie && traktMovie.ids.imdb && traktMovie.ids.tmdb) {
+        const ratingPercentage = Math.round(traktMovie.rating * 10)
+
         return this.addImages({
           imdb_id: traktMovie.ids.imdb,
           tmdb_id: traktMovie.ids.tmdb,
@@ -272,11 +274,12 @@ export default class MovieHelper extends AbstractHelper {
           released: new Date(traktMovie.released).getTime() / 1000.0,
           certification: traktMovie.certification,
           synopsis: traktMovie.overview,
-          runtime: traktMovie.runtime,
+          runtime: this._formatRuntime(traktMovie.runtime),
           rating: {
+            stars: (ratingPercentage / 100) * 5,
             votes: traktMovie.votes,
             watching: await traktWatchers ? traktWatchers.length : 0,
-            percentage: Math.round(traktMovie.rating * 10)
+            percentage: ratingPercentage
           },
           images: {
             banner: null,
