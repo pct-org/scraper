@@ -31,7 +31,7 @@ export default class MovieProvider extends BaseProvider {
     let slug
 
     const {
-      title, size, seeds, peers, magnet, torrentLink,
+      title, size, seeds, peers, magnet, torrentLink
     } = torrent
 
     movieTitle = title.match(regex.regex)[1]
@@ -65,8 +65,8 @@ export default class MovieProvider extends BaseProvider {
         size: bytes(size),
         seeds: seeds || 0,
         peers: peers || 0,
-        url: magnet || torrentLink,
-      },
+        url: magnet || torrentLink
+      }
     }
   }
 
@@ -83,7 +83,7 @@ export default class MovieProvider extends BaseProvider {
    */
   getAllContent({
     torrents,
-    lang = 'en',
+    lang = 'en'
   }: Object): Promise<Array<Object>> {
     const movies = new Map()
 
@@ -94,7 +94,7 @@ export default class MovieProvider extends BaseProvider {
 
       const movie = this.getContentData({
         lang,
-        torrent: t,
+        torrent: t
       })
 
       if (!movie) {
@@ -107,7 +107,7 @@ export default class MovieProvider extends BaseProvider {
       }
 
       const torrent = movie.torrents.filter(
-        torrent => torrent.language === language && torrent.quality === quality,
+        torrent => torrent.language === language && torrent.quality === quality
       )[0]
 
       const created = {
@@ -116,12 +116,12 @@ export default class MovieProvider extends BaseProvider {
         slugYear: movie.slugYear,
         year: movie.year,
         type: this.contentType,
-        torrent,
+        torrent
       }
 
       return movies.set(slug, created)
     }, {
-      concurrency: 1,
+      concurrency: 1
     }).then(() => Array.from(movies.values()))
   }
 

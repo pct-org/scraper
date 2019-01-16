@@ -379,7 +379,7 @@ describe('ShowHelper', () => {
       backdrops: image
     })
 
-    showHelper._getTmdbImages()
+    showHelper._addTmdbImages()
       .then(done)
       .catch(err => {
         expect(err).to.be.an('Error')
@@ -391,7 +391,7 @@ describe('ShowHelper', () => {
 
   /** @test {ShowHelper#_getTvdbImages} */
   it('should get show images from TVDB', done => {
-    showHelper._getTvdbImages(296762)
+    showHelper._addTvdbImages(296762)
       .then(res => abstractHelperTests.testImages(res, done))
       .catch(done)
   })
@@ -403,7 +403,7 @@ describe('ShowHelper', () => {
       banner: null
     })
 
-    showHelper._getTvdbImages(296762)
+    showHelper._addTvdbImages(296762)
       .then(done)
       .catch(err => {
         expect(err).to.be.an('Error')
@@ -415,7 +415,7 @@ describe('ShowHelper', () => {
 
   /** @test {ShowHelper#_getFanartImages} */
   it('should get show images from Fanart', done => {
-    showHelper._getFanartImages(75682)
+    showHelper._addFanartImages(75682)
       .then(res => abstractHelperTests.testImages(res, done))
       .catch(done)
   })

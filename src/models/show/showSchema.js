@@ -10,6 +10,7 @@ import { contentSchema, torrentSchema } from '../content/contentSchema'
  */
 export const showSchema: Object = {
   ...contentSchema,
+  tvdb_id: Number,
   air_info: {
     type: {
       network: String,

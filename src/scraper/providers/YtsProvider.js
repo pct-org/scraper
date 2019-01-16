@@ -20,7 +20,7 @@ export default class YtsProvider extends MovieProvider {
    * @returns {Object|undefined} - Information about the content from the
    * torrent.
    */
-  extractContent({torrent, lang}: Object): Object | void {
+  extractContent({ torrent, lang }: Object): Object | void {
     const movie = {
       movieTitle: torrent.title,
       slug: torrent.imdb_code,
@@ -60,7 +60,7 @@ export default class YtsProvider extends MovieProvider {
    * @returns {Object|undefined} - Information about the content from the
    * torrent.
    */
-  getContentData({torrent, lang = 'en'}: Object): Object | void {
+  getContentData({ torrent, lang = 'en' }: Object): Object | void {
     if (
       torrent && torrent.torrents &&
       torrent.imdb_code &&

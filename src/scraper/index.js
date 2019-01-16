@@ -14,7 +14,7 @@ import {
 } from './providers'
 
 /**
- * The max concurreny web requests at a time.
+ * The max concurrent web requests at a time.
  * @type {number}
  */
 const maxWebRequests: number = 2

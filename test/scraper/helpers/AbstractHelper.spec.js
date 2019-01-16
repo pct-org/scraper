@@ -61,7 +61,7 @@ export function testGetFanartImages(
   const stub = sinon.stub(fanart, `get${cap}Images`)
   stub.resolves(resolves)
 
-  helper._getFanartImages()
+  helper._addFanartImages()
     .then(done)
     .catch(err => {
       expect(err).to.be.an('Error')

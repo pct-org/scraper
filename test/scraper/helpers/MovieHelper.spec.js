@@ -229,7 +229,7 @@ describe('MovieHelper', () => {
       backdrops: image
     })
 
-    movieHelper._getTmdbImages()
+    movieHelper._addTmdbImages()
       .then(done)
       .catch(err => {
         expect(err).to.be.an('Error')
@@ -241,14 +241,14 @@ describe('MovieHelper', () => {
 
   /** @test {MovieHelper#_getTmdbImages} */
   it('should get movie images from TMDB', done => {
-    movieHelper._getTmdbImages(10195)
+    movieHelper._addTmdbImages(10195)
       .then(res => abstractHelperTests.testImages(res, done))
       .catch(done)
   })
 
   /** @test {MovieHelper#_getOmdbImages} */
   it('should get movie images from OMDB', done => {
-    movieHelper._getOmdbImages('tt1431045')
+    movieHelper._addOmdbImages('tt1431045')
       .then(res => abstractHelperTests.testImages(res, done))
       .catch(done)
   })
@@ -261,7 +261,7 @@ describe('MovieHelper', () => {
     const stub = sinon.stub(omdb, 'byId')
     stub.resolves(images)
 
-    movieHelper._getOmdbImages('')
+    movieHelper._addOmdbImages('')
       .then(done)
       .catch(err => {
         expect(err).to.be.an('Error')
@@ -273,7 +273,7 @@ describe('MovieHelper', () => {
 
   /** @test {MovieHelper#_getFanartImages} */
   it('should get movie images from Fanart', done => {
-    movieHelper._getFanartImages(10195)
+    movieHelper._addFanartImages(10195)
       .then(res => abstractHelperTests.testImages(res, done))
       .catch(done)
   })

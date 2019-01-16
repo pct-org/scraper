@@ -81,7 +81,9 @@ export default class MovieHelper extends AbstractHelper {
       }
 
       logger.info(`${this.name}: '${m.title}' is a new movie!`)
+
       return await new this.Model(m).save()
+
     } catch (err) {
       logger.error(`_updateMovie: ${err.message || err}`)
     }
@@ -105,141 +107,191 @@ export default class MovieHelper extends AbstractHelper {
 
   /**
    * Get movie images from TMDB.
-   * @param {!string} tmdbId - The tmdb id of the movie you want the images
-   * from.
-   * @returns {Object} - Object with banner, fanart and poster images.
+   * @param {!AnimeMovie|Movie} movie - The movie you want the images for
+   * @returns {Promise<AnimeMovie|Movie>} - A movie with torrents attached.
    */
-  _getTmdbImages(tmdbId: string): Promise<Object | Error> {
+  _addTmdbImages(movie: Movie | AnimeMovie): Promise<Movie | AnimeMovie> {
     return tmdb.movie.images({
-      movie_id: tmdbId
+      movie_id: movie.tmdb_id
     }).then(i => {
       const baseUrl = 'http://image.tmdb.org/t/p/w500'
 
       const tmdbPoster = i.posters.filter(
         poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null
-      )[0].file_path
+      ).shift()
+
       const tmdbBackdrop = i.backdrops.filter(
         backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null
-      )[0].file_path
+      ).shift()
 
       const { Holder } = AbstractHelper
-      const images = {
-        banner: tmdbPoster ? `${baseUrl}${tmdbPoster}` : Holder,
-        backdrop: tmdbBackdrop ? `${baseUrl}${tmdbBackdrop}` : Holder,
-        poster: tmdbPoster ? `${baseUrl}${tmdbPoster}` : Holder
-      }
 
-      return this.checkImages(images)
+      return this.checkImages({
+        ...movie,
+        images: {
+          banner: Holder,
+          backdrop: tmdbBackdrop ? `${baseUrl}${tmdbBackdrop.file_path}` : Holder,
+          poster: tmdbPoster ? `${baseUrl}${tmdbPoster.file_path}` : Holder
+        }
+      })
+
+    }).catch(err => {
+      // If we have tmdb_id then the check images failed
+      if (err.tmdb_id) {
+        return Promise.reject(err)
+
+      } else if (err.statusCode && err.statusCode === 404) {
+        logger.warn(`_addTmdbImages: can't find images for slug '${movie.slug}'`)
+
+        // Movie does not exist in tmdb
+        return Promise.reject(movie)
+
+      } else {
+        logger.error(`_addTmdbImages: ${err.message || err}`)
+      }
     })
   }
 
   /**
    * Get movie images from OMDB.
-   * @param {!string} imdbId - The imdb id of the movie you want the images
-   * from.
-   * @returns {Object} - Object with banner, fanart and poster images.
+   * @param {!AnimeMovie|Movie} movie - The movie you want the images for
+   * @returns {Promise<AnimeMovie|Movie>} - A movie with torrents attached.
    */
-  _getOmdbImages(imdbId: string): Promise<Object | Error> {
+  _addOmdbImages(movie: Movie | AnimeMovie): Promise<Movie | AnimeMovie> {
     return omdb.byId({
-      imdb: imdbId,
+      imdb: movie.imdb_id,
       type: 'movie'
     }).then(i => {
-      const { Holder } = AbstractHelper
-      const images = {
-        banner: i.Poster ? i.Poster : Holder,
-        backdrop: i.Poster ? i.Poster : Holder,
-        poster: i.Poster ? i.Poster : Holder
-      }
+      return this.checkImages({
+        ...movie,
+        images: {
+          banner: movie.images.banner,
 
-      return this.checkImages(images)
+          backdrop: movie.images.backdrop,
+
+          poster: !movie.images.poster && i.Poster
+            ? i.Poster
+            : movie.images.poster
+
+        }
+      })
+
+    }).catch(err => {
+      // If we have imdb_id then the check images failed
+      if (err.imdb_id) {
+        return Promise.reject(err)
+
+      } else if (err.statusCode && err.statusCode === 404) {
+        logger.warn(`_addOmdbImages: can't find images for slug '${movie.slug}'`)
+
+        // Movie does not exist in omdb
+        return Promise.reject(movie)
+
+      } else {
+        logger.error(`_addOmdbImages: ${err.message || err}`)
+      }
     })
   }
 
   /**
    * Get movie images from Fanart.
-   * @param {!number} tmdbId - The tvdb id of the movie you want the images
-   * from.
-   * @returns {Object} - Object with banner, fanart and poster images.
+   * @param {!AnimeMovie|Movie} movie - The movie you want the images for
+   * @returns {Promise<AnimeMovie|Movie>} - A movie with torrents attached.
    */
-  _getFanartImages(tmdbId: number): Promise<Object | Error> {
-    return fanart.getMovieImages(tmdbId).then(i => {
-      const { Holder } = AbstractHelper
-      const images = {
-        banner: i.moviebanner ? i.moviebanner[0].url : Holder,
-        backdrop: i.moviebackground
-          ? i.moviebackground[0].url
-          : i.hdmovieclearart
-            ? i.hdmovieclearart[0].url
-            : Holder,
-        poster: i.movieposter ? i.movieposter[0].url : Holder
-      }
+  _addFanartImages(movie: Movie | AnimeMovie): Promise<Movie | AnimeMovie> {
+    return fanart.getMovieImages(movie.tmdb_id).then(i => {
+      return this.checkImages({
+        ...movie,
+        images: {
+          banner: !movie.images.banner && i.moviebanner
+            ? i.moviebanner[0].url
+            : movie.images.banner,
 
-      return this.checkImages(images)
+          backdrop: !movie.images.backdrop && i.moviebackground
+            ? i.moviebackground[0].url
+            : i.hdmovieclearart
+              ? i.hdmovieclearart[0].url
+              : movie.images.backdrop,
+
+          poster: !movie.images.poster && i.movieposter
+            ? i.movieposter[0].url
+            : movie.images.poster
+        }
+      })
+
+    }).catch(err => {
+      // If we have tmdb_id then the check images failed
+      if (err.tmdb_id) {
+        return Promise.reject(err)
+
+      } else if (err.statusCode && err.statusCode === 404) {
+        logger.warn(`_addFanartImages: can't find images for slug '${movie.slug}'`)
+
+        // Movie does not exist in fanart
+        return Promise.reject(movie)
+
+      } else {
+        logger.error(`_addFanartImages: ${err.message || err}`)
+      }
     })
   }
 
   /**
-   * Get movie images.
-   * @override
+   * Add images to item
    * @protected
-   * @param {!number} tmdbId - The tmdb id of the movie you want the images
-   * from.
-   * @param {!string} imdbId - The imdb id of the movie you want the images
-   * from.
+   * @param {!AnimeShow|Show|Movie} movie - The item to fetch images for
    * @returns {Promise<Object>} - Object with banner, fanart and poster images.
    */
-  getImages({ tmdbId, imdbId }: Object): Promise<Object> {
-    return this._getTmdbImages(tmdbId)
-      .catch(() => this._getOmdbImages(tmdbId))
-      .catch(() => this._getFanartImages(tmdbId))
-      .catch(() => AbstractHelper.DefaultImages)
+  addImages(movie: Movie): Promise<Object> {
+    return this._addTmdbImages(movie)
+      .catch(movie => this._addOmdbImages(movie))
+      .catch(movie => this._addFanartImages(movie))
+      .catch(movie => movie)
   }
 
   /**
    * Get info from Trakt and make a new movie object.
    * @override
-   * @param {!string} slug - The slug to query trakt.tv.
+   * @param {!string} traktId - The slug to query trakt.tv.
    * @returns {Promise<AnimeMovie | Movie | Error>} - A new movie.
    */
-  async getTraktInfo(slug: string): Promise<AnimeMovie | Movie | Error> {
+  async getTraktInfo(traktId: string): Promise<AnimeMovie | Movie | Error> {
     try {
       const traktMovie = await trakt.movies.summary({
-        id: slug,
+        id: traktId,
         extended: 'full'
       })
-      const traktWatchers = await trakt.movies.watching({
-        id: slug
-      })
+      const traktWatchers = await trakt.movies.watching({ id: traktId })
 
       if (traktMovie && traktMovie.ids.imdb && traktMovie.ids.tmdb) {
-        return Promise.resolve(
-          {
-            imdb_id: traktMovie.ids.imdb,
-            tmdb_id: traktMovie.ids.tmdb,
-            slug: traktMovie.ids.slug,
-            title: traktMovie.title,
-            released: new Date(traktMovie.released).getTime() / 1000.0,
-            certification: traktMovie.certification,
-            synopsis: traktMovie.overview,
-            runtime: traktMovie.runtime,
-            rating: {
-              votes: traktMovie.votes,
-              watching: await traktWatchers ? traktWatchers.length : 0,
-              percentage: Math.round(traktMovie.rating * 10)
-            },
-            images: await this.getImages({
-              tmdbId: traktMovie.ids.tmdb,
-              imdb: traktMovie.ids.imdb
-            }),
-            genres: traktMovie.genres ? traktMovie.genres : ['unknown'],
-            trailer: traktMovie.trailer,
-            torrents: []
-          }
-        )
+        return this.addImages({
+          imdb_id: traktMovie.ids.imdb,
+          tmdb_id: traktMovie.ids.tmdb,
+          slug: traktMovie.ids.slug,
+          title: traktMovie.title,
+          released: new Date(traktMovie.released).getTime() / 1000.0,
+          certification: traktMovie.certification,
+          synopsis: traktMovie.overview,
+          runtime: traktMovie.runtime,
+          rating: {
+            votes: traktMovie.votes,
+            watching: await traktWatchers ? traktWatchers.length : 0,
+            percentage: Math.round(traktMovie.rating * 10)
+          },
+          images: {
+            banner: null,
+            backdrop: null,
+            poster: null
+          },
+          genres: traktMovie.genres ? traktMovie.genres : ['unknown'],
+          trailer: traktMovie.trailer,
+          torrents: []
+        })
       }
     } catch (err) {
-      logger.error(`Trakt: Could not find any data on: ${err.path || err} with slug: '${slug}'`)
-      return Promise.reject(err)
+      return Promise.reject({
+        message: `Trakt: Could not find any data on: ${err.path || err} with trakt id: '${traktId}'`
+      })
     }
   }
 
