@@ -196,7 +196,7 @@ export default class ShowHelper extends AbstractHelper {
         const episode = {
           tmdb_id: parseInt(e.id, 10),
           number: parseInt(e.episode_number, 10),
-          title: e.title,
+          title: e.name,
           synopsis: e.overview,
           first_aired: new Date(e.air_date).getTime() / 1000.0,
           images: {
