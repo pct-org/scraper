@@ -27,7 +27,20 @@ export const contentSchema: Object = {
   certification: String,
   slug: String,
   synopsis: String,
-  runtime: Number,
+  runtime: {
+    full: {
+      type: String
+    },
+    short: {
+      type: String
+    },
+    hours: {
+      type: Number
+    },
+    minutes: {
+      type: Number
+    }
+  },
   rating: {
     percentage: {
       type: Number
@@ -36,6 +49,9 @@ export const contentSchema: Object = {
       type: Number
     },
     votes: {
+      type: Number
+    },
+    stars: {
       type: Number
     }
   },

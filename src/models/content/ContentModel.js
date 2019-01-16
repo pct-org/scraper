@@ -10,6 +10,7 @@ import { Model } from 'mongoose'
 /**
  * The rating model type.
  * @typedef {Object} Rating
+ * @property {!number} amount of stars
  * @property {!number} votes How many people rated the content.
  * @property {!number} watching How many people are currently watching the
  * content.
@@ -17,9 +18,25 @@ import { Model } from 'mongoose'
  * percentage.
  */
 type Rating = {
+  stars: number,
   votes: number,
   watching: number,
   percentage: number
+}
+
+/**
+ * The runtime model type
+ * @typedef {Object} Runtime
+ * @property {!string} full string of runtime 43 minutes
+ * @property {!string} short string of runtime 43 min
+ * @property {!number} amount of hours
+ * @property {!number} amount of minutes
+ */
+type Runtime = {
+  full: string,
+  short: string,
+  hours: number,
+  minutes: number,
 }
 
 /**
@@ -117,9 +134,9 @@ export class ContentModel extends Model {
 
   /**
    * How long the content is (in minutes).
-   * @type {number}
+   * @type {Runtime}
    */
-  runtime: number
+  runtime: Runtime
 
   /**
    * The rating of the content.

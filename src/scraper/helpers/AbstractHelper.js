@@ -150,8 +150,7 @@ export default class AbstractHelper extends IHelper {
         : `${minutes} min`,
 
       hours,
-      minutes,
-      inMinutes: parseInt(runtimeInMinutes, 10)
+      minutes
     }
   }
 }
