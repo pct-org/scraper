@@ -75,12 +75,19 @@ export default class BaseProvider extends AbstractProvider {
    * @returns {Promise<Object | Error>} - A show object.
    */
   _getShowContent(content: Object): Promise<Object> {
-    const { episodes, slug } = content
+    const { episodes, slug, imdb } = content
+
+    if (!episodes || episodes.length === 0) {
+      return logger.warn(
+        `${this.name}: '${slug}' has no torrents`
+      )
+    }
+
     if (episodes && episodes[0]) {
       delete episodes[0]
     }
 
-    return this.helper.getTraktInfo(slug).then(res => {
+    return this.helper.getTraktInfo(slug, imdb).then(res => {
       if (res && res.imdb_id) {
         return this.helper.addEpisodes(res, episodes, slug)
       }

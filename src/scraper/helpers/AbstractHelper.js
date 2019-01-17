@@ -88,7 +88,7 @@ export default class AbstractHelper extends IHelper {
    * Formats the torrents
    * @param torrents Object torrents to format
    * @returns {Array} of torrents
-   * @private
+   * @protected
    */
   _formatTorrents(torrents: Object) {
     let formattedTorrents = []

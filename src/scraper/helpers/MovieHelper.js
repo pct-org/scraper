@@ -262,16 +262,19 @@ export default class MovieHelper extends AbstractHelper {
   /**
    * Get info from Trakt and make a new movie object.
    * @override
-   * @param {!string} traktId - The slug to query trakt.tv.
+   * @param {!string} traktSlug - The slug to query trakt.tv.
    * @returns {Promise<AnimeMovie | Movie | Error>} - A new movie.
    */
-  async getTraktInfo(traktId: string): Promise<AnimeMovie | Movie | Error> {
+  async getTraktInfo(traktSlug: string): Promise<AnimeMovie | Movie | Error> {
     try {
       const traktMovie = await trakt.movies.summary({
-        id: traktId,
+        id: traktSlug,
         extended: 'full'
       })
-      const traktWatchers = await trakt.movies.watching({ id: traktId })
+
+      const traktWatchers = await trakt.movies.watching({
+        id: traktSlug
+      })
 
       if (traktMovie && traktMovie.ids.imdb && traktMovie.ids.tmdb) {
         const ratingPercentage = Math.round(traktMovie.rating * 10)
@@ -281,7 +284,7 @@ export default class MovieHelper extends AbstractHelper {
           tmdb_id: traktMovie.ids.tmdb,
           slug: traktMovie.ids.slug,
           title: traktMovie.title,
-          released: new Date(traktMovie.released).getTime() / 1000.0,
+          released: new Date(traktMovie.released).getTime(),
           certification: traktMovie.certification,
           synopsis: traktMovie.overview,
           runtime: this._formatRuntime(traktMovie.runtime),
@@ -304,7 +307,7 @@ export default class MovieHelper extends AbstractHelper {
       }
     } catch (err) {
       return Promise.reject({
-        message: `Trakt: Could not find any data on: ${err.path || err} with trakt id: '${traktId}'`
+        message: `Trakt: Could not find any data on: ${err.path || err} with trakt id: '${traktSlug}'`
       })
     }
   }

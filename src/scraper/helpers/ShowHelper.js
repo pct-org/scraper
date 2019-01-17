@@ -168,7 +168,7 @@ export default class ShowHelper extends AbstractHelper {
 
       return await this._updateShowInDb(s)
     } catch (err) {
-      logger.error(`_updateEpisodes: ${err.message || err}`)
+      logger.error(`_updateShow: ${err.message || err}`)
     }
   }
 
@@ -198,7 +198,7 @@ export default class ShowHelper extends AbstractHelper {
           number: parseInt(e.episode_number, 10),
           title: e.name,
           synopsis: e.overview,
-          first_aired: new Date(e.air_date).getTime() / 1000.0,
+          first_aired: e.air_date ? new Date(e.air_date).getTime() : 0,
           images: {
             full: !e.still_path ? null : `${baseUrl}/original${e.still_path}`,
             high: !e.still_path ? null : `${baseUrl}/w1280${e.still_path}`,
@@ -211,12 +211,20 @@ export default class ShowHelper extends AbstractHelper {
         updatedEpisodes.push(episode)
       })
 
+      // Check if the season has any torrents
+      const torrents = updatedEpisodes.filter(episode => episode.torrents.length > 0)
+
+      if (torrents.length === 0) {
+        // Don't add the season if non of the episodes has torrents
+        return show
+      }
+
       show.seasons.push({
         tmdb_id: s.id,
         number: s.season_number,
         title: s.name,
         synopsis: s.overview,
-        first_aired: new Date(s.air_date).getTime() / 1000.0,
+        first_aired: s.air_date ? new Date(s.air_date).getTime() : 0,
         images: {
           full: !s.poster_path ? null : `${baseUrl}/original${s.poster_path}`,
           high: !s.poster_path ? null : `${baseUrl}/w1280${s.poster_path}`,
@@ -230,9 +238,93 @@ export default class ShowHelper extends AbstractHelper {
 
       return show
 
-    }).catch(err =>
-      logger.error(`_addSeason: TheMovieDB could not find any data on: ${err.path || err} with tmdb id: '${show.tmdb_id}'`)
-    )
+    }).catch(err => {
+      if (err.statusCode === 404) {
+        return this._addTraktSeason(show, episodes, season)
+      }
+
+      logger.error(`_addSeason: ${err.path || err}`)
+    })
+  }
+
+  /**
+   * Adds one season to a show but is only used when the season could not be found by TheMovieDB
+   * @param {!AnimeShow|Show} show - The show to add the torrents to.
+   * @param {!Object} episodes - The episodes containing the torrents.
+   * @param {!number} season - The season number.
+   * @returns {Promise<AnimeShow | Show>} - A newly updated show.
+   * @private
+   */
+  _addTraktSeason(
+    show: AnimeShow | Show,
+    episodes: Object,
+    season: number
+  ): Promise<AnimeShow | Show> {
+    return trakt.seasons.season({
+      season,
+      id: show.imdb_id,
+      extended: 'full'
+    }).then(s => {
+      const updatedEpisodes = []
+      let firstEpisode = null
+
+      s.map((e, index) => {
+        const episode = {
+          tmdb_id: null,
+          number: parseInt(e.number, 10),
+          title: e.title,
+          synopsis: e.overview,
+          first_aired: e.first_aired ? new Date(e.first_aired).getTime() : 0,
+          images: {
+            full: null,
+            high: null,
+            medium: null,
+            thumb: null
+          },
+          torrents: this._formatTorrents(episodes[season][e.number])
+        }
+
+        if (index === 0) {
+          firstEpisode = episode
+        }
+
+        updatedEpisodes.push(episode)
+      })
+
+      // Check if the season has any torrents
+      const torrents = updatedEpisodes.filter(episode => episode.torrents.length > 0)
+
+      if (torrents.length === 0) {
+        // Don't add the season if non of the episodes has torrents
+        return show
+      }
+
+      show.seasons.push({
+        tmdb_id: s.id,
+        number: season,
+        title: `Season ${season}`,
+        synopsis: null,
+        first_aired: firstEpisode ? firstEpisode.first_aired : 0,
+        images: {
+          full: null,
+          high: null,
+          medium: null,
+          thumb: null
+        },
+        episodes: this.sortSeasonsOrEpisodes(updatedEpisodes)
+      })
+
+      show.seasons = this.sortSeasonsOrEpisodes(show.seasons)
+
+      return show
+
+    }).catch(err => {
+      if (err.statusCode === 404) {
+        return logger.error(`_addTraktSeason: Trakt and TheMovDB could not find any data for slug '${show.slug}' and season '${season}' with imdb id: '${show.imdb_id}'`)
+      }
+
+      logger.error(`_addTraktSeason: ${err.path || err}`)
+    })
   }
 
   /**
@@ -405,22 +497,43 @@ export default class ShowHelper extends AbstractHelper {
   /**
    * Get info from Trakt and make a new show object.
    * @override
-   * @param {!string} traktId - The slug to query https://trakt.tv/.
+   * @param {!string} traktSlug - The slug to query https://trakt.tv/.
+   * @param {!string} imdbId - The imdb id to query trakt.tv
    * @returns {Promise<AnimeShow | Show | Error>} - A new show without the
    * episodes attached.
    */
-  async getTraktInfo(traktId: string): Show {
+  async getTraktInfo(traktSlug: string, imdbId?: string = null): Show {
     try {
-      const traktShow = await trakt.shows.summary({
-        id: traktId,
-        extended: 'full'
-      })
+      let traktShow = null
+      let idUsed = traktSlug
 
-      const traktWatchers = await trakt.shows.watching({ id: traktId })
+      try {
+        traktShow = await trakt.shows.summary({
+          id: traktSlug,
+          extended: 'full'
+        })
+      } catch (err) {
+        // If it's a 404 and we have don't have the imdbId then throw error
+        if (err.statusCode !== 404 || !imdbId || imdbId.indexOf('tt') === -1) {
+          throw err
+        }
+
+        logger.warn(`No show found for slug: '${traktSlug}' trying imdb id: '${imdbId}'`)
+
+        idUsed = imdbId
+        traktShow = await trakt.shows.summary({
+          id: imdbId,
+          extended: 'full'
+        })
+      }
 
       if (!traktShow) {
-        return logger.warn(`No show found for slug: '${traktId}'`)
+        return logger.error(`No show found for slug: '${traktSlug}' or imdb id: '${imdbId}'`)
       }
+
+      const traktWatchers = await trakt.shows.watching({
+        id: idUsed
+      })
 
       const { imdb, tmdb, tvdb } = traktShow.ids
 
@@ -433,7 +546,7 @@ export default class ShowHelper extends AbstractHelper {
           tmdb_id: tmdb,
           tvdb_id: tvdb,
           title: traktShow.title,
-          released: new Date(traktShow.first_aired).getTime() / 1000.0,
+          released: new Date(traktShow.first_aired).getTime(),
           certification: traktShow.certification,
           synopsis: traktShow.overview,
           runtime: this._formatRuntime(traktShow.runtime),
@@ -463,10 +576,14 @@ export default class ShowHelper extends AbstractHelper {
         })
       }
     } catch (err) {
+      let message = `getTraktInfo: ${err.path || err}`
+
+      if (err.statusCode === 404) {
+        message = `getTraktInfo: Could not find any data with slug: '${traktSlug}' or imdb id: '${imdbId}'`
+      }
+
       // BulkProvider will log it
-      return Promise.reject({
-        message: `Trakt: Could not find any data on: ${err.path || err} with trakt id: '${traktId}'`
-      })
+      return Promise.reject({ message })
     }
   }
 
