@@ -231,7 +231,7 @@ export default class ShowHelper extends AbstractHelper {
       return show
 
     }).catch(err =>
-      logger.error(`TheMovieDB: Could not find any data on: ${err.path || err}`)
+      logger.error(`_addSeason: TheMovieDB could not find any data on: ${err.path || err} with tmdb id: '${show.tmdb_id}'`)
     )
   }
 
@@ -295,12 +295,12 @@ export default class ShowHelper extends AbstractHelper {
       } else if (err.statusCode && err.statusCode === 404) {
         logger.warn(`_addTmdbImages: can't find images for slug '${show.slug}'`)
 
-        // Show does not exist in Tmdb
-        return Promise.reject(show)
-
       } else {
         logger.error(`_addTmdbImages: ${err.message || err}`)
       }
+
+      // Always return the show
+      return Promise.reject(show)
     })
   }
 
@@ -337,12 +337,12 @@ export default class ShowHelper extends AbstractHelper {
       } else if (err.statusCode && err.statusCode === 404) {
         logger.warn(`_addTvdbImages: can't find images for slug '${show.slug}'`)
 
-        // Show does not exist in Tvdb
-        return Promise.reject(show)
-
       } else {
         logger.error(`_addTvdbImages: ${err.message || err}`)
       }
+
+      // Always return the show
+      return Promise.reject(show)
     })
   }
 
@@ -379,12 +379,12 @@ export default class ShowHelper extends AbstractHelper {
       } else if (err.statusCode && err.statusCode === 404) {
         logger.warn(`_addFanartImages: can't find images for slug '${show.slug}'`)
 
-        // Show does not exist in fanart
-        return Promise.reject(show)
-
       } else {
         logger.error(`_addFanartImages: ${err.message || err}`)
       }
+
+      // Always return the show
+      return Promise.reject(show)
     })
   }
 
@@ -439,7 +439,7 @@ export default class ShowHelper extends AbstractHelper {
           runtime: this._formatRuntime(traktShow.runtime),
           trailer: traktShow.trailer,
           rating: {
-            stars: (ratingPercentage / 100) * 5,
+            stars: parseFloat(((ratingPercentage / 100) * 5).toFixed('2')),
             votes: traktShow.votes,
             watching: traktWatchers ? traktWatchers.length : 0,
             percentage: ratingPercentage

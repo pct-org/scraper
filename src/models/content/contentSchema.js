@@ -27,6 +27,7 @@ export const contentSchema: Object = {
   certification: String,
   slug: String,
   synopsis: String,
+  last_updated: Number,
   runtime: {
     full: {
       type: String

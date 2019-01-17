@@ -42,8 +42,9 @@ export default class MovieHelper extends AbstractHelper {
         newTorrents.push(torrent)
 
       } else if (match.seeds > torrent.seeds) {
+        // Remove the lesser one
         newTorrents = newTorrents.filter(
-          t => t.quality === torrent.quality && t.language === torrent.language
+          t => t.quality !== torrent.quality && t.language !== torrent.language
         )
 
         newTorrents.push(match)
@@ -143,12 +144,12 @@ export default class MovieHelper extends AbstractHelper {
       } else if (err.statusCode && err.statusCode === 404) {
         logger.warn(`_addTmdbImages: can't find images for slug '${movie.slug}'`)
 
-        // Movie does not exist in tmdb
-        return Promise.reject(movie)
-
       } else {
         logger.error(`_addTmdbImages: ${err.message || err}`)
       }
+
+      // Always return the movie
+      return Promise.reject(movie)
     })
   }
 
@@ -158,6 +159,13 @@ export default class MovieHelper extends AbstractHelper {
    * @returns {Promise<AnimeMovie|Movie>} - A movie with torrents attached.
    */
   _addOmdbImages(movie: Movie | AnimeMovie): Promise<Movie | AnimeMovie> {
+    // TODO:: Check if rate limit is hit, if so then skip this one
+
+    // Check if we already have the images omdb can retrieve if so throw catch
+    if (movie.images.poster) {
+      return Promise.reject(movie)
+    }
+
     return omdb.byId({
       imdb: movie.imdb_id,
       type: 'movie'
@@ -172,7 +180,6 @@ export default class MovieHelper extends AbstractHelper {
           poster: !movie.images.poster && i.Poster
             ? i.Poster
             : movie.images.poster
-
         }
       })
 
@@ -184,12 +191,15 @@ export default class MovieHelper extends AbstractHelper {
       } else if (err.statusCode && err.statusCode === 404) {
         logger.warn(`_addOmdbImages: can't find images for slug '${movie.slug}'`)
 
-        // Movie does not exist in omdb
-        return Promise.reject(movie)
+      } else if (err.statusCode && err.statusCode === 401) {
+        logger.warn(`_addOmdbImages: rate limit hit`)
 
       } else {
         logger.error(`_addOmdbImages: ${err.message || err}`)
       }
+
+      // Always return the movie
+      return Promise.reject(movie)
     })
   }
 
@@ -227,12 +237,12 @@ export default class MovieHelper extends AbstractHelper {
       } else if (err.statusCode && err.statusCode === 404) {
         logger.warn(`_addFanartImages: can't find images for slug '${movie.slug}'`)
 
-        // Movie does not exist in fanart
-        return Promise.reject(movie)
-
       } else {
         logger.error(`_addFanartImages: ${err.message || err}`)
       }
+
+      // Always return the movie
+      return Promise.reject(movie)
     })
   }
 
@@ -276,7 +286,7 @@ export default class MovieHelper extends AbstractHelper {
           synopsis: traktMovie.overview,
           runtime: this._formatRuntime(traktMovie.runtime),
           rating: {
-            stars: (ratingPercentage / 100) * 5,
+            stars: parseFloat(((ratingPercentage / 100) * 5).toFixed('2')),
             votes: traktMovie.votes,
             watching: await traktWatchers ? traktWatchers.length : 0,
             percentage: ratingPercentage
@@ -288,6 +298,7 @@ export default class MovieHelper extends AbstractHelper {
           },
           genres: traktMovie.genres ? traktMovie.genres : ['unknown'],
           trailer: traktMovie.trailer,
+          last_updated: Number(new Date()),
           torrents: []
         })
       }

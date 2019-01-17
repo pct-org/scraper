@@ -213,6 +213,7 @@ export default class BaseProvider extends AbstractProvider {
       concurrency: 1
     }).then(() => {
       logger.info(`${this.name}: Found ${torrents.length} torrents.`)
+
       return torrents
     })
   }
@@ -284,7 +285,7 @@ export default class BaseProvider extends AbstractProvider {
    * the database.
    * @param {?Object} config.query - The query to get the content with for the
    * api.
-   * @param {?Array<Ojbect>} config.regexps - The regular expressions used to
+   * @param {?Array<Object>} config.regexps - The regular expressions used to
    * extract information from a torrent.
    * @returns {Promise<Array<Object>|undefined, Error>} - The results of a
    * configuration.
@@ -317,6 +318,8 @@ export default class BaseProvider extends AbstractProvider {
         torrents,
         language
       })
+
+      logger.info(`${this.name}: Total content ${allContent.length}`)
 
       return await pMap(
         allContent,

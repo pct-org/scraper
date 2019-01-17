@@ -102,12 +102,6 @@ export default class ShowModel extends ContentModel {
   air_info: AirInformation
 
   /**
-   * The time at which the show was last updated.
-   * @type {number}
-   */
-  last_updated: number
-
-  /**
    * The seasons in the show.
    * @type {Array<Season>}
    */
@@ -158,7 +152,7 @@ export default class ShowModel extends ContentModel {
     num_seasons,
     last_updated,
     seasons,
-    trailer,
+    trailer
   }: Object = {}): void {
     super({
       imdb_id,
@@ -173,12 +167,12 @@ export default class ShowModel extends ContentModel {
       images,
       genres,
       type,
-      trailer
+      trailer,
+      last_updated
     })
 
     this.tvdb_id = tvdb_id
     this.air_info = air_info
-    this.last_updated = last_updated
     this.seasons = seasons
     this.num_seasons = num_seasons
   }

@@ -169,6 +169,12 @@ export class ContentModel extends Model {
   trailer: string
 
   /**
+   * The time at which the content was last updated.
+   * @type {number}
+   */
+  last_updated: number
+
+  /**
    * Create a new Content object.
    * @param {!Object} config - The configuration object for the content.
    * @param {!string} imdb_id - The imdb id of the content.
@@ -183,6 +189,8 @@ export class ContentModel extends Model {
    * @param {!Images} images - The images for the content.
    * @param {!Array<string>} genres - The genres describing the content.
    * @param {!string} type - The type of the content.
+   * @param {!string} trailer - Youtube link to a trailer
+   * @param {!number} last_updated = 0 - The time the show was last updated.
    */
   constructor({
     imdb_id,
@@ -197,7 +205,8 @@ export class ContentModel extends Model {
     images,
     genres,
     type,
-    trailer
+    trailer,
+    last_updated
   }: Object): void {
     super()
 
@@ -215,6 +224,7 @@ export class ContentModel extends Model {
     this.genres = genres
     this.type = type
     this.trailer = trailer
+    this.last_updated = last_updated
   }
 
 }

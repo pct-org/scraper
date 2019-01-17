@@ -17,7 +17,7 @@ export const ytsConfig: Object = {
   Model: Movie,
   query: {
     page: 1,
-    limi: 50
+    limit: 50
   }
 }
 

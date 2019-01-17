@@ -20,68 +20,71 @@ export const showSchema: Object = {
       status: String
     }
   },
-  last_updated: Number,
   num_seasons: Number,
   seasons: {
-    type: [{
-      tmdb_id: Number,
-      number: Number,
-      title: String,
-      synopsis: String,
-      first_aired: Number,
-      images: {
-        type: {
-          full: {
-            type: String,
-            default: null
-          },
-          high: {
-            type: String,
-            default: null
-          },
-          medium: {
-            type: String,
-            default: null
-          },
-          thumb: {
-            type: String,
-            default: null
+    type: [
+      {
+        tmdb_id: Number,
+        number: Number,
+        title: String,
+        synopsis: String,
+        first_aired: Number,
+        images: {
+          type: {
+            full: {
+              type: String,
+              default: null
+            },
+            high: {
+              type: String,
+              default: null
+            },
+            medium: {
+              type: String,
+              default: null
+            },
+            thumb: {
+              type: String,
+              default: null
+            }
           }
-        }
-      },
-      episodes: {
-        type: [{
-          tmdb_id: Number,
-          number: Number,
-          title: String,
-          synopsis: String,
-          first_aired: Number,
-          images: {
-            type: {
-              full: {
-                type: String,
-                default: null
+        },
+        episodes: {
+          type: [
+            {
+              tmdb_id: Number,
+              number: Number,
+              title: String,
+              synopsis: String,
+              first_aired: Number,
+              images: {
+                type: {
+                  full: {
+                    type: String,
+                    default: null
+                  },
+                  high: {
+                    type: String,
+                    default: null
+                  },
+                  medium: {
+                    type: String,
+                    default: null
+                  },
+                  thumb: {
+                    type: String,
+                    default: null
+                  }
+                }
               },
-              high: {
-                type: String,
-                default: null
-              },
-              medium: {
-                type: String,
-                default: null
-              },
-              thumb: {
-                type: String,
-                default: null
+              torrents: {
+                type: [torrentSchema]
               }
             }
-          },
-          torrents: {
-            type: [torrentSchema]
-          }
-        }]
+          ]
+        }
       }
-    }]
+    ]
   }
 }
 

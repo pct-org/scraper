@@ -38,6 +38,7 @@ export default class MovieProvider extends BaseProvider {
     if (movieTitle.endsWith(' ')) {
       movieTitle = movieTitle.substring(0, movieTitle.length - 1)
     }
+
     movieTitle = movieTitle.replace(/\./g, ' ')
 
     slug = movieTitle.replace(/[^a-zA-Z0-9 ]/gi, '')
