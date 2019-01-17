@@ -113,7 +113,7 @@ export default class IndexController extends IController {
       ])
 
     const root = process.env.TEMP_DIR
-    const file = `${name}.log`
+    const file = `${name}-app.log`
     const filePath = join(...[
       process.env.TEMP_DIR,
       file
