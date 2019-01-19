@@ -22,9 +22,9 @@ export default class MovieHelper extends AbstractHelper {
   /**
    * Update the torrents for an existing movie.
    *
-   * @param torrents
-   * @param foundTorrents
-   * @returns {Array<Object>}
+   * @param {Array} torrents - Array of new torrents
+   * @param {Array} foundTorrents - Array of existing torrents
+   * @returns {Array<Object>} - Array of the best torrents
    * @private
    */
   _updateTorrents(
@@ -306,9 +306,14 @@ export default class MovieHelper extends AbstractHelper {
         })
       }
     } catch (err) {
-      return Promise.reject({
-        message: `Trakt: Could not find any data on: ${err.path || err} with trakt id: '${traktSlug}'`
-      })
+      let message = `getTraktInfo: ${err.path || err}`
+
+      if (err.statusCode === 404) {
+        message = `getTraktInfo: Could not find any data with slug: '${traktSlug}'`
+      }
+
+      // BulkProvider will log it
+      return Promise.reject(Error(message))
     }
   }
 

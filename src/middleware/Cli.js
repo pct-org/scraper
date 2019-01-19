@@ -73,8 +73,8 @@ export default class Cli extends BaseCli {
    * @param {!string} options.name - The name of the Cli program.
    * @param {!string} [options.version] - The version of the Cli program.
    */
-  constructor(PopApi: any, {argv, name, version}: Object): void {
-    super(PopApi, {name, version})
+  constructor(PopApi: any, { argv, name, version }: Object): void {
+    super(PopApi, { name, version })
 
     /**
       * The database middleware from `pop-api`.

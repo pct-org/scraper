@@ -43,7 +43,10 @@ import {
       logDir,
       controllers,
       statusPath: join(...[logDir, 'status.json']),
-      updatedPath: join(...[logDir, 'updated.json'])
+      updatedPath: join(...[logDir, 'updated.json']),
+
+      // This starts the scraping on the master node and sets up the cron
+      start: isMaster
     }, [
       Cli,
       Logger,
@@ -54,10 +57,6 @@ import {
       Cron
     ])
 
-    // TODO: make scraping start wth 'start' param in 'init'.
-    if (isMaster && PopApi.startScraper) {
-      PopApi.scraper.scrape()
-    }
   } catch (err) {
     throw err
   }

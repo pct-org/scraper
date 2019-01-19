@@ -212,7 +212,9 @@ export default class ShowHelper extends AbstractHelper {
       })
 
       // Check if the season has any torrents
-      const torrents = updatedEpisodes.filter(episode => episode.torrents.length > 0)
+      const torrents = updatedEpisodes.filter(
+        episode => episode.torrents.length > 0
+      )
 
       if (torrents.length === 0) {
         // Don't add the season if non of the episodes has torrents
@@ -248,7 +250,8 @@ export default class ShowHelper extends AbstractHelper {
   }
 
   /**
-   * Adds one season to a show but is only used when the season could not be found by TheMovieDB
+   * Adds one season to a show but is only used when the season
+   * could not be found by TheMovieDB
    * @param {!AnimeShow|Show} show - The show to add the torrents to.
    * @param {!Object} episodes - The episodes containing the torrents.
    * @param {!number} season - The season number.
@@ -292,7 +295,9 @@ export default class ShowHelper extends AbstractHelper {
       })
 
       // Check if the season has any torrents
-      const torrents = updatedEpisodes.filter(episode => episode.torrents.length > 0)
+      const torrents = updatedEpisodes.filter(
+        episode => episode.torrents.length > 0
+      )
 
       if (torrents.length === 0) {
         // Don't add the season if non of the episodes has torrents
@@ -583,7 +588,7 @@ export default class ShowHelper extends AbstractHelper {
       }
 
       // BulkProvider will log it
-      return Promise.reject({ message })
+      return Promise.reject(Error(message))
     }
   }
 

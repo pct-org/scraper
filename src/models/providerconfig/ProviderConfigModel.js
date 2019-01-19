@@ -61,7 +61,7 @@ export default class ProviderConfigModel extends Model {
    * @param {!string} clazz - The clazz of the provider configuration.
    * @param {?Object} query - The query of the provider configuration.
    */
-  constructor({api, modelType, name, type, clazz, query}: Object = {}): void {
+  constructor({ api, modelType, name, type, clazz, query }: Object = {}): void {
     super()
 
     /**

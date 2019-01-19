@@ -86,7 +86,7 @@ export default class AbstractHelper extends IHelper {
 
   /**
    * Formats the torrents
-   * @param torrents Object torrents to format
+   * @param {Array} torrents Object torrents to format
    * @returns {Array} of torrents
    * @protected
    */
@@ -127,12 +127,12 @@ export default class AbstractHelper extends IHelper {
   }
 
   /**
-   * Formats the runtime
-   * @param runtimeInMinutes
-   * @returns {{hours: number, minutes: number, short: string, inMinutes: *, full: string}}
-   * @protected
+   * @param {!number} runtimeInMinutes - runtime in minutes of the item
+   * @returns {{hours: number, minutes: number, short: string, full: string}}
+   * formatted runtime object
+   * @private
    */
-  _formatRuntime(runtimeInMinutes) {
+  _formatRuntime(runtimeInMinutes: number) {
     const hours = runtimeInMinutes >= 60 ? Math.round(runtimeInMinutes / 60) : 0
     const minutes = runtimeInMinutes % 60
 
@@ -153,4 +153,5 @@ export default class AbstractHelper extends IHelper {
       minutes
     }
   }
+
 }
