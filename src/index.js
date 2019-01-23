@@ -24,7 +24,7 @@ import {
 } from '../package.json'
 
 /** Setup the api. */
-(async () => {
+(async() => {
   try {
     providers.map(p => {
       const { Provider, args } = p
@@ -43,19 +43,25 @@ import {
       logDir,
       controllers,
       statusPath: join(...[logDir, 'status.json']),
-      updatedPath: join(...[logDir, 'updated.json']),
+      updatedPath: join(...[logDir, 'updated.json'])
 
       // This starts the scraping on the master node and sets up the cron
-      start: isMaster
+      // start: isMaster
     }, [
       Cli,
       Logger,
       Database,
       Routes,
       HttpServer,
-      PopApiScraper,
-      Cron
+      PopApiScraper
     ])
+
+    if (isMaster) {
+      // Add the cron and enabled it if the scraper should start
+      await PopApi.use(Cron, {
+        start: PopApi.startScraper
+      })
+    }
 
   } catch (err) {
     throw err

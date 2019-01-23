@@ -70,7 +70,7 @@ export const contentSchema: Object = {
         type: String,
         default: null
       },
-      thumb: {
+      banner: {
         type: String,
         default: null
       }

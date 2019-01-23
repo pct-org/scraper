@@ -57,6 +57,7 @@ export default class ExportController extends IController {
         tempDir,
         `${collection}.json`
       ])
+
       if (existsSync(jsonFile)) {
         return res.download(jsonFile)
       }
@@ -65,6 +66,7 @@ export default class ExportController extends IController {
         tempDir,
         `${collection}s.json`
       ])
+
       if (existsSync(jsonFile)) {
         return res.download(jsonFile)
       }

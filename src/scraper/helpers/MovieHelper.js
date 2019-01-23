@@ -132,7 +132,8 @@ export default class MovieHelper extends AbstractHelper {
         images: {
           banner: Holder,
           backdrop: tmdbBackdrop ? `${baseUrl}${tmdbBackdrop.file_path}` : Holder,
-          poster: tmdbPoster ? `${baseUrl}${tmdbPoster.file_path}` : Holder
+          poster: tmdbPoster ? `${baseUrl}${tmdbPoster.file_path}` : Holder,
+          logo: Holder
         }
       })
 
@@ -179,7 +180,9 @@ export default class MovieHelper extends AbstractHelper {
 
           poster: !movie.images.poster && i.Poster
             ? i.Poster
-            : movie.images.poster
+            : movie.images.poster,
+
+          logo: movie.images.logo
         }
       })
 
@@ -219,13 +222,19 @@ export default class MovieHelper extends AbstractHelper {
 
           backdrop: !movie.images.backdrop && i.moviebackground
             ? i.moviebackground[0].url
-            : i.hdmovieclearart
+            : !movie.images.backdrop && i.hdmovieclearart
               ? i.hdmovieclearart[0].url
               : movie.images.backdrop,
 
           poster: !movie.images.poster && i.movieposter
             ? i.movieposter[0].url
-            : movie.images.poster
+            : movie.images.poster,
+
+          logo: !movie.images.logo && i.movielogo
+            ? i.movielogo[0].url
+            : !movie.images.logo && i.hdmovielogo
+              ? i.hdmovielogo[0].url
+              : movie.images.logo
         }
       })
 

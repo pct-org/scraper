@@ -45,13 +45,13 @@ type Runtime = {
  * @property {!string} backdrop A backdrop image for the content.
  * @property {!string} poster A poster image for the content.
  * @property {!string} logo A hd clear logo image for the content.
- * @property {!string} thumb A background thumb image for the content.
+ * @property {!string} banner A banner image for the content.
  */
 type Images = {
   backdrop: string,
   poster: string,
   logo: string,
-  thumb: string
+  banner: string
 }
 
 /**

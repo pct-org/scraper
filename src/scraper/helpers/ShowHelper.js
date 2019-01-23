@@ -381,7 +381,9 @@ export default class ShowHelper extends AbstractHelper {
 
           poster: tmdbPoster
             ? `${baseUrl}${tmdbPoster.file_path}`
-            : Holder
+            : Holder,
+
+          logo: Holder
         }
       })
     }).catch(err => {
@@ -423,7 +425,9 @@ export default class ShowHelper extends AbstractHelper {
 
           poster: !show.images.poster && i.poster
             ? `${baseUrl}${i.poster}`
-            : show.images.poster
+            : show.images.poster,
+
+          logo: show.images.logo
         }
       })
     }).catch(err => {
@@ -465,7 +469,13 @@ export default class ShowHelper extends AbstractHelper {
 
           poster: !show.images.poster && i.tvposter
             ? i.tvposter[0].url
-            : show.images.poster
+            : show.images.poster,
+
+          logo: !show.images.logo && i.clearlogo
+            ? i.clearlogo[0].url
+            : !show.images.logo && i.hdtvlogo
+              ? i.hdtvlogo[0].url
+              : show.images.logo
         }
       })
     }).catch(err => {
