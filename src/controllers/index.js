@@ -26,7 +26,11 @@ const baseProjection: Object = {
   genres: 1,
   images: 1,
   rating: 1,
-  type: 1
+  type: 1,
+  runtime: 1,
+  trailer: 1,
+  certification: 1,
+  released: 1
 }
 
 /**
@@ -35,11 +39,6 @@ const baseProjection: Object = {
  */
 const movieProjection: Object = {
   ...baseProjection,
-  synopsis: 1,
-  runtime: 1,
-  released: 1,
-  trailer: 1,
-  certification: 1,
   torrents: 1
 }
 
@@ -67,15 +66,17 @@ const animeProjection: Object = {
  * @type {Object}
  */
 const query: Object = {
-  $or: [{
-    num_seasons: {
-      $gt: 0
+  $or: [
+    {
+      num_seasons: {
+        $gt: 0
+      }
+    }, {
+      torrents: {
+        $exists: true
+      }
     }
-  }, {
-    torrents: {
-      $exists: true
-    }
-  }]
+  ]
 }
 
 /**

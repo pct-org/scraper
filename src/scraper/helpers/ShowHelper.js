@@ -392,7 +392,7 @@ export default class ShowHelper extends AbstractHelper {
         return Promise.reject(err)
 
       } else if (err.statusCode && err.statusCode === 404) {
-        logger.warn(`_addTmdbImages: can't find images for slug '${show.slug}'`)
+        logger.warn(`_addTmdbImages: can't find images for slug '${show.slug}' with tmdb id '${show.tmdb_id}'`)
 
       } else {
         logger.error(`_addTmdbImages: ${err.message || err}`)
@@ -436,7 +436,7 @@ export default class ShowHelper extends AbstractHelper {
         return Promise.reject(err)
 
       } else if (err.statusCode && err.statusCode === 404) {
-        logger.warn(`_addTvdbImages: can't find images for slug '${show.slug}'`)
+        logger.warn(`_addTvdbImages: can't find images for slug '${show.slug}' with tvdb id '${show.tvdb_id}'`)
 
       } else {
         logger.error(`_addTvdbImages: ${err.message || err}`)
@@ -484,7 +484,7 @@ export default class ShowHelper extends AbstractHelper {
         return Promise.reject(err)
 
       } else if (err.statusCode && err.statusCode === 404) {
-        logger.warn(`_addFanartImages: can't find images for slug '${show.slug}'`)
+        logger.warn(`_addFanartImages: can't find images for slug '${show.slug}' with tvdb id '${show.tvdb_id}'`)
 
       } else {
         logger.error(`_addFanartImages: ${err.message || err}`)
