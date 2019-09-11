@@ -1,15 +1,10 @@
-// Import the necessary modules.
 // @flow
-import { ContentService } from 'pop-api'
+import { ContentService } from '@pct-org/pop-api'
 
 import ContentController from './ContentController'
 import ExportController from './ExportController'
 import IndexController from './IndexController'
-import {
-  AnimeShow as Anime,
-  Movie,
-  Show
-} from '../models'
+import { Movie, Show } from '../models'
 
 /**
  * Object used as a base projections for content.
@@ -30,7 +25,7 @@ const baseProjection: Object = {
   runtime: 1,
   trailer: 1,
   certification: 1,
-  released: 1
+  released: 1,
 }
 
 /**
@@ -39,7 +34,7 @@ const baseProjection: Object = {
  */
 const movieProjection: Object = {
   ...baseProjection,
-  torrents: 1
+  torrents: 1,
 }
 
 /**
@@ -49,7 +44,7 @@ const movieProjection: Object = {
 const showProjection: Object = {
   ...baseProjection,
   tvdb_id: 1,
-  num_seasons: 1
+  num_seasons: 1,
 }
 
 /**
@@ -58,7 +53,7 @@ const showProjection: Object = {
  */
 const animeProjection: Object = {
   ...movieProjection,
-  ...showProjection
+  ...showProjection,
 }
 
 /**
@@ -69,54 +64,46 @@ const query: Object = {
   $or: [
     {
       num_seasons: {
-        $gt: 0
-      }
+        $gt: 0,
+      },
     }, {
       torrents: {
-        $exists: true
-      }
-    }
-  ]
+        $exists: true,
+      },
+    },
+  ],
 }
 
 /**
  * The controllers used by the setup process of registering them.
  * @type {Array<Object>}
  */
-export default [{
-  Controller: IndexController,
-  args: {}
-}, {
-  Controller: ExportController,
-  args: {}
-}, {
-  Controller: ContentController,
-  args: {
-    basePath: 'anime',
-    service: new ContentService({
-      Model: Anime,
-      projection: animeProjection,
-      query
-    })
-  }
-}, {
-  Controller: ContentController,
-  args: {
-    basePath: 'movie',
-    service: new ContentService({
-      Model: Movie,
-      projection: movieProjection,
-      query
-    })
-  }
-}, {
-  Controller: ContentController,
-  args: {
-    basePath: 'show',
-    service: new ContentService({
-      Model: Show,
-      projection: showProjection,
-      query
-    })
-  }
-}]
+export default [
+  {
+    Controller: IndexController,
+    args: {},
+  }, {
+    Controller: ExportController,
+    args: {},
+  },
+  {
+    Controller: ContentController,
+    args: {
+      basePath: 'movie',
+      service: new ContentService({
+        Model: Movie,
+        projection: movieProjection,
+        query,
+      }),
+    },
+  }, {
+    Controller: ContentController,
+    args: {
+      basePath: 'show',
+      service: new ContentService({
+        Model: Show,
+        projection: showProjection,
+        query,
+      }),
+    },
+  }]

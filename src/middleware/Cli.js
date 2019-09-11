@@ -7,26 +7,12 @@ import inquirer from 'inquirer'
 import parseTorrent from 'parse-torrent'
 import path from 'path'
 import webtorrentHealth from 'webtorrent-health'
-import {
-  Cli as BaseCli,
-  Database
-} from 'pop-api'
+import { Cli as BaseCli, Database } from '@pct-org/pop-api'
 
 import promptSchemas from './promptschemas.js'
-import {
-  AnimeMovie,
-  AnimeShow,
-  Movie,
-  Show
-} from '../models'
-import {
-  MovieHelper,
-  ShowHelper
-} from '../scraper/helpers'
-import {
-  MovieProvider,
-  ShowProvider
-} from '../scraper/providers'
+import { AnimeMovie, AnimeShow, Movie, Show } from '../models'
+import { MovieHelper, ShowHelper } from '../scraper/helpers'
+import { MovieProvider, ShowProvider } from '../scraper/providers'
 
 /**
  * Class The class for the command line interface.
@@ -66,10 +52,10 @@ export default class Cli extends BaseCli {
 
   /**
    * Create a CLI object.
+   *
    * @param {!PopApi} PopApi - The PopApi instance to bind the cli to.
-   * @param {!Ojbect} options - The options for the cli.
-   * @param {?Array<string>} options.argv - The arguments to be parsed by
-   * commander.
+   * @param {!Object} options - The options for the cli.
+   * @param {?Array<string>} options.argv - The arguments to be parsed by commander.
    * @param {!string} options.name - The name of the Cli program.
    * @param {!string} [options.version] - The version of the Cli program.
    */
@@ -77,11 +63,11 @@ export default class Cli extends BaseCli {
     super(PopApi, { name, version })
 
     /**
-      * The database middleware from `pop-api`.
-      * @type {Database}
-      */
+     * The database middleware from `pop-api`.
+     * @type {Database}
+     */
     this.database = new Database(PopApi, {
-      database: name
+      database: name,
     })
 
     this.run(PopApi, argv)
@@ -103,7 +89,7 @@ export default class Cli extends BaseCli {
       .option(
         '--providers <env>',
         'Add provider configurations',
-        /^(development|production|test)$/i
+        /^(development|production|test)$/i,
       )
       .option('--export <collection>',
         'Export a collection to a JSON file.',
@@ -121,7 +107,7 @@ export default class Cli extends BaseCli {
       `    $ ${this.name} --content <animemovie|animeshow|movie|show>`,
       `    $ ${this.name} --provider`,
       `    $ ${this.name} --export <anime|movie|show>`,
-      `    $ ${this.name} --import <path-to-json>`
+      `    $ ${this.name} --import <path-to-json>`,
     ])
   }
 
@@ -139,7 +125,7 @@ export default class Cli extends BaseCli {
       peers: health.peers,
       size: remote.length,
       filesize: bytes(remote.length),
-      provider: Cli._Name
+      provider: Cli._Name,
     }
   }
 
@@ -154,7 +140,7 @@ export default class Cli extends BaseCli {
       url: magnet,
       seeds: health.seeds,
       peers: health.peers,
-      provider: Cli._Name
+      provider: Cli._Name,
     }
   }
 
@@ -195,7 +181,7 @@ export default class Cli extends BaseCli {
       imdb,
       torrent,
       movieQuality,
-      language
+      language,
     ]
 
     return this.database.connect().then(() => {
@@ -203,7 +189,7 @@ export default class Cli extends BaseCli {
         const { imdb, quality, language, torrent } = res
         const movie = {
           slugYear: imdb,
-          torrents: {}
+          torrents: {},
         }
         const contentType = MovieProvider.ContentTypes.Movie
         const movieProvider = new MovieProvider({}, {})
@@ -211,7 +197,7 @@ export default class Cli extends BaseCli {
           name: Cli._Name,
           Helper: MovieHelper,
           Model: isAnime ? AnimeMovie : Movie,
-          contentType
+          contentType,
         })
 
         return this._getTorrent(torrent, contentType).then(res => {
@@ -219,7 +205,7 @@ export default class Cli extends BaseCli {
             movie,
             quality,
             torrent: res,
-            lang: language
+            lang: language,
           })
 
           return movieProvider.getContent(movie)
@@ -246,7 +232,7 @@ export default class Cli extends BaseCli {
       showQuality,
       season,
       episode,
-      dateBased
+      dateBased,
     } = promptSchemas
     const showSchema: Array<Object> = [
       imdb,
@@ -254,7 +240,7 @@ export default class Cli extends BaseCli {
       showQuality,
       season,
       episode,
-      dateBased
+      dateBased,
     ]
 
     return this.database.connect().then(() => {
@@ -263,7 +249,7 @@ export default class Cli extends BaseCli {
         const show = {
           slug: imdb,
           dateBased,
-          episodes: {}
+          episodes: {},
         }
         const contentType = MovieProvider.ContentTypes.Show
         const showProvider = new ShowProvider({}, {})
@@ -271,7 +257,7 @@ export default class Cli extends BaseCli {
           name: Cli._Name,
           Helper: ShowHelper,
           Model: isAnime ? AnimeShow : Show,
-          contentType
+          contentType,
         })
 
         return this._getTorrent(torrent, contentType).then(res => {
@@ -280,7 +266,7 @@ export default class Cli extends BaseCli {
             torrent: res,
             season,
             episode,
-            quality
+            quality,
           })
 
           return showProvider.getContent(show)
@@ -326,13 +312,13 @@ export default class Cli extends BaseCli {
       __dirname,
       '..',
       '..',
-      'tmp'
+      'tmp',
     ])
     const tempDir = process.env.TEMP_DIR
 
     return this.database.exportFile(e, path.join(...[
       tempDir,
-      `${e}s.json`
+      `${e}s.json`,
     ]))
       .then(() => process.exit(0))
       .catch(err => {
@@ -380,8 +366,10 @@ export default class Cli extends BaseCli {
 
     if (this.program.content) {
       return this._content(this.program.content)
+
     } else if (this.program.export) {
       return this._export(this.program.export)
+
     } else if (this.program.import) {
       return this._import(this.program.import)
     }

@@ -1,4 +1,3 @@
-// Export the necessary modules.
 export bulkConfigs from './bulkConfigs'
 export movieConfigs from './movieConfigs'
 export showConfigs from './showConfigs'

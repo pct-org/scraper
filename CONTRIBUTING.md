@@ -130,26 +130,13 @@ steps:
 
 ### npm scripts
 
-The following [`npm-scripts`](https://docs.npmjs.com/misc/scripts) are available in order to help you with the
+The following [`yarn-scripts`](https://yarnpkg.com/lang/en/docs/cli/run) are available in order to help you with the
 development of the project.
 
 ```
- $ npm run build    # Transform the code with 'babel'
- $ npm run docs     # Generate the documentation with 'esdoc'
- $ npm run debug    # Run the applicaiton in debug mode
- $ npm run dev      # Run the application in development mode
- $ npm run flow     # Check flow typings
- $ npm run lint     # Check javascript style
- $ npm run test     # Run unit tests
-```
-
-### Git hooks
-
-The following `git` hooks are available to ensure the changes you are about to
-make follow the [styleguides](#styleguides) and make sure your changes pass the
-tests.
-
-```
-pre-commit          # npm run lint && npm run flow
-pre-push            # npm run test
+ $ yarn build          # Transform the code with 'babel'
+ $ yarn start:debug    # Run the applicaiton in debug mode
+ $ yarn start:dev      # Run the application in development mode
+ $ yarn lint           # Check javascript style
+ $ yarn test           # Run unit tests
 ```

@@ -1,13 +1,12 @@
-// Import the necessary modules.
 // @flow
 import {
-  AnimeShow
+  AnimeShow,
   // Show
 } from '../../models'
 import { ShowProvider } from '../providers'
 import {
   // kat,
-  nyaa
+  nyaa,
 } from '../apiModules'
 import { ShowHelper } from '../helpers'
 
@@ -15,22 +14,24 @@ import { ShowHelper } from '../helpers'
  * The regular expressions used to extract information about shows.
  * @type {Array<Object>}
  */
-const regexps = [{
-  regex: /(.*).[sS](\d{2})[eE](\d{2})/i,
-  dateBased: false
-}, {
-  regex: /(.*).(\d{1,2})[x](\d{2})/i,
-  dateBased: false
-}, {
-  regex: /(.*).(\d{4}).(\d{2}.\d{2})/i,
-  dateBased: true
-}, {
-  regex: /\[.*\].(\D+).S(\d+)...(\d{2,3}).*\.mkv/i,
-  dateBased: false
-}, {
-  regex: /\[.*\].(\D+)...(\d{2,3}).*\.mkv/i,
-  dateBased: false
-}]
+const regexps = [
+  {
+    regex: /(.*).[sS](\d{2})[eE](\d{2})/i,
+    dateBased: false,
+  }, {
+    regex: /(.*).(\d{1,2})[x](\d{2})/i,
+    dateBased: false,
+  }, {
+    regex: /(.*).(\d{4}).(\d{2}.\d{2})/i,
+    dateBased: true,
+  }, {
+    regex: /\[.*\].(\D+).S(\d+)...(\d{2,3}).*\.mkv/i,
+    dateBased: false,
+  }, {
+    regex: /\[.*\].(\D+)...(\d{2,3}).*\.mkv/i,
+    dateBased: false,
+  },
+]
 
 /**
  * The base configuration for Nyaa.
@@ -41,7 +42,7 @@ const baseNyaaConfig: Object = {
   contentType: ShowProvider.ContentTypes.Show,
   Helper: ShowHelper,
   Model: AnimeShow,
-  regexps
+  regexps,
 }
 
 /**
@@ -53,8 +54,8 @@ export const nyaaCommieConfig: Object = {
   name: 'Commie',
   query: {
     page: 1,
-    q: 'commie mkv'
-  }
+    q: 'commie mkv',
+  },
 }
 
 /**
@@ -66,8 +67,8 @@ export const nyaaFffConfig: Object = {
   name: 'FFF',
   query: {
     page: 1,
-    q: 'fff mkv'
-  }
+    q: 'fff mkv',
+  },
 }
 
 /**
@@ -79,8 +80,8 @@ export const nyaaGgConfig: Object = {
   name: 'GG',
   query: {
     page: 1,
-    q: 'gg mkv'
-  }
+    q: 'gg mkv',
+  },
 }
 
 // /**
@@ -210,5 +211,5 @@ export const nyaaGgConfig: Object = {
 export default [
   nyaaCommieConfig,
   nyaaFffConfig,
-  nyaaGgConfig
+  nyaaGgConfig,
 ]

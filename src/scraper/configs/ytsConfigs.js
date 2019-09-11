@@ -1,4 +1,3 @@
-// Import the necessary modules.
 // @flow
 import { Movie } from '../../models'
 import { YtsProvider } from '../providers'
@@ -17,8 +16,8 @@ export const ytsConfig: Object = {
   Model: Movie,
   query: {
     page: 1,
-    limit: 50
-  }
+    limit: 50,
+  },
 }
 
 /**

@@ -1,4 +1,3 @@
-// Import the necessary modules.
 // @flow
 import { Movie } from '../../models'
 import { MovieProvider } from '../providers'
@@ -17,15 +16,17 @@ export const katMovieConfig: Object = {
   Model: Movie,
   query: {
     category: 'movies_hd',
-    query: 'x264 BlueRay'
+    query: 'x264 BlueRay',
   },
-  regexps: [{
-    regex: /(.*).(\d{4}).[3Dd]\D+(\d{3,4}p)/i
-  }, {
-    regex: /(.*).(\d{4}).[4k]\D+(\d{3,4}p)/i
-  }, {
-    regex: /(.*).(\d{4})\D+(\d{3,4}p)/i
-  }]
+  regexps: [
+    {
+      regex: /(.*).(\d{4}).[3Dd]\D+(\d{3,4}p)/i,
+    }, {
+      regex: /(.*).(\d{4}).[4k]\D+(\d{3,4}p)/i,
+    }, {
+      regex: /(.*).(\d{4})\D+(\d{3,4}p)/i,
+    },
+  ],
 }
 
 /**

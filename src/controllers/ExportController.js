@@ -1,14 +1,13 @@
-// Import the necessary modules.
 // @flow
 import { join } from 'path'
 import { existsSync } from 'fs'
 import type {
   $Request,
   $Response,
-  NextFunction
+  NextFunction,
 } from 'express'
 
-import { IController } from 'pop-api'
+import { IController } from '@pct-org/pop-api'
 
 /**
  * Class for downloading export collections.
@@ -38,7 +37,7 @@ export default class ExportController extends IController {
   getExport(
     req: $Request,
     res: $Response,
-    next: NextFunction
+    next: NextFunction,
   ): Object | mixed {
     const { collection } = req.params
 
@@ -49,13 +48,13 @@ export default class ExportController extends IController {
           __dirname,
           '..',
           '..',
-          'tmp'
+          'tmp',
         ])
 
       const tempDir = process.env.TEMP_DIR
       let jsonFile = join(...[
         tempDir,
-        `${collection}.json`
+        `${collection}.json`,
       ])
 
       if (existsSync(jsonFile)) {
@@ -64,7 +63,7 @@ export default class ExportController extends IController {
 
       jsonFile = join(...[
         tempDir,
-        `${collection}s.json`
+        `${collection}s.json`,
       ])
 
       if (existsSync(jsonFile)) {
@@ -74,8 +73,7 @@ export default class ExportController extends IController {
       return next(new Error(`Error: no such file found for '${jsonFile}'`))
     }
 
-    const msg = `Error: '${collection}' is not a valid collection to export.`
-    return next(new Error(msg))
+    return next(new Error(`Error: '${collection}' is not a valid collection to export.`))
   }
 
 }

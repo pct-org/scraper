@@ -18,8 +18,8 @@ export default [
     Provider: BulkProvider,
     args: {
       maxWebRequests,
-      configs: bulkConfigs
-    }
+      configs: bulkConfigs,
+    },
   }, /* {
    Provider: MovieProvider,
    args: {
@@ -36,7 +36,7 @@ export default [
     Provider: YtsProvider,
     args: {
       maxWebRequests,
-      configs: ytsConfigs
-    }
-  }
+      configs: ytsConfigs,
+    },
+  },
 ]

@@ -1,14 +1,7 @@
-// Import the necessary modules.
 // @flow
-import {
-  AnimeShow,
-  Show
-} from '../../models'
+import { Show } from '../../models'
 import { BulkProvider } from '../providers'
-import {
-  eztv,
-  horribleSubs
-} from '../apiModules'
+import { eztv } from '../apiModules'
 import { ShowHelper } from '../helpers'
 
 /**
@@ -20,26 +13,11 @@ export const eztvConfig: Object = {
   api: eztv,
   contentType: BulkProvider.ContentTypes.Show,
   Helper: ShowHelper,
-  Model: Show
-}
-
-/**
- * The configuration for HorribleSubs.
- * @type {Object}
- */
-export const horribleSubsConfig: Object = {
-  name: 'HorribleSubs',
-  api: horribleSubs,
-  contentType: BulkProvider.ContentTypes.Show,
-  Helper: ShowHelper,
-  Model: AnimeShow
+  Model: Show,
 }
 
 /**
  * Export the configs for the BulkProvider.
  * @type {Array<Object>}
  */
-export default [
-  eztvConfig,
-  horribleSubsConfig
-]
+export default [eztvConfig]

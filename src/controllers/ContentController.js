@@ -1,16 +1,9 @@
 // Import the necessary modules.
 // @flow
-import type {
-  $Request,
-  $Response,
-  NextFunction
-} from 'express'
+import type { $Request, $Response, NextFunction } from 'express'
 import type { MongooseModel } from 'mongoose'
 
-import {
-  BaseContentController,
-  type ContentService
-} from 'pop-api'
+import { BaseContentController, type ContentService } from '@pct-org/pop-api'
 
 /**
  * Base class for getting content from endpoints.
@@ -58,31 +51,35 @@ export default class ContentController extends BaseContentController {
     switch (s) {
       case 'name':
         return {
-          title: order
+          title: order,
         }
       case 'rating':
         return {
           'rating.votes': order,
-          'rating.percentage': order
+          'rating.percentage': order,
         }
+
       case 'released':
         return {
           latest_episode: order,
-          released: order
+          released: order,
         }
+
       case 'trending':
         return {
-          'rating.watching': order
+          'rating.watching': order,
         }
+
       case 'year':
         return {
-          year: order
+          year: order,
         }
+
       default:
         return {
           'rating.votes': order,
           'rating.precentage': order,
-          'rating.watching': order
+          'rating.watching': order,
         }
     }
   }
@@ -100,7 +97,7 @@ export default class ContentController extends BaseContentController {
   getContents(
     req: $Request,
     res: $Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Array<string> | mixed> {
     return this.service.getContents(`/${this.basePath}s`)
       .then(content => this.checkEmptyContent(res, content))
@@ -118,7 +115,7 @@ export default class ContentController extends BaseContentController {
   getPage(
     req: $Request,
     res: $Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Array<MongooseModel> | mixed> {
     const { page } = req.params
     const { sort, order, genre, keywords } = req.query
@@ -127,7 +124,7 @@ export default class ContentController extends BaseContentController {
     const s = typeof sort === 'string' ? this.sortContent(sort, o) : ''
 
     const query = {
-      ...this.service.query
+      ...this.service.query,
     }
 
     if (typeof genre === 'string' && genre.toLowerCase() !== 'all') {
@@ -141,7 +138,7 @@ export default class ContentController extends BaseContentController {
 
     if (typeof keywords === 'string') {
       query.$text = {
-        $search: keywords
+        $search: keywords,
       }
     }
 

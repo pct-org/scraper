@@ -2,29 +2,12 @@
 // @flow
 import fs from 'fs'
 import { join } from 'path'
-import {
-  ApiError,
-  IController,
-  PopApi,
-  utils
-} from 'pop-api'
-import type {
-  $Request,
-  $Response,
-  NextFunction
-} from 'express'
+import { ApiError, IController, PopApi, utils } from '@pct-org/pop-api'
+import type { $Request, $Response, NextFunction } from 'express'
 
 import ContentController from './ContentController'
-import {
-  AnimeShow as Anime,
-  Movie,
-  Show
-} from '../models'
-import {
-  name,
-  repository,
-  version
-} from '../../package.json'
+import { Movie, Show } from '../models'
+import { name, repository, version } from '../../package.json'
 
 /**
  * Class for displaying information about the server the API is running on.
@@ -60,31 +43,35 @@ export default class IndexController extends IController {
   async getIndex(
     req: $Request,
     res: $Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Object | mixed> {
     try {
       const commit = await utils.executeCommand('git', [
         'rev-parse',
         '--short',
-        'HEAD'
+        'HEAD',
       ])
 
       const query = ContentController.Query
-      const totalAnimes = await Anime.count(query).exec()
       const totalMovies = await Movie.count(query).exec()
       const totalShows = await Show.count(query).exec()
 
+      const status = await PopApi.scraper.getStatus()
+      const updated = await PopApi.scraper.getUpdated()
+
       return res.json({
         repo: repository.url,
+        version,
+        commit: commit.trim(),
         server: IndexController._Server,
-        status: await PopApi.scraper.getStatus(),
-        totalAnimes,
+        status: status || 'idle',
         totalMovies,
         totalShows,
-        updated: await PopApi.scraper.getUpdated(),
-        uptime: process.uptime() | 0, // eslint-disable-line no-bitwise
-        version,
-        commit
+        updated: updated > 0
+          ? (new Date(updated * 1000)).toISOString().slice(0, 19).replace('T', ' ')
+          : 'never',
+        uptime:
+          process.uptime() | 0, // eslint-disable-line no-bitwise
       })
     } catch (err) {
       return next(err)
@@ -101,7 +88,7 @@ export default class IndexController extends IController {
   getErrorLog(
     req: $Request,
     res: $Response,
-    next: NextFunction
+    next: NextFunction,
   ): Object | mixed {
     process.env.TEMP_DIR = typeof process.env.TEMP_DIR === 'string'
       ? process.env.TEMP_DIR
@@ -109,27 +96,27 @@ export default class IndexController extends IController {
         __dirname,
         '..',
         '..',
-        'tmp'
+        'tmp',
       ])
 
     const root = process.env.TEMP_DIR
     const file = `${name}-app.log`
     const filePath = join(...[
       process.env.TEMP_DIR,
-      file
+      file,
     ])
 
     if (fs.existsSync(filePath)) {
       return res.sendFile(file, {
         root,
         headers: {
-          'Content-Type': 'text/plain; charset=UTF-8'
-        }
+          'Content-Type': 'text/plain; charset=UTF-8',
+        },
       })
     }
 
     return next(new ApiError({
-      message: `Could not find file: '${filePath}'`
+      message: `Could not find file: '${filePath}'`,
     }))
   }
 
