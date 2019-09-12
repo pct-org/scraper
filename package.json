@@ -37,7 +37,7 @@
     "test-mocha": "cross-env NODE_ENV=test nyc -r=lcov -r=text mocha --exit --recursive --timeout 10000"
   },
   "dependencies": {
-    "@pct-org/mongo-models": "^0.0.3",
+    "@pct-org/mongo-models": "^0.5.2",
     "@pct-org/pop-api": "0.6.3",
     "bytes": "^3.0.0",
     "dotenv": "8.1.0",
@@ -47,7 +47,7 @@
     "horriblesubs-api": "^1.0.8",
     "inquirer": "7.0.0",
     "kat-api-pt": "^4.0.0",
-    "mongoose": "^5.0.1",
+    "mongoose": "^5.7.0",
     "node-tvdb": "4.1.0",
     "nyaa-api-pt": "^2.0.0",
     "omdb-api-pt": "^2.0.1",

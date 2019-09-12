@@ -1,15 +1,11 @@
-// Import the necessary modules.
 // @flow
 import fs from 'fs'
 import { join } from 'path'
 import { ApiError, IController, PopApi, utils } from '@pct-org/pop-api'
 import type { $Request, $Response, NextFunction } from 'express'
-
 import { MovieModel } from '@pct-org/mongo-models/dist/movie/movie.model'
+import { ShowModel } from '@pct-org/mongo-models/dist/show/show.model'
 
-
-import ContentController from './ContentController'
-// import { Movie, Show } from '../models'
 import { name, repository, version } from '../../package.json'
 
 /**
@@ -55,11 +51,6 @@ export default class IndexController extends IController {
         'HEAD',
       ])
 
-      const query = ContentController.Query
-      const totalMovies = await MovieModel.count(query).exec()
-      const totalShows = 0// await Show.count(query).exec()
-
-      const status = await PopApi.scraper.getStatus()
       const updated = await PopApi.scraper.getUpdated()
 
       return res.json({
@@ -67,14 +58,13 @@ export default class IndexController extends IController {
         version,
         commit: commit.trim(),
         server: IndexController._Server,
-        status: status || 'idle',
-        totalMovies,
-        totalShows,
+        status: await PopApi.scraper.getStatus() || 'idle',
+        totalMovies: await MovieModel.countDocuments().exec(),
+        totalShows: await ShowModel.countDocuments().exec(),
         updated: updated > 0
           ? (new Date(updated * 1000)).toISOString().slice(0, 19).replace('T', ' ')
           : 'never',
-        uptime:
-          process.uptime() | 0, // eslint-disable-line no-bitwise
+        uptime: process.uptime() | 0, // eslint-disable-line no-bitwise
       })
     } catch (err) {
       return next(err)

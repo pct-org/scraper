@@ -4,7 +4,7 @@ import { BulkProvider } from '../providers'
 import { eztv } from '../apiModules'
 import { ShowHelper } from '../helpers'
 
-import { showSchema } from '@pct-org/mongo-models/dist/show/show.schema'
+import { ShowModel } from '@pct-org/mongo-models/dist/show/show.model'
 
 /**
  * The configuration for EZTV.
@@ -15,7 +15,7 @@ export const eztvConfig: Object = {
   api: eztv,
   contentType: BulkProvider.ContentTypes.Show,
   Helper: ShowHelper,
-  Model: showSchema,
+  Model: ShowHelper,
 }
 
 /**
