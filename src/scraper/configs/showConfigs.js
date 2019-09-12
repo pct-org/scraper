@@ -1,8 +1,4 @@
 // @flow
-import {
-  AnimeShow,
-  // Show
-} from '../../models'
 import { ShowProvider } from '../providers'
 import {
   // kat,
@@ -32,57 +28,6 @@ const regexps = [
     dateBased: false,
   },
 ]
-
-/**
- * The base configuration for Nyaa.
- * @type {Object}
- */
-const baseNyaaConfig: Object = {
-  api: nyaa,
-  contentType: ShowProvider.ContentTypes.Show,
-  Helper: ShowHelper,
-  Model: AnimeShow,
-  regexps,
-}
-
-/**
- * The configuration for Nyaa Commie.
- * @type {Object}
- */
-export const nyaaCommieConfig: Object = {
-  ...baseNyaaConfig,
-  name: 'Commie',
-  query: {
-    page: 1,
-    q: 'commie mkv',
-  },
-}
-
-/**
- * The configuration for Nyaa FFF.
- * @type {Object}
- */
-export const nyaaFffConfig: Object = {
-  ...baseNyaaConfig,
-  name: 'FFF',
-  query: {
-    page: 1,
-    q: 'fff mkv',
-  },
-}
-
-/**
- * The configuration for Nyaa GG.
- * @type {Object}
- */
-export const nyaaGgConfig: Object = {
-  ...baseNyaaConfig,
-  name: 'GG',
-  query: {
-    page: 1,
-    q: 'gg mkv',
-  },
-}
 
 // /**
 //  * The base configuration for KAT.
@@ -208,8 +153,4 @@ export const nyaaGgConfig: Object = {
  * Export the configs for the ShowProvider.
  * @type {Array<Object>}
  */
-export default [
-  nyaaCommieConfig,
-  nyaaFffConfig,
-  nyaaGgConfig,
-]
+export default []

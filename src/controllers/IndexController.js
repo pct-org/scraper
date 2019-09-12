@@ -5,8 +5,11 @@ import { join } from 'path'
 import { ApiError, IController, PopApi, utils } from '@pct-org/pop-api'
 import type { $Request, $Response, NextFunction } from 'express'
 
+import { MovieModel } from '@pct-org/mongo-models/dist/movie/movie.model'
+
+
 import ContentController from './ContentController'
-import { Movie, Show } from '../models'
+// import { Movie, Show } from '../models'
 import { name, repository, version } from '../../package.json'
 
 /**
@@ -53,8 +56,8 @@ export default class IndexController extends IController {
       ])
 
       const query = ContentController.Query
-      const totalMovies = await Movie.count(query).exec()
-      const totalShows = await Show.count(query).exec()
+      const totalMovies = await MovieModel.count(query).exec()
+      const totalShows = 0// await Show.count(query).exec()
 
       const status = await PopApi.scraper.getStatus()
       const updated = await PopApi.scraper.getUpdated()

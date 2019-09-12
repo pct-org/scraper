@@ -1,8 +1,9 @@
 // @flow
-import { Movie } from '../../models'
 import { MovieProvider } from '../providers'
 import { kat } from '../apiModules'
 import { MovieHelper } from '../helpers'
+
+import { movieSchema } from '@pct-org/mongo-models/dist/movie/movie.schema'
 
 /**
  * The configuration for KAT movies.
@@ -13,7 +14,7 @@ export const katMovieConfig: Object = {
   api: kat,
   contentType: MovieProvider.ContentTypes.Movie,
   Helper: MovieHelper,
-  Model: Movie,
+  Model: movieSchema,
   query: {
     category: 'movies_hd',
     query: 'x264 BlueRay',

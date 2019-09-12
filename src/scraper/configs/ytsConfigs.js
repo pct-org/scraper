@@ -1,8 +1,9 @@
 // @flow
-import { Movie } from '../../models'
 import { YtsProvider } from '../providers'
 import { yts } from '../apiModules'
 import { MovieHelper } from '../helpers'
+
+import { movieSchema } from '@pct-org/mongo-models/dist/movie/movie.schema'
 
 /**
  * The configuration for YTS.
@@ -13,7 +14,7 @@ export const ytsConfig: Object = {
   api: yts,
   contentType: YtsProvider.ContentTypes.Movie,
   Helper: MovieHelper,
-  Model: Movie,
+  Model: movieSchema,
   query: {
     page: 1,
     limit: 50,

@@ -127,8 +127,7 @@ export default class BaseProvider extends AbstractProvider {
       return this._getMovieContent(content)
     }
 
-    const err = new Error(`'${this.contentType}' is not a valid value for ContentTypes!`)
-    return Promise.reject(err)
+    return Promise.reject(new Error(`'${this.contentType}' is not a valid value for ContentTypes!`))
   }
 
   /**

@@ -4,7 +4,7 @@ import { ContentService } from '@pct-org/pop-api'
 import ContentController from './ContentController'
 import ExportController from './ExportController'
 import IndexController from './IndexController'
-import { Movie, Show } from '../models'
+// import { Movie, Show } from '../models'
 
 /**
  * Object used as a base projections for content.
@@ -86,24 +86,25 @@ export default [
     Controller: ExportController,
     args: {},
   },
-  {
-    Controller: ContentController,
-    args: {
-      basePath: 'movie',
-      service: new ContentService({
-        Model: Movie,
-        projection: movieProjection,
-        query,
-      }),
-    },
-  }, {
-    Controller: ContentController,
-    args: {
-      basePath: 'show',
-      service: new ContentService({
-        Model: Show,
-        projection: showProjection,
-        query,
-      }),
-    },
-  }]
+  // {
+  //   Controller: ContentController,
+  //   args: {
+  //     basePath: 'movie',
+  //     service: new ContentService({
+  //       Model: Movie,
+  //       projection: movieProjection,
+  //       query,
+  //     }),
+  //   },
+  // }, {
+  //   Controller: ContentController,
+  //   args: {
+  //     basePath: 'show',
+  //     service: new ContentService({
+  //       Model: Show,
+  //       projection: showProjection,
+  //       query,
+  //     }),
+  //   },
+  // }
+]

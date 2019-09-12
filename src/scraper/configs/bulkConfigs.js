@@ -1,8 +1,10 @@
 // @flow
-import { Show } from '../../models'
+// import { Show } from '../../models'
 import { BulkProvider } from '../providers'
 import { eztv } from '../apiModules'
 import { ShowHelper } from '../helpers'
+
+import { showSchema } from '@pct-org/mongo-models/dist/show/show.schema'
 
 /**
  * The configuration for EZTV.
@@ -13,7 +15,7 @@ export const eztvConfig: Object = {
   api: eztv,
   contentType: BulkProvider.ContentTypes.Show,
   Helper: ShowHelper,
-  Model: Show,
+  Model: showSchema,
 }
 
 /**

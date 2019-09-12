@@ -1,4 +1,3 @@
-// Import the necessary modules.
 // @flow
 import 'dotenv/config'
 import { isMaster } from 'cluster'
@@ -8,7 +7,7 @@ import { Cron, PopApiScraper } from 'pop-api-scraper'
 
 import controllers from './controllers'
 import providers from './scraper'
-import { Cli } from './middleware'
+// import { Cli } from './middleware'
 
 import { name, version } from '../package.json'
 

@@ -1,6 +1,4 @@
-// Import the necessary modules.
 // @flow
-import { ContentModel } from '../../models/content/ContentModel'
 
 /**
  * Interface for saving content.
@@ -20,7 +18,7 @@ export default class IHelper {
   getTraktInfo(
     traktSlug: string,
     imdbId?: string
-  ): Promise<ContentModel | Error> {
+  ): Promise<Error> {
     throw new Error('Using default method: \'getTraktInfo\'')
   }
 
