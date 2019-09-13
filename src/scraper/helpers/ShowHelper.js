@@ -1,19 +1,9 @@
-// Import the necessary modules.
 // @flow
-/* eslint-disable camelcase */
 import pMap from 'p-map'
+import type { Show, Season, Episode } from '@pct-org/mongo-models'
 
 import AbstractHelper from './AbstractHelper'
-import {
-  fanart,
-  tmdb,
-  trakt,
-  tvdb
-} from '../apiModules'
-import type {
-  AnimeShow,
-  Show
-} from '../../models'
+import { fanart, tmdb, trakt, tvdb } from '../apiModules'
 
 /**
  * Class for saving shows.
@@ -23,30 +13,38 @@ import type {
 export default class ShowHelper extends AbstractHelper {
 
   /**
-   * Update the number of seasons of a given show.
-   * @param {!AnimeShow|Show} show - The show to update the number of seasons.
-   * @returns {Promise<AnimeShow|Show>} - A newly updated show.
+   * Update the torrents for an existing episode.
+   *
+   * @param {Array} torrents - Array of new torrents
+   * @param {Array} foundTorrents - Array of existing torrents
+   * @returns {Array<Object>} - Array of the best torrents
+   * @private
    */
-  async _updateShowInDb(show: AnimeShow | Show): Promise<AnimeShow | Show> {
-    const saved = await this.Model.findOneAndUpdate({
-      _id: show.imdb_id
-    }, new this.Model(show), {
-      new: true,
-      upsert: true
+  _updateTorrents(
+    torrents: Array<Object>,
+    foundTorrents: Array<Object>,
+  ): Object {
+    let newTorrents = torrents
+
+    foundTorrents.forEach(torrent => {
+      const match = torrents.find(
+        t => t.quality === torrent.quality && t.language === torrent.language,
+      )
+
+      if (!match) {
+        newTorrents.push(torrent)
+
+      } else if (match.seeds > torrent.seeds) {
+        // Remove the lesser one
+        newTorrents = newTorrents.filter(
+          t => t.quality !== torrent.quality && t.language !== torrent.language,
+        )
+
+        newTorrents.push(match)
+      }
     })
 
-    const distinct = await this.Model.distinct('seasons', {
-      _id: saved.imdb_id
-    }).exec()
-
-    saved.num_seasons = distinct.length
-
-    return this.Model.findOneAndUpdate({
-      _id: saved.imdb_id
-    }, new this.Model(saved), {
-      new: true,
-      upsert: true
-    })
+    return newTorrents
   }
 
   /**
@@ -58,154 +56,172 @@ export default class ShowHelper extends AbstractHelper {
     return seasonsOrEpisodes.sort((a, b) => a.number - b.number)
   }
 
-  /**
-   * Update the torrents for an existing show.
-   * @param {!Object} matchingEpisode - The matching episode of new the show.
-   * @param {!Object} foundEpisode - The matching episode existing show.
-   * @param {!string} quality - The quality of the torrent.
-   * @returns {AnimeShow|Show} - A show with merged torrents.
-   */
-  _updateEpisode(
-    matchingEpisode: Object,
-    foundEpisode: Object,
-    quality: string
-  ): AnimeShow | Show {
+  async _updateShow(show: Show): Promise<Show> {
+    try {
+      // Create a copy
+      const s = Object.assign({}, show)
+      const found = await this.Model.Show.findOne({
+        _id: s.imdbId,
+      })
 
-    const foundTorrents = foundEpisode.torrents.find(
-      torrent => torrent.qualtity === quality
-    )
-    const matchingTorrents = matchingEpisode.torrents.find(
-      torrent => torrent.qualtity === quality
-    )
+      // We do not need to store the seasons here
+      delete s.seasons
 
-    if (foundTorrents && matchingTorrents) {
-      let update = false
+      if (found) {
+        logger.info(`${this.name}: '${found.title}' is an existing show.`)
 
-      if (
-        foundTorrents.seeds > matchingTorrents.seeds ||
-        foundTorrents.url === matchingTorrents.url
-      ) {
-        update = true
+        // Keep old attributes that could change
+        s.createdAt = found.createdAt
+        s.bookmarked = found.bookmarked
+        s.bookmarkedOn = found.bookmarkedOn
+
+        return await this.Model.Show.findOneAndUpdate({
+            _id: s.imdbId,
+          },
+          s,
+          {
+            upsert: true,
+            new: true,
+          },
+        )
       }
 
-      if (update) {
-        matchingEpisode.torrents = foundTorrents
-      }
-    } else if (foundTorrents && !matchingTorrents) {
-      matchingEpisode.torrents = foundTorrents
+      logger.info(`${this.name}: '${s.title}' is a new show!`)
+
+      return await new this.Model.Show(s).save()
+
+    } catch (err) {
+      logger.error(`_updateShow: ${err.path || err}`)
     }
-
-    return matchingEpisode
   }
 
-  /**
-   * Update a given show with its associated episodes.
-   * @param {!AnimeShow|Show} show - The show to update its episodes.
-   * @returns {Promise<AnimeShow|Show>} - A newly updated show.
-   */
-  async _updateShow(show: AnimeShow | Show): Promise<AnimeShow | Show> {
+  async _updateShowSeasons(show: Show): Promise<Show> {
     try {
-      const s = show
-      const found = await this.Model.findOne({
-        _id: s.imdb_id
+      const seasonsFound = await this.Model.Season.find({
+        showImdbId: show.imdbId,
       })
 
-      if (!found) {
-        logger.info(`${this.name}: '${s.title}' is a new show!`)
-        const newShow = await new this.Model(s).save()
+      await Promise.all(
+        show.seasons.map(async(season) => {
+          // Create a copy
+          const s = Object.assign({}, season)
+          const found = seasonsFound.find(sf => sf.number === season.number && sf._id === season._id)
 
-        return await this._updateShowInDb(newShow)
-      }
+          // We do not need to store the episodes here
+          delete s.episodes
 
-      logger.info(`${this.name}: '${found.title}' is an existing show.`)
+          if (found) {
+            // logger.info(`${this.name}: '${show.title}' update new season '${season.number}'`)
 
-      found.seasons.forEach(foundSeason => {
-        const matchingSeason = s.seasons.find(
-          season => season.number === foundSeason.number
-        )
+            // Keep old attributes that could change
+            s.createdAt = found.createdAt
 
-        if (!matchingSeason) {
-          s.seasons.push(foundSeason)
+            await this.Model.Season.findOneAndUpdate({
+                _id: season._id,
+              },
+              s,
+              {
+                upsert: true,
+                new: true,
+              },
+            )
+          } else {
+            // logger.info(`${this.name}: '${show.title}' add season '${season.number}'`)
 
-        } else {
-          s.seasons.map(season => {
-            if (season.number !== foundSeason.number) {
-              return season
-            }
+            await new this.Model.Season(s).save()
+          }
 
-            const episodes = []
-
-            foundSeason.episodes.forEach(e => {
-              let matchingEpisode = matchingSeason.episodes.find(
-                s => s.season === e.season && s.episode === e.episode
-              )
-
-              if (e.first_aired > s.latest_episode) {
-                s.latest_episode = e.first_aired
-              }
-
-              if (!matchingEpisode) {
-                episodes.push(e)
-
-              } else {
-                matchingEpisode = this._updateEpisode(matchingEpisode, e, '480p')
-                matchingEpisode = this._updateEpisode(matchingEpisode, e, '720p')
-
-                episodes.push(this._updateEpisode(matchingEpisode, e, '1080p'))
-              }
-            })
-
-            return {
-              ...season,
-              episodes: this.sortSeasonsOrEpisodes(episodes)
-            }
-          })
-        }
-      })
-
-      // Sort the seasons
-      s.seasons = this.sortSeasonsOrEpisodes(s.seasons)
-
-      return await this._updateShowInDb(s)
+          // Update all episodes of the season
+          return await this._updateShowEpisodes(show, season)
+        }),
+      )
     } catch (err) {
-      logger.error(`_updateShow: ${err.message || err}`)
+      logger.error(`_updateShowSeasons: ${err.path || err}`)
+    }
+  }
+
+  async _updateShowEpisodes(show: Show, season: Season): Promise<Show> {
+    try {
+      const episodesFound = await this.Model.Episode.find({
+        showImdbId: show.imdbId,
+        season: season.number,
+      })
+
+      await Promise.all(
+        season.episodes.map(async(episode) => {
+          const e = episode
+          const found = episodesFound.find(se => se.number === episode.number && se._id === episode._id)
+
+          if (found) {
+            // logger.info(`${this.name}: '${show.title}' update episode '${e.number}' of season '${season.number}'`)
+
+            // Keep old attributes that could change
+            e.createdAt = found.createdAt
+            e.watched = found.watched
+
+            if (found.torrents && found.torrents.length > 0) {
+              e.torrents = this._updateTorrents(e.torrents, found.torrents)
+            }
+
+            await this.Model.Episode.findOneAndUpdate({
+                _id: episode._id,
+              },
+              e,
+              {
+                upsert: true,
+                new: true,
+              },
+            )
+
+          } else {
+            // logger.info(`${this.name}: '${show.title}' add episode '${e.number}' of season '${season.number}'`)
+
+            await new this.Model.Episode(e).save()
+          }
+        }),
+      )
+    } catch (err) {
+      logger.error(`_updateShowEpisodes: ${err.path || err}`)
     }
   }
 
   /**
    * Adds one season to a show.
-   * @param {!AnimeShow|Show} show - The show to add the torrents to.
+   *
+   * @param {!Show} show - The show to add the torrents to.
    * @param {!Object} episodes - The episodes containing the torrents.
    * @param {!number} season - The season number.
-   * @returns {Promise<AnimeShow | Show>} - A newly updated show.
+   * @returns {Promise<Show>} - A newly updated show.
    */
-  _addSeason(
-    show: AnimeShow | Show,
-    episodes: Object,
-    season: number
-  ): Promise<AnimeShow | Show> {
+  _addSeason(show: Show, episodes: Object, season: number): Promise<Show> {
     return tmdb.tv.season.details({
-      tv_id: show.tmdb_id,
-      season
+      tv_id: show.tmdbId,
+      season,
     }).then(s => {
       const updatedEpisodes = []
 
       const baseUrl = 'https://image.tmdb.org/t/p'
 
       s.episodes.map(e => {
+        const number = parseInt(e.episode_number, 10)
+
         const episode = {
-          tmdb_id: parseInt(e.id, 10),
-          number: parseInt(e.episode_number, 10),
+          _id: `${show.imdbId}-${season}-${number}`,
+          showImdbId: show.imdbId,
+          tmdbId: parseInt(e.id, 10),
+          number: number,
+          season,
           title: e.name,
           synopsis: e.overview,
-          first_aired: e.air_date ? new Date(e.air_date).getTime() : 0,
+          firstAired: e.air_date ? new Date(e.air_date).getTime() : 0,
           images: {
             full: !e.still_path ? null : `${baseUrl}/original${e.still_path}`,
             high: !e.still_path ? null : `${baseUrl}/w1280${e.still_path}`,
             medium: !e.still_path ? null : `${baseUrl}/w780${e.still_path}`,
-            thumb: !e.still_path ? null : `${baseUrl}/w342${e.still_path}`
+            thumb: !e.still_path ? null : `${baseUrl}/w342${e.still_path}`,
           },
-          torrents: this._formatTorrents(episodes[season][e.episode_number])
+          type: 'episode',
+          torrents: this._formatTorrents(episodes[season][e.episode_number]),
         }
 
         updatedEpisodes.push(episode)
@@ -213,7 +229,7 @@ export default class ShowHelper extends AbstractHelper {
 
       // Check if the season has any torrents
       const torrents = updatedEpisodes.filter(
-        episode => episode.torrents.length > 0
+        episode => episode.torrents.length > 0,
       )
 
       if (torrents.length === 0) {
@@ -222,18 +238,21 @@ export default class ShowHelper extends AbstractHelper {
       }
 
       show.seasons.push({
-        tmdb_id: s.id,
+        _id: `${show.imdbId}-${s.season_number}`,
+        showImdbId: show.imdbId,
+        tmdbId: s.id,
         number: s.season_number,
         title: s.name,
         synopsis: s.overview,
-        first_aired: s.air_date ? new Date(s.air_date).getTime() : 0,
+        firstAired: s.air_date ? new Date(s.air_date).getTime() : 0,
         images: {
           full: !s.poster_path ? null : `${baseUrl}/original${s.poster_path}`,
           high: !s.poster_path ? null : `${baseUrl}/w1280${s.poster_path}`,
           medium: !s.poster_path ? null : `${baseUrl}/w780${s.poster_path}`,
-          thumb: !s.poster_path ? null : `${baseUrl}/w342${s.poster_path}`
+          thumb: !s.poster_path ? null : `${baseUrl}/w342${s.poster_path}`,
         },
-        episodes: this.sortSeasonsOrEpisodes(updatedEpisodes)
+        type: 'season',
+        episodes: this.sortSeasonsOrEpisodes(updatedEpisodes),
       })
 
       show.seasons = this.sortSeasonsOrEpisodes(show.seasons)
@@ -252,39 +271,40 @@ export default class ShowHelper extends AbstractHelper {
   /**
    * Adds one season to a show but is only used when the season
    * could not be found by TheMovieDB
-   * @param {!AnimeShow|Show} show - The show to add the torrents to.
+   *
+   * @param {!Show} show - The show to add the torrents to.
    * @param {!Object} episodes - The episodes containing the torrents.
    * @param {!number} season - The season number.
-   * @returns {Promise<AnimeShow | Show>} - A newly updated show.
+   * @returns {Promise<Show>} - A newly updated show.
    * @private
    */
-  _addTraktSeason(
-    show: AnimeShow | Show,
-    episodes: Object,
-    season: number
-  ): Promise<AnimeShow | Show> {
+  _addTraktSeason(show: Show, episodes: Object, season: number): Promise<Show> {
     return trakt.seasons.season({
       season,
-      id: show.imdb_id,
-      extended: 'full'
-    }).then(s => {
+      id: show.imdbId,
+      extended: 'full',
+    }).then(season => {
       const updatedEpisodes = []
       let firstEpisode = null
 
       s.map((e, index) => {
+        const number = parseInt(e.number, 10)
         const episode = {
-          tmdb_id: null,
-          number: parseInt(e.number, 10),
+          _id: `${show.imdbId}-${season}-${number}`,
+          showImdbId: show.imdbId,
+          tmdbId: null,
+          number,
           title: e.title,
           synopsis: e.overview,
-          first_aired: e.first_aired ? new Date(e.first_aired).getTime() : 0,
+          firstAired: e.first_aired ? new Date(e.first_aired).getTime() : 0,
           images: {
             full: null,
             high: null,
             medium: null,
-            thumb: null
+            thumb: null,
           },
-          torrents: this._formatTorrents(episodes[season][e.number])
+          type: 'episode',
+          torrents: this._formatTorrents(episodes[season][e.number]),
         }
 
         if (index === 0) {
@@ -296,7 +316,7 @@ export default class ShowHelper extends AbstractHelper {
 
       // Check if the season has any torrents
       const torrents = updatedEpisodes.filter(
-        episode => episode.torrents.length > 0
+        episode => episode.torrents.length > 0,
       )
 
       if (torrents.length === 0) {
@@ -305,18 +325,21 @@ export default class ShowHelper extends AbstractHelper {
       }
 
       show.seasons.push({
-        tmdb_id: s.id,
+        _id: `${show.imdbId}-${season}`,
+        showImdbId: show.imdbId,
+        tmdbId: s.id,
         number: season,
         title: `Season ${season}`,
+        type: 'season',
         synopsis: null,
-        first_aired: firstEpisode ? firstEpisode.first_aired : 0,
+        firstAired: firstEpisode ? firstEpisode.first_aired : 0,
         images: {
           full: null,
           high: null,
           medium: null,
-          thumb: null
+          thumb: null,
         },
-        episodes: this.sortSeasonsOrEpisodes(updatedEpisodes)
+        episodes: this.sortSeasonsOrEpisodes(updatedEpisodes),
       })
 
       show.seasons = this.sortSeasonsOrEpisodes(show.seasons)
@@ -325,7 +348,7 @@ export default class ShowHelper extends AbstractHelper {
 
     }).catch(err => {
       if (err.statusCode === 404) {
-        return logger.error(`_addTraktSeason: Trakt and TheMovDB could not find any data for slug '${show.slug}' and season '${season}' with imdb id: '${show.imdb_id}'`)
+        return logger.error(`_addTraktSeason: Trakt and TheMovDB could not find any data for slug '${show.slug}' and season '${season}' with imdb id: '${show.imdbId}'`)
       }
 
       logger.error(`_addTraktSeason: ${err.path || err}`)
@@ -334,38 +357,37 @@ export default class ShowHelper extends AbstractHelper {
 
   /**
    * Adds episodes to a show.
-   * @param {!AnimeShow|Show} show - The show to add the torrents to.
+   *
+   * @param {!Show} show - The show to add the torrents to.
    * @param {!Object} episodes - The episodes containing the torrents.
    * @returns {Show} - A show with updated torrents.
    */
-  addEpisodes(
-    show: AnimeShow | Show,
-    episodes: Object
-  ): Show {
+  addEpisodes(show: Show, episodes: Object): Show {
     return pMap(Object.keys(episodes), season => {
       return this._addSeason(show, episodes, season)
 
     }).then(() => this._updateShow(show))
+      .then(() => this._updateShowSeasons(show))
       .catch(err => logger.error(`addEpisodes: ${err.message || err}`))
   }
 
   /**
    * Get TV show images from TMDB.
-   * @param {!AnimeShow|Show} show - The show to fetch images for
-   * @returns {!AnimeShow|Show} - Show with banner, fanart and poster images.
+   * @param {!Show} show - The show to fetch images for
+   * @returns {!Show} - Show with banner, fanart and poster images.
    */
-  _addTmdbImages(show: Show | AnimeShow): Promise<Show | AnimeShow> {
+  _addTmdbImages(show: Show): Promise<Show> {
     return tmdb.tv.images({
-      tv_id: show.tmdb_id
+      tv_id: show.tmdbId,
     }).then(i => {
-      const baseUrl = 'http://image.tmdb.org/t/p/w500'
+      const baseUrl = 'https://image.tmdb.org/t/p/w500'
 
       const tmdbPoster = i.posters.filter(
-        poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null
+        poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null,
       ).shift()
 
       const tmdbBackdrop = i.backdrops.filter(
-        backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null
+        backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null,
       ).shift()
 
       const { Holder } = AbstractHelper
@@ -383,16 +405,16 @@ export default class ShowHelper extends AbstractHelper {
             ? `${baseUrl}${tmdbPoster.file_path}`
             : Holder,
 
-          logo: Holder
-        }
+          logo: Holder,
+        },
       })
     }).catch(err => {
       // If we have tmdb_id then the check images failed
-      if (err.tmdb_id) {
+      if (err.tmdbId) {
         return Promise.reject(err)
 
       } else if (err.statusCode && err.statusCode === 404) {
-        logger.warn(`_addTmdbImages: can't find images for slug '${show.slug}' with tmdb id '${show.tmdb_id}'`)
+        logger.warn(`_addTmdbImages: can't find images for slug '${show.slug}' with tmdb id '${show.tmdbId}'`)
 
       } else {
         logger.error(`_addTmdbImages: ${err.message || err}`)
@@ -405,12 +427,12 @@ export default class ShowHelper extends AbstractHelper {
 
   /**
    * Get TV show images from TVDB.
-   * @param {!AnimeShow|Show} show - The show to fetch images for
-   * @returns {!AnimeShow|Show} - Show with banner, fanart and poster images.
+   * @param {!Show} show - The show to fetch images for
+   * @returns {!Show} - Show with banner, fanart and poster images.
    */
-  _addTvdbImages(show: Show | AnimeShow): Promise<Show | AnimeShow> {
-    return tvdb.getSeriesById(show.tvdb_id).then(i => {
-      const baseUrl = 'http://thetvdb.com/banners/'
+  _addTvdbImages(show): Promise<Show> {
+    return tvdb.getSeriesById(show.tvdbId).then(i => {
+      const baseUrl = 'https://thetvdb.com/banners/'
 
       return this.checkImages({
         ...show,
@@ -427,16 +449,16 @@ export default class ShowHelper extends AbstractHelper {
             ? `${baseUrl}${i.poster}`
             : show.images.poster,
 
-          logo: show.images.logo
-        }
+          logo: show.images.logo,
+        },
       })
     }).catch(err => {
       // If we have tvdb_id then the check images failed
-      if (err.tvdb_id) {
+      if (err.tvdbId) {
         return Promise.reject(err)
 
       } else if (err.statusCode && err.statusCode === 404) {
-        logger.warn(`_addTvdbImages: can't find images for slug '${show.slug}' with tvdb id '${show.tvdb_id}'`)
+        logger.warn(`_addTvdbImages: can't find images for slug '${show.slug}' with tvdb id '${show.tvdbId}'`)
 
       } else {
         logger.error(`_addTvdbImages: ${err.message || err}`)
@@ -449,11 +471,11 @@ export default class ShowHelper extends AbstractHelper {
 
   /**
    * Get TV show images from Fanart.
-   * @param {!AnimeShow|Show} show - The show to fetch images for
-   * @returns {!AnimeShow|Show} - Show with banner, fanart and poster images.
+   * @param {!Show} show - The show to fetch images for
+   * @returns {!Show} - Show with banner, fanart and poster images.
    */
-  _addFanartImages(show: Show | AnimeShow): Promise<Show | AnimeShow> {
-    return fanart.getShowImages(show.tvdb_id).then(i => {
+  _addFanartImages(show: Show): Promise<Show> {
+    return fanart.getShowImages(show.tvdbId).then(i => {
       return this.checkImages({
         ...show,
         images: {
@@ -475,16 +497,16 @@ export default class ShowHelper extends AbstractHelper {
             ? i.clearlogo[0].url
             : !show.images.logo && i.hdtvlogo
               ? i.hdtvlogo[0].url
-              : show.images.logo
-        }
+              : show.images.logo,
+        },
       })
     }).catch(err => {
       // If we have tvdb_id then the check images failed
-      if (err.tvdb_id) {
+      if (err.tvdbId) {
         return Promise.reject(err)
 
       } else if (err.statusCode && err.statusCode === 404) {
-        logger.warn(`_addFanartImages: can't find images for slug '${show.slug}' with tvdb id '${show.tvdb_id}'`)
+        logger.warn(`_addFanartImages: can't find images for slug '${show.slug}' with tvdb id '${show.tvdbId}'`)
 
       } else {
         logger.error(`_addFanartImages: ${err.message || err}`)
@@ -525,7 +547,7 @@ export default class ShowHelper extends AbstractHelper {
       try {
         traktShow = await trakt.shows.summary({
           id: traktSlug,
-          extended: 'full'
+          extended: 'full',
         })
       } catch (err) {
         // If it's a 404 and we have don't have the imdbId then throw error
@@ -538,7 +560,7 @@ export default class ShowHelper extends AbstractHelper {
         idUsed = imdbId
         traktShow = await trakt.shows.summary({
           id: imdbId,
-          extended: 'full'
+          extended: 'full',
         })
       }
 
@@ -547,7 +569,7 @@ export default class ShowHelper extends AbstractHelper {
       }
 
       const traktWatchers = await trakt.shows.watching({
-        id: idUsed
+        id: idUsed,
       })
 
       const { imdb, tmdb, tvdb } = traktShow.ids
@@ -556,10 +578,11 @@ export default class ShowHelper extends AbstractHelper {
         const ratingPercentage = Math.round(traktShow.rating * 10)
 
         return this.addImages({
+          _id: imdb,
           slug: traktShow.ids.slug,
-          imdb_id: imdb,
-          tmdb_id: tmdb,
-          tvdb_id: tvdb,
+          imdbId: imdb,
+          tmdbId: tmdb,
+          tvdbId: tvdb,
           title: traktShow.title,
           released: new Date(traktShow.first_aired).getTime(),
           certification: traktShow.certification,
@@ -570,24 +593,26 @@ export default class ShowHelper extends AbstractHelper {
             stars: parseFloat(((ratingPercentage / 100) * 5).toFixed('2')),
             votes: traktShow.votes,
             watching: traktWatchers ? traktWatchers.length : 0,
-            percentage: ratingPercentage
+            percentage: ratingPercentage,
           },
           images: {
             banner: null,
             backdrop: null,
-            poster: null
+            poster: null,
           },
+          type: 'show',
           genres: traktShow.genres ? traktShow.genres : ['unknown'],
-          air_info: {
+          airInfo: {
             network: traktShow.network,
             country: traktShow.country,
             day: traktShow.airs.day,
             time: traktShow.airs.time,
-            status: traktShow.status
+            status: traktShow.status,
           },
-          last_updated: Number(new Date()),
+          createdAt: Number(new Date()),
+          updatedAt: Number(new Date()),
           seasons: [],
-          num_seasons: 0
+          numSeasons: 0,
         })
       }
     } catch (err) {

@@ -1,4 +1,3 @@
-// Import the necessary modules.
 // @flow
 import { bulkConfigs, ytsConfigs } from './configs'
 import { BulkProvider, YtsProvider } from './providers'
@@ -15,29 +14,46 @@ const maxWebRequests: number = 2
  */
 export default [
   // {
-  //   Provider: BulkProvider,
+  //   Provider: YtsProvider,
   //   args: {
   //     maxWebRequests,
-  //     configs: bulkConfigs,
+  //     configs: ytsConfigs,
   //   },
   // },
-  /* {
-   Provider: MovieProvider,
-   args: {
-   maxWebRequests,
-   configs: movieConfigs
-   }
-   }, {
-   Provider: ShowProvider,
-   args: {
-   maxWebRequests,
-   configs: showConfigs
-   }
-   }, */{
-    Provider: YtsProvider,
+  {
+    Provider: BulkProvider,
     args: {
       maxWebRequests,
-      configs: ytsConfigs,
+      configs: bulkConfigs,
     },
   },
 ]
+
+// export default [
+//   // {
+//   //   Provider: BulkProvider,
+//   //   args: {
+//   //     maxWebRequests,
+//   //     configs: bulkConfigs,
+//   //   },
+//   // },
+//   /* {
+//    Provider: MovieProvider,
+//    args: {
+//    maxWebRequests,
+//    configs: movieConfigs
+//    }
+//    }, {
+//    Provider: ShowProvider,
+//    args: {
+//    maxWebRequests,
+//    configs: showConfigs
+//    }
+//    }, */{
+//     Provider: YtsProvider,
+//     args: {
+//       maxWebRequests,
+//       configs: ytsConfigs,
+//     },
+//   },
+// ]

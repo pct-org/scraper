@@ -1,18 +1,12 @@
-// Import the necessary modules.
 // @flow
 import pMap from 'p-map'
 import pTimes from 'p-times'
-import { AbstractProvider } from 'pop-api-scraper'
+import { AbstractProvider } from '@pct-org/pop-api-scraper'
 
-import type {
-  MovieHelper,
-  ShowHelper
-} from '../helpers'
+import type { MovieHelper, ShowHelper } from '../helpers'
 
 /**
  * Class for scraping content from various sources.
- * @implements {AbstractProvider}
- * @type {BaseProvider}
  */
 export default class BaseProvider extends AbstractProvider {
 
@@ -22,7 +16,7 @@ export default class BaseProvider extends AbstractProvider {
    */
   static ContentTypes: Object = {
     Movie: 'movie',
-    Show: 'show'
+    Show: 'show',
   }
 
   /**
@@ -35,7 +29,7 @@ export default class BaseProvider extends AbstractProvider {
    * The name of the torrent provider.
    * @type {string}
    */
-  name: string
+  // name: string
 
   /**
    * The helper class for adding movies.
@@ -53,7 +47,7 @@ export default class BaseProvider extends AbstractProvider {
    * The max allowed concurrent web requests.
    * @type {number}
    */
-  maxWebRequests: number
+  // maxWebRequests: number
 
   /**
    * The query object for the api.
@@ -79,7 +73,7 @@ export default class BaseProvider extends AbstractProvider {
 
     if (!episodes || episodes.length === 0) {
       return logger.warn(
-        `${this.name}: '${slug}' has no torrents`
+        `${this.name}: '${slug}' has no torrents`,
       )
     }
 
@@ -88,7 +82,7 @@ export default class BaseProvider extends AbstractProvider {
     }
 
     return this.helper.getTraktInfo(slug, imdb).then(res => {
-      if (res && res.imdb_id) {
+      if (res && res.imdbId) {
         return this.helper.addEpisodes(res, episodes, slug)
       }
     })
@@ -105,7 +99,7 @@ export default class BaseProvider extends AbstractProvider {
     const { slug, torrents } = content
 
     return this.helper.getTraktInfo(slug).then(res => {
-      if (res && res.imdb_id) {
+      if (res && res.imdbId) {
         return this.helper.addTorrents(res, torrents)
       }
     })
@@ -154,20 +148,20 @@ export default class BaseProvider extends AbstractProvider {
    * @param {!Object} options - The options to get content info from a torrent.
    * @param {!Object} options.torrent - A torrent object to extract content
    * information from.
-   * @param {!string} [optiosn.lang=en] - The language of the torrent.
+   * @param {!string} [options.lang=en] - The language of the torrent.
    * @returns {Object|undefined} - Information about the content from the
    * torrent.
    */
   getContentData({ torrent, lang = 'en' }: Object): Object | void {
     const regex = this.regexps.find(
-      r => r.regex.test(torrent.title) || r.regex.test(torrent.name)
+      r => r.regex.test(torrent.title) || r.regex.test(torrent.name),
     )
 
     if (regex) {
       return this.extractContent({
         torrent,
         regex,
-        lang
+        lang,
       })
     }
 
@@ -188,7 +182,7 @@ export default class BaseProvider extends AbstractProvider {
    */
   getAllContent({
     torrents,
-    lang = 'en'
+    lang = 'en',
   }: Object): Promise<Array<Object>> {
     throw new Error('Using default method: \'getAllContent\'')
   }
@@ -205,7 +199,9 @@ export default class BaseProvider extends AbstractProvider {
       this.query.page = page + 1
 
       logger.info(`${this.name}: Started searching ${this.name} on page ${page + 1} out of ${totalPages}`)
+
       const res = await this.api.search(this.query)
+
       const data = res.results
         ? res.results // Kat & ET
         : res.data
@@ -215,8 +211,9 @@ export default class BaseProvider extends AbstractProvider {
             : []
 
       torrents = torrents.concat(data)
+
     }, {
-      concurrency: 1
+      concurrency: 1,
     }).then(() => {
       logger.info(`${this.name}: Found ${torrents.length} torrents.`)
 
@@ -254,7 +251,7 @@ export default class BaseProvider extends AbstractProvider {
    * the database.
    * @param {?Object} config.query - The query to get the content with for the
    * api.
-   * @param {?Array<Ojbect>} config.regexps - The regular expressions used to
+   * @param {?Array<object>} config.regexps - The regular expressions used to
    * extract information from a torrent.
    * @returns {undefined}
    */
@@ -265,14 +262,14 @@ export default class BaseProvider extends AbstractProvider {
     Model,
     Helper,
     query,
-    regexps
+    regexps,
   }: Object): void {
     this.name = name
     this.api = api
     this.contentType = contentType
     this.helper = new Helper({
       Model,
-      name
+      name,
     })
     this.query = query
     this.regexps = regexps
@@ -303,15 +300,16 @@ export default class BaseProvider extends AbstractProvider {
     Model,
     Helper,
     query,
-    regexps
+    regexps,
   }: Object): Promise<Array<Object> | void> {
     try {
       this.setConfig({ name, api, contentType, Model, Helper, query, regexps })
 
-      const totalPages = await this.getTotalPages()
+      const totalPages = 10 // await this.getTotalPages()
+
       if (!totalPages) {
         return logger.error(
-          `${this.name}: totalPages returned: '${totalPages}'`
+          `${this.name}: totalPages returned: '${totalPages}'`,
         )
       }
 
@@ -322,18 +320,19 @@ export default class BaseProvider extends AbstractProvider {
       const { language } = this.query
       const allContent = await this.getAllContent({
         torrents,
-        language
+        language,
       })
 
       logger.info(`${this.name}: Total content ${allContent.length}`)
 
+      console.log('maxWebRequests', this.maxWebRequests)
       return await pMap(
         allContent,
         content => this.getContent(content)
           .catch(err => logger.error(`BaseProvider.scrapeConfig: ${err.message || err}`)),
         {
-          concurrency: this.maxWebRequests
-        }
+          concurrency: 1, // this.maxWebRequests,
+        },
       )
     } catch (err) {
       logger.error(`Catch BaseProvider.scrapeConfig: ${err.message || err}`)

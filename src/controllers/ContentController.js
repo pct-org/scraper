@@ -12,17 +12,17 @@ import { BaseContentController, type ContentService } from '@pct-org/pop-api'
  */
 export default class ContentController extends BaseContentController {
 
-  /**
-   * The base path for the routes.
-   * @type {string}
-   */
-  basePath: string
-
-  /**
-   * The service of the content controller.
-   * @type {ContentService}
-   */
-  service: ContentService
+  // /**
+  //  * The base path for the routes.
+  //  * @type {string}
+  //  */
+  // basePath: string
+  //
+  // /**
+  //  * The service of the content controller.
+  //  * @type {ContentService}
+  //  */
+  // service: ContentService
 
   /**
    * Register the default methods to the default routes.

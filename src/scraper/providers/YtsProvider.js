@@ -1,11 +1,8 @@
-// Import the necessary modules.
 // @flow
 import MovieProvider from './MovieProvider'
 
 /**
  * Class for scraping content from YTS.ag.
- * @extends {MovieProvider}
- * @type {YtsProvider}
  */
 export default class YtsProvider extends MovieProvider {
 
@@ -26,21 +23,20 @@ export default class YtsProvider extends MovieProvider {
       slug: torrent.imdb_code,
       slugYear: torrent.imdb_code,
       year: torrent.year,
-      torrents: []
+      torrents: [],
     }
 
     torrent.torrents.map(t => {
-      // eslint-disable-next-line camelcase
-      const { hash, peers, quality, seeds, size_bytes } = t
+      const { hash, peers, quality, seeds, size_bytes: sizeBytes } = t
 
       const torrentObj = {
         quality,
         provider: this.name,
         language: lang,
-        size: size_bytes,
+        size: sizeBytes,
         seeds: seeds || 0,
         peers: peers || 0,
-        url: `magnet:?xt=urn:btih:${hash}&tr=udp://glotorrents.pw:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://torrent.gresille.org:80/announce&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://tracker.internetwarriors.net:1337`
+        url: `magnet:?xt=urn:btih:${hash}&tr=udp://glotorrents.pw:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://torrent.gresille.org:80/announce&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://tracker.internetwarriors.net:1337`,
       }
 
       return movie.torrents.push(torrentObj)
@@ -56,7 +52,7 @@ export default class YtsProvider extends MovieProvider {
    * @param {!Object} options - The options to get content info from a torrent.
    * @param {!Object} options.torrent - A torrent object to extract content
    * information from.
-   * @param {!string} [optiosn.lang=en] - The language of the torrent.
+   * @param {!string} [options.lang=en] - The language of the torrent.
    * @returns {Object|undefined} - Information about the content from the
    * torrent.
    */
@@ -68,7 +64,7 @@ export default class YtsProvider extends MovieProvider {
     ) {
       return this.extractContent({
         torrent,
-        lang
+        lang,
       })
     }
 

@@ -1,16 +1,8 @@
-// Import the necessary modules.
 // @flow
+import type { Movie } from '@pct-org/mongo-models'
+
 import AbstractHelper from './AbstractHelper'
-import {
-  fanart,
-  tmdb,
-  trakt,
-  omdb
-} from '../apiModules'
-import type {
-  AnimeMovie,
-  Movie
-} from '../../models'
+import { fanart, tmdb, trakt, omdb } from '../apiModules'
 
 /**
  * Class for saving movies.
@@ -29,13 +21,13 @@ export default class MovieHelper extends AbstractHelper {
    */
   _updateTorrents(
     torrents: Array<Object>,
-    foundTorrents: Array<Object>
+    foundTorrents: Array<Object>,
   ): Object {
     let newTorrents = torrents
 
     foundTorrents.forEach(torrent => {
       const match = torrents.find(
-        t => t.quality === torrent.quality && t.language === torrent.language
+        t => t.quality === torrent.quality && t.language === torrent.language,
       )
 
       if (!match) {
@@ -44,7 +36,7 @@ export default class MovieHelper extends AbstractHelper {
       } else if (match.seeds > torrent.seeds) {
         // Remove the lesser one
         newTorrents = newTorrents.filter(
-          t => t.quality !== torrent.quality && t.language !== torrent.language
+          t => t.quality !== torrent.quality && t.language !== torrent.language,
         )
 
         newTorrents.push(match)
@@ -56,14 +48,14 @@ export default class MovieHelper extends AbstractHelper {
 
   /**
    * Update a given movie.
-   * @param {!AnimeMovie|Movie} movie - The movie to update its torrent.
-   * @returns {AnimeMovie|Movie} - A newly updated movie.
+   * @param {!Movie} movie - The movie to update its torrent.
+   * @returns {Movie} - A newly updated movie.
    */
-  async _updateMovieInDb(movie: AnimeMovie | Movie): AnimeMovie | Movie {
+  async _updateMovieInDb(movie: Movie): Movie {
     try {
       const m = movie
       const found = await this.Model.findOne({
-        _id: m.imdb_id
+        _id: m.imdbId,
       })
 
       if (found) {
@@ -73,11 +65,17 @@ export default class MovieHelper extends AbstractHelper {
           m.torrents = this._updateTorrents(m.torrents, found.torrents)
         }
 
+        // Keep old attributes that could change
+        m.createdAt = found.createdAt
+        m.bookmarked = found.bookmarked
+        m.bookmarkedOn = found.bookmarkedOn
+        m.watched = found.watched
+
         return await this.Model.findOneAndUpdate({
-          _id: m.imdb_id
+          _id: m.imdbId,
         }, m, {
           upsert: true,
-          new: true
+          new: true,
         })
       }
 
@@ -92,14 +90,14 @@ export default class MovieHelper extends AbstractHelper {
 
   /**
    * Adds torrents to a movie.
-   * @param {!AnimeMovie|Movie} movie - The movie to add the torrents to.
+   * @param {!Movie} movie - The movie to add the torrents to.
    * @param {!Object} torrents - The torrents to add to the movie.
    * @returns {Promise<AnimeMovie|Movie>} - A movie with torrents attached.
    */
   addTorrents(
-    movie: AnimeMovie | Movie,
-    torrents: Object
-  ): Promise<AnimeMovie | Movie> {
+    movie: Movie,
+    torrents: Object,
+  ): Promise<Movie> {
 
     movie.torrents = torrents
 
@@ -108,21 +106,21 @@ export default class MovieHelper extends AbstractHelper {
 
   /**
    * Get movie images from TMDB.
-   * @param {!AnimeMovie|Movie} movie - The movie you want the images for
-   * @returns {Promise<AnimeMovie|Movie>} - A movie with torrents attached.
+   * @param {!Movie} movie - The movie you want the images for
+   * @returns {Promise<Movie>} - A movie with torrents attached.
    */
-  _addTmdbImages(movie: Movie | AnimeMovie): Promise<Movie | AnimeMovie> {
+  _addTmdbImages(movie: Movie): Promise<Movie> {
     return tmdb.movie.images({
-      movie_id: movie.tmdb_id
+      movie_id: movie.tmdbId,
     }).then(i => {
-      const baseUrl = 'http://image.tmdb.org/t/p/w500'
+      const baseUrl = 'https://image.tmdb.org/t/p/w500'
 
       const tmdbPoster = i.posters.filter(
-        poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null
+        poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null,
       ).shift()
 
       const tmdbBackdrop = i.backdrops.filter(
-        backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null
+        backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null,
       ).shift()
 
       const { Holder } = AbstractHelper
@@ -131,15 +129,19 @@ export default class MovieHelper extends AbstractHelper {
         ...movie,
         images: {
           banner: Holder,
-          backdrop: tmdbBackdrop ? `${baseUrl}${tmdbBackdrop.file_path}` : Holder,
-          poster: tmdbPoster ? `${baseUrl}${tmdbPoster.file_path}` : Holder,
-          logo: Holder
-        }
+          backdrop: tmdbBackdrop
+            ? `${baseUrl}${tmdbBackdrop.file_path}`
+            : Holder,
+          poster: tmdbPoster
+            ? `${baseUrl}${tmdbPoster.file_path}`
+            : Holder,
+          logo: Holder,
+        },
       })
 
     }).catch(err => {
       // If we have tmdb_id then the check images failed
-      if (err.tmdb_id) {
+      if (err.tmdbId) {
         return Promise.reject(err)
 
       } else if (err.statusCode && err.statusCode === 404) {
@@ -156,10 +158,10 @@ export default class MovieHelper extends AbstractHelper {
 
   /**
    * Get movie images from OMDB.
-   * @param {!AnimeMovie|Movie} movie - The movie you want the images for
-   * @returns {Promise<AnimeMovie|Movie>} - A movie with torrents attached.
+   * @param {!Movie} movie - The movie you want the images for
+   * @returns {Promise<Movie>} - A movie with torrents attached.
    */
-  _addOmdbImages(movie: Movie | AnimeMovie): Promise<Movie | AnimeMovie> {
+  _addOmdbImages(movie: Movie): Promise<Movie> {
     // TODO:: Check if rate limit is hit, if so then skip this one
 
     // Check if we already have the images omdb can retrieve if so throw catch
@@ -168,8 +170,8 @@ export default class MovieHelper extends AbstractHelper {
     }
 
     return omdb.byId({
-      imdb: movie.imdb_id,
-      type: 'movie'
+      imdb: movie.imdbId,
+      type: 'movie',
     }).then(i => {
       return this.checkImages({
         ...movie,
@@ -182,13 +184,13 @@ export default class MovieHelper extends AbstractHelper {
             ? i.Poster
             : movie.images.poster,
 
-          logo: movie.images.logo
-        }
+          logo: movie.images.logo,
+        },
       })
 
     }).catch(err => {
       // If we have imdb_id then the check images failed
-      if (err.imdb_id) {
+      if (err.imdbId) {
         return Promise.reject(err)
 
       } else if (err.statusCode && err.statusCode === 404) {
@@ -208,10 +210,10 @@ export default class MovieHelper extends AbstractHelper {
 
   /**
    * Get movie images from Fanart.
-   * @param {!AnimeMovie|Movie} movie - The movie you want the images for
-   * @returns {Promise<AnimeMovie|Movie>} - A movie with torrents attached.
+   * @param {!Movie} movie - The movie you want the images for
+   * @returns {Promise<Movie>} - A movie with torrents attached.
    */
-  _addFanartImages(movie: Movie | AnimeMovie): Promise<Movie | AnimeMovie> {
+  _addFanartImages(movie: Movie): Promise<Movie> {
     return fanart.getMovieImages(movie.tmdb_id).then(i => {
       return this.checkImages({
         ...movie,
@@ -234,8 +236,8 @@ export default class MovieHelper extends AbstractHelper {
             ? i.movielogo[0].url
             : !movie.images.logo && i.hdmovielogo
               ? i.hdmovielogo[0].url
-              : movie.images.logo
-        }
+              : movie.images.logo,
+        },
       })
 
     }).catch(err => {
@@ -244,7 +246,8 @@ export default class MovieHelper extends AbstractHelper {
         return Promise.reject(err)
 
       } else if (err.statusCode && err.statusCode === 404) {
-        logger.warn(`_addFanartImages: can't find images for slug '${movie.slug}'`)
+        // There is almost never images from Fanart
+        // logger.warn(`_addFanartImages: can't find images for slug '${movie.slug}'`)
 
       } else {
         logger.error(`_addFanartImages: ${err.message || err}`)
@@ -258,7 +261,7 @@ export default class MovieHelper extends AbstractHelper {
   /**
    * Add images to item
    * @protected
-   * @param {!AnimeShow|Show|Movie} movie - The item to fetch images for
+   * @param {!Movie} movie - The item to fetch images for
    * @returns {Promise<Object>} - Object with banner, fanart and poster images.
    */
   addImages(movie: Movie): Promise<Object> {
@@ -272,25 +275,26 @@ export default class MovieHelper extends AbstractHelper {
    * Get info from Trakt and make a new movie object.
    * @override
    * @param {!string} traktSlug - The slug to query trakt.tv.
-   * @returns {Promise<AnimeMovie | Movie | Error>} - A new movie.
+   * @returns {Promise<Movie | Error>} - A new movie.
    */
-  async getTraktInfo(traktSlug: string): Promise<AnimeMovie | Movie | Error> {
+  async getTraktInfo(traktSlug: string): Promise<Movie | Error> {
     try {
       const traktMovie = await trakt.movies.summary({
         id: traktSlug,
-        extended: 'full'
+        extended: 'full',
       })
 
       const traktWatchers = await trakt.movies.watching({
-        id: traktSlug
+        id: traktSlug,
       })
 
       if (traktMovie && traktMovie.ids.imdb && traktMovie.ids.tmdb) {
         const ratingPercentage = Math.round(traktMovie.rating * 10)
 
         return this.addImages({
-          imdb_id: traktMovie.ids.imdb,
-          tmdb_id: traktMovie.ids.tmdb,
+          _id: traktMovie.ids.imdb,
+          imdbId: traktMovie.ids.imdb,
+          tmdbId: traktMovie.ids.tmdb,
           slug: traktMovie.ids.slug,
           title: traktMovie.title,
           released: new Date(traktMovie.released).getTime(),
@@ -301,17 +305,22 @@ export default class MovieHelper extends AbstractHelper {
             stars: parseFloat(((ratingPercentage / 100) * 5).toFixed('2')),
             votes: traktMovie.votes,
             watching: await traktWatchers ? traktWatchers.length : 0,
-            percentage: ratingPercentage
+            percentage: ratingPercentage,
           },
           images: {
             banner: null,
             backdrop: null,
-            poster: null
+            poster: null,
           },
           genres: traktMovie.genres ? traktMovie.genres : ['unknown'],
           trailer: traktMovie.trailer,
-          last_updated: Number(new Date()),
-          torrents: []
+          createdAt: Number(new Date()),
+          updatedAt: Number(new Date()),
+          type: 'movie',
+          torrents: [],
+          watched: false,
+          bookmarked: false,
+          bookmarkedOn: null,
         })
       }
     } catch (err) {

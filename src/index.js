@@ -3,11 +3,11 @@ import 'dotenv/config'
 import { isMaster } from 'cluster'
 import { join } from 'path'
 import { Database, HttpServer, Logger, Routes, PopApi } from '@pct-org/pop-api'
-import { Cron, PopApiScraper } from 'pop-api-scraper'
+import { Cron, PopApiScraper } from '@pct-org/pop-api-scraper'
 
 import controllers from './controllers'
 import providers from './scraper'
-// import { Cli } from './middleware'
+import { Cli } from './middleware'
 
 import { name, version } from '../package.json'
 
@@ -40,7 +40,7 @@ import { name, version } from '../package.json'
       // This starts the scraping on the master node and sets up the cron
       // start: isMaster
     }, [
-      // Cli, // Makes it crash, so disable it for now
+      Cli,
       Logger,
       Database,
       Routes,
