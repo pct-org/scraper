@@ -37,7 +37,7 @@
     "test-mocha": "cross-env NODE_ENV=test nyc -r=lcov -r=text mocha --exit --recursive --timeout 10000"
   },
   "dependencies": {
-    "@pct-org/mongo-models": "^0.7.1",
+    "@pct-org/mongo-models": "^0.8.0",
     "@pct-org/pop-api": "^0.7.0",
     "@pct-org/pop-api-scraper": "^0.7.0",
     "bytes": "^3.0.0",

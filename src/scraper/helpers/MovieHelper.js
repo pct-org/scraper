@@ -128,14 +128,17 @@ export default class MovieHelper extends AbstractHelper {
       return this.checkImages({
         ...movie,
         images: {
-          banner: Holder,
+          banner: AbstractHelper.DefaultImageSizes,
+
           backdrop: tmdbBackdrop
-            ? `${baseUrl}${tmdbBackdrop.file_path}`
-            : Holder,
+            ? this._formatImdbImage(tmdbBackdrop.file_path)
+            : AbstractHelper.DefaultImageSizes,
+
           poster: tmdbPoster
-            ? `${baseUrl}${tmdbPoster.file_path}`
-            : Holder,
-          logo: Holder,
+            ? this._formatImdbImage(tmdbPoster.file_path)
+            : AbstractHelper.DefaultImageSizes,
+
+          logo: AbstractHelper.DefaultImageSizes,
         },
       })
 
@@ -181,7 +184,12 @@ export default class MovieHelper extends AbstractHelper {
           backdrop: movie.images.backdrop,
 
           poster: !movie.images.poster && i.Poster
-            ? i.Poster
+            ? {
+              full: i.Poster,
+              high: i.Poster,
+              medium: i.Poster,
+              thumb: i.Poster,
+            }
             : movie.images.poster,
 
           logo: movie.images.logo,
@@ -215,28 +223,61 @@ export default class MovieHelper extends AbstractHelper {
    */
   _addFanartImages(movie: Movie): Promise<Movie> {
     return fanart.getMovieImages(movie.tmdb_id).then(i => {
+      const banner = !movie.images.banner && i.moviebanner
+        ? i.moviebanner.shift()
+        : null
+
+      const backdrop = !movie.images.backdrop && i.moviebackground
+        ? i.moviebackground.shift()
+        : !movie.images.backdrop && i.hdmovieclearart
+          ? i.hdmovieclearart.shift()
+          : null
+
+      const poster = !movie.images.poster && i.movieposter
+        ? i.movieposter.shift()
+        : null
+
+      const logo = !movie.images.logo && i.movielogo
+        ? i.movielogo.shift()
+        : !movie.images.logo && i.hdmovielogo
+          ? i.hdmovielogo.shift()
+          : null
+
       return this.checkImages({
         ...movie,
         images: {
-          banner: !movie.images.banner && i.moviebanner
-            ? i.moviebanner[0].url
+          banner: banner
+            ? {
+              full: banner.url,
+              high: banner.url,
+              medium: banner.url,
+              thumb: banner.url,
+            }
             : movie.images.banner,
 
-          backdrop: !movie.images.backdrop && i.moviebackground
-            ? i.moviebackground[0].url
-            : !movie.images.backdrop && i.hdmovieclearart
-              ? i.hdmovieclearart[0].url
-              : movie.images.backdrop,
+          backdrop: backdrop ? {
+              full: backdrop.url,
+              high: backdrop.url,
+              medium: backdrop.url,
+              thumb: backdrop.url,
+            }
+            : movie.images.backdrop,
 
-          poster: !movie.images.poster && i.movieposter
-            ? i.movieposter[0].url
+          poster: poster ? {
+              full: poster.url,
+              high: poster.url,
+              medium: poster.url,
+              thumb: poster.url,
+            }
             : movie.images.poster,
 
-          logo: !movie.images.logo && i.movielogo
-            ? i.movielogo[0].url
-            : !movie.images.logo && i.hdmovielogo
-              ? i.hdmovielogo[0].url
-              : movie.images.logo,
+          logo: logo ? {
+              full: logo.url,
+              high: logo.url,
+              medium: logo.url,
+              thumb: logo.url,
+            }
+            : movie.images.logo,
         },
       })
 

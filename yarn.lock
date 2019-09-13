@@ -904,10 +904,10 @@
     universal-user-agent "^2.0.0"
     url-template "^2.0.8"
 
-"@pct-org/mongo-models@^0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@pct-org/mongo-models/-/mongo-models-0.7.1.tgz#08322c177bb8629db52cfcba45a94022c6f3a40d"
-  integrity sha512-U/JY/5QHnBd+UwoxbcATgKc7u9Q40TuETgsoUG//6GuUY3jGIsolFl0Tq4e8kxje5UQjG8yx6QXiPSAVzLXJMg==
+"@pct-org/mongo-models@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@pct-org/mongo-models/-/mongo-models-0.8.0.tgz#4dc6c004239eca9fab49f081c84612fb5104c1b9"
+  integrity sha512-ECn5jhjmOV9UwVmCvmhBNaz1GnfPGML6s+/ixHt4vMwnV60jG9yejAsIdrP+jVYu7gvRg8TVke9MDq5GrWpgMg==
   dependencies:
     graphql "^14.5.4"
     mongoose "^5.7.0"

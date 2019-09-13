@@ -5,7 +5,7 @@ import type {
   AnimeMovie,
   AnimeShow,
   Movie,
-  Show
+  Show,
 } from '../../models'
 
 /**
@@ -23,14 +23,15 @@ export default class AbstractHelper extends IHelper {
   static Holder: string = null
 
   /**
-   * The default image object.
+   * The default image sizes object.
    * @protected
    * @type {Object}
    */
-  static DefaultImages: Object = {
-    banner: AbstractHelper.Holder,
-    backdrop: AbstractHelper.Holder,
-    poster: AbstractHelper.Holder
+  static DefaultImageSizes: Object = {
+    full: AbstractHelper.Holder,
+    high: AbstractHelper.Holder,
+    medium: AbstractHelper.Holder,
+    thumb: AbstractHelper.Holder,
   }
 
   /**
@@ -85,6 +86,24 @@ export default class AbstractHelper extends IHelper {
   }
 
   /**
+   * Formats imdb image sizes
+   *
+   * @param filePath
+   * @return {{high: *, thumb: *, medium: *, full: *}}
+   * @protected
+   */
+  _formatImdbImage(filePath: string) {
+    const baseUrl = 'https://image.tmdb.org/t/p'
+
+    return {
+      full: `${baseUrl}/original${filePath}`,
+      high: `${baseUrl}/w1280${filePath}`,
+      medium: `${baseUrl}/w780${filePath}`,
+      thumb: `${baseUrl}/w342${filePath}`,
+    }
+  }
+
+  /**
    * Formats the torrents
    * @param {Array} torrents Object torrents to format
    * @returns {Array} of torrents
@@ -100,14 +119,14 @@ export default class AbstractHelper extends IHelper {
     Object.keys(torrents).forEach(quality => {
       let add = true
       const sameQuality = formattedTorrents.find(
-        torrent => torrent.quality === quality
+        torrent => torrent.quality === quality,
       )
 
       if (sameQuality) {
         if (torrents[quality].seeds > sameQuality.seeds) {
           // Remove the quality from the array
           formattedTorrents = formattedTorrents.filter(
-            torrent => torrent.quality === quality
+            torrent => torrent.quality === quality,
           )
 
         } else {
@@ -118,7 +137,7 @@ export default class AbstractHelper extends IHelper {
       if (add) {
         formattedTorrents.push({
           ...torrents[quality],
-          quality
+          quality,
         })
       }
     })
@@ -150,7 +169,7 @@ export default class AbstractHelper extends IHelper {
         : `${minutes} min`,
 
       hours,
-      minutes
+      minutes,
     }
   }
 

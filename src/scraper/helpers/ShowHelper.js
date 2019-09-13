@@ -214,12 +214,9 @@ export default class ShowHelper extends AbstractHelper {
           title: e.name,
           synopsis: e.overview,
           firstAired: e.air_date ? new Date(e.air_date).getTime() : 0,
-          images: {
-            full: !e.still_path ? null : `${baseUrl}/original${e.still_path}`,
-            high: !e.still_path ? null : `${baseUrl}/w1280${e.still_path}`,
-            medium: !e.still_path ? null : `${baseUrl}/w780${e.still_path}`,
-            thumb: !e.still_path ? null : `${baseUrl}/w342${e.still_path}`,
-          },
+          images: e.still_path
+            ? this._formatImdbImage(e.still_path)
+            : AbstractHelper.DefaultImageSizes,
           type: 'episode',
           torrents: this._formatTorrents(episodes[season][e.episode_number]),
         }
@@ -245,12 +242,9 @@ export default class ShowHelper extends AbstractHelper {
         title: s.name,
         synopsis: s.overview,
         firstAired: s.air_date ? new Date(s.air_date).getTime() : 0,
-        images: {
-          full: !s.poster_path ? null : `${baseUrl}/original${s.poster_path}`,
-          high: !s.poster_path ? null : `${baseUrl}/w1280${s.poster_path}`,
-          medium: !s.poster_path ? null : `${baseUrl}/w780${s.poster_path}`,
-          thumb: !s.poster_path ? null : `${baseUrl}/w342${s.poster_path}`,
-        },
+        images: s.poster_path
+          ? this._formatImdbImage(s.poster_path)
+          : AbstractHelper.DefaultImageSizes,
         type: 'season',
         episodes: this.sortSeasonsOrEpisodes(updatedEpisodes),
       })
@@ -380,8 +374,6 @@ export default class ShowHelper extends AbstractHelper {
     return tmdb.tv.images({
       tv_id: show.tmdbId,
     }).then(i => {
-      const baseUrl = 'https://image.tmdb.org/t/p/w500'
-
       const tmdbPoster = i.posters.filter(
         poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null,
       ).shift()
@@ -390,22 +382,20 @@ export default class ShowHelper extends AbstractHelper {
         backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null,
       ).shift()
 
-      const { Holder } = AbstractHelper
-
       return this.checkImages({
         ...show,
         images: {
-          banner: Holder,
+          banner: AbstractHelper.DefaultImageSizes,
 
           backdrop: tmdbBackdrop
-            ? `${baseUrl}${tmdbBackdrop.file_path}`
-            : Holder,
+            ? this._formatImdbImage(tmdbBackdrop.file_path)
+            : AbstractHelper.DefaultImageSizes,
 
           poster: tmdbPoster
-            ? `${baseUrl}${tmdbPoster.file_path}`
-            : Holder,
+            ? this._formatImdbImage(tmdbPoster.file_path)
+            : AbstractHelper.DefaultImageSizes,
 
-          logo: Holder,
+          logo: AbstractHelper.DefaultImageSizes,
         },
       })
     }).catch(err => {
@@ -438,15 +428,30 @@ export default class ShowHelper extends AbstractHelper {
         ...show,
         images: {
           banner: !show.images.banner && i.banner
-            ? `${baseUrl}${i.banner}`
+            ? {
+              full: `${baseUrl}${i.banner}`,
+              high: `${baseUrl}${i.banner}`,
+              medium: `${baseUrl}${i.banner}`,
+              thumb: `${baseUrl}${i.banner}`,
+            }
             : show.images.banner,
 
           backdrop: !show.images.backdrop && i.fanart
-            ? `${baseUrl}${i.fanart}`
+            ? {
+              full: `${baseUrl}${i.fanart}`,
+              high: `${baseUrl}${i.fanart}`,
+              medium: `${baseUrl}${i.fanart}`,
+              thumb: `${baseUrl}${i.fanart}`,
+            }
             : show.images.backdrop,
 
           poster: !show.images.poster && i.poster
-            ? `${baseUrl}${i.poster}`
+            ? {
+              full: `${baseUrl}${i.poster}`,
+              high: `${baseUrl}${i.poster}`,
+              medium: `${baseUrl}${i.poster}`,
+              thumb: `${baseUrl}${i.poster}`,
+            }
             : show.images.poster,
 
           logo: show.images.logo,
@@ -476,28 +481,61 @@ export default class ShowHelper extends AbstractHelper {
    */
   _addFanartImages(show: Show): Promise<Show> {
     return fanart.getShowImages(show.tvdbId).then(i => {
+      const banner = !show.images.banner && i.tvbanner
+        ? i.tvbanner.shift()
+        : null
+
+      const backdrop = !show.images.backdrop && i.showbackground
+        ? i.showbackground.shift()
+        : !show.images.backdrop && i.clearart
+          ? i.clearart.shift()
+          : null
+
+      const poster = !show.images.poster && i.tvposter
+        ? i.tvposter.shift()
+        : null
+
+      const logo = !show.images.logo && i.clearlogo
+        ? i.clearlogo.shift()
+        : !show.images.logo && i.hdtvlogo
+          ? i.hdtvlogo.shift()
+          : null
+
       return this.checkImages({
         ...show,
         images: {
-          banner: !show.images.banner && i.tvbanner
-            ? i.tvbanner[0].url
+          banner: banner
+            ? {
+              full: banner.url,
+              high: banner.url,
+              medium: banner.url,
+              thumb: banner.url,
+            }
             : show.images.banner,
 
-          backdrop: !show.images.backdrop && i.showbackground
-            ? i.showbackground[0].url
-            : i.clearart
-              ? i.clearart[0].url
-              : show.images.backdrop,
+          backdrop: backdrop ? {
+              full: backdrop.url,
+              high: backdrop.url,
+              medium: backdrop.url,
+              thumb: backdrop.url,
+            }
+            : show.images.backdrop,
 
-          poster: !show.images.poster && i.tvposter
-            ? i.tvposter[0].url
+          poster: poster ? {
+              full: poster.url,
+              high: poster.url,
+              medium: poster.url,
+              thumb: poster.url,
+            }
             : show.images.poster,
 
-          logo: !show.images.logo && i.clearlogo
-            ? i.clearlogo[0].url
-            : !show.images.logo && i.hdtvlogo
-              ? i.hdtvlogo[0].url
-              : show.images.logo,
+          logo: logo ? {
+              full: logo.url,
+              high: logo.url,
+              medium: logo.url,
+              thumb: logo.url,
+            }
+            : show.images.logo,
         },
       })
     }).catch(err => {
