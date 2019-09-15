@@ -217,7 +217,7 @@ export default class BaseProvider extends AbstractProvider {
     }).then(() => {
       logger.info(`${this.name}: Found ${torrents.length} torrents.`)
 
-      return torrents
+      return Promise.resolve(torrents)
     })
   }
 
@@ -305,7 +305,7 @@ export default class BaseProvider extends AbstractProvider {
     try {
       this.setConfig({ name, api, contentType, Model, Helper, query, regexps })
 
-      const totalPages = 10 // await this.getTotalPages()
+      const totalPages = await this.getTotalPages()
 
       if (!totalPages) {
         return logger.error(

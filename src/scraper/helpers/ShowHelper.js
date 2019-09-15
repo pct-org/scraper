@@ -200,8 +200,6 @@ export default class ShowHelper extends AbstractHelper {
     }).then(s => {
       const updatedEpisodes = []
 
-      const baseUrl = 'https://image.tmdb.org/t/p'
-
       s.episodes.map(e => {
         const number = parseInt(e.episode_number, 10)
 
@@ -277,7 +275,7 @@ export default class ShowHelper extends AbstractHelper {
       season,
       id: show.imdbId,
       extended: 'full',
-    }).then(season => {
+    }).then(s => {
       const updatedEpisodes = []
       let firstEpisode = null
 
@@ -326,7 +324,7 @@ export default class ShowHelper extends AbstractHelper {
         title: `Season ${season}`,
         type: 'season',
         synopsis: null,
-        firstAired: firstEpisode ? firstEpisode.first_aired : 0,
+        firstAired: firstEpisode ? firstEpisode.firstAired : 0,
         images: {
           full: null,
           high: null,
@@ -342,7 +340,7 @@ export default class ShowHelper extends AbstractHelper {
 
     }).catch(err => {
       if (err.statusCode === 404) {
-        return logger.error(`_addTraktSeason: Trakt and TheMovDB could not find any data for slug '${show.slug}' and season '${season}' with imdb id: '${show.imdbId}'`)
+        return logger.error(`_addTraktSeason: Trakt and TheMovieDB could not find any data for slug '${show.slug}' and season '${season}' with imdb id: '${show.imdbId}'`)
       }
 
       logger.error(`_addTraktSeason: ${err.path || err}`)

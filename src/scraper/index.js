@@ -13,13 +13,6 @@ const maxWebRequests: number = 2
  * @type {Array<Object>}
  */
 export default [
-  {
-    Provider: YtsProvider,
-    args: {
-      maxWebRequests,
-      configs: ytsConfigs,
-    },
-  },
   // {
   //   Provider: BulkProvider,
   //   args: {
@@ -27,6 +20,13 @@ export default [
   //     configs: bulkConfigs,
   //   },
   // },
+  {
+    Provider: YtsProvider,
+    args: {
+      maxWebRequests,
+      configs: ytsConfigs,
+    },
+  },
 ]
 
 // export default [

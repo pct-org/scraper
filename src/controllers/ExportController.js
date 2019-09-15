@@ -41,7 +41,7 @@ export default class ExportController extends IController {
   ): Object | mixed {
     const { collection } = req.params
 
-    if (collection.match(/(anime|movie|show)s?/i)) {
+    if (collection.match(/(movie|show)s?/i)) {
       process.env.TEMP_DIR = process.env.TEMP_DIR
         ? process.env.TEMP_DIR
         : join(...[
