@@ -1,39 +1,56 @@
-# popcorn-api
+<h1 align="center">
+  <img height="200" width="200" src="https://github.com/pct-org/getting-started/blob/master/.github/logo.png" alt="logo" />
+  <br />
+  Getting Started
+</h1>
 
-[![Build Status](https://travis-ci.org/popcorn-official/popcorn-api.svg?branch=development)](https://travis-ci.org/popcorn-official/popcorn-api)
-[![Windows Build](https://img.shields.io/appveyor/ci/chrisalderson/popcorn-api/3.0.0.svg?label=windows)](https://ci.appveyor.com/project/ChrisAlderson/popcorn-api)
-[![Coverage Status](https://coveralls.io/repos/github/popcorn-official/popcorn-api/badge.svg?branch=3.0.0)](https://coveralls.io/github/popcorn-official/popcorn-api?branch=3.0.0)
-[![Dependency Status](https://david-dm.org/popcorn-official/popcorn-api.svg)](https://david-dm.org/popcorn-official/popcorn-api)
-[![devDependency Status](https://david-dm.org/popcorn-official/popcorn-api/dev-status.svg)](https://david-dm.org/popcorn-official/popcorn-api?type=dev)
-[![document](https://popcorn-official.github.io/popcorn-api/badge.svg)](https://popcorn-official.github.io/popcorn-api/source.html)
+<div align="center">
+  <a target="_blank" href="https://gitter.im/pct-org/app?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">
+    <img src="https://badges.gitter.im/popcorn-time-desktop.svg" alt="Gitter" />
+  </a>
+</div>
 
-Popcorn API is developed to make it easier for anyone to create their own
-version of [Popcorn Time](http://popcorntime.sh). It contains:
+---
 
-- Metadata about movies (taken from Trakt).
-- Metadata about TV shows and individual episodes (taken from Trakt).
-- Multiple quality magnet links for every episode.
-- Ability to easily filter content to the user's content.
-- Add content manually through the CLI.
+## Projects
+
+Popcorn Time consists of several projects, each doing it's own part.
+
+| Project                      | Description |
+| ---------------------------- | -------------------------------------------------------- |
+| [`@pct-org/graphql-api`]     | Serves the data to the clients from the MongoDB database |
+| [`@pct-org/getting-started`] | Explains how to get started with this setup              |
+| [`@pct-org/mongo-models`]    | Models used for MongoDB and GraphQL object types         |
+| [`@pct-org/native-app`]      | React Native App                                         |
+| [`@pct-org/scraper`]         | Scrapes everything and saves it to MongoDB database      |
 
 ## Installation
 
-To setup your local machine to start working on the project you can follow
-these steps:
+```bash
+// TODO
+```
 
-1. Install [MongoDB](https://www.mongodb.com/) including `mongoexport` and `mongoimport`
-2. Install [NodeJS](https://nodejs.org/) (at least Node v7.10.1 or greater)
-3. Clone the repository with: `git clone https://github.com/popcorn-official/popcorn-api.git`
-4. Install dependencies `npm i`
-5. Install the flow-typed libraries with `npm run flow-typed`
+## Running the scraper
 
-## Documentation
+```bash
+// TODO
+```
 
- - [General documentation](https://popcorn-official.github.io/popcorn-api/manual/index.html)
- - [Route Api docs](http://docs.popcornofficial.apiary.io/).
- - [Api docs](https://popcorn-official.github.io/popcorn-api/identifiers.html)
- - TODO: Add more documentation links.
+## Contributing:
 
-## License
+Please see the [contributing guide].
 
-MIT License
+## Issues
+
+File a bug against [pct-org/getting-started prefixed with \[scraper\]](https://github.com/pct-org/getting-started/issues/new?title=[scraper]%20).
+
+## [License](./LICENSE)
+
+This project is [MIT licensed](./LICENSE).
+
+[contributing guide]: ./CONTRIBUTING.md
+[`@pct-org/graphql-api`]: https://github.com/pct-org/graphql-api
+[`@pct-org/getting-started`]: https://github.com/pct-org/getting-started
+[`@pct-org/mongo-models`]: https://github.com/pct-org/mongo-models
+[`@pct-org/native-app`]: https://github.com/pct-org/native-app
+[`@pct-org/scraper`]: https://github.com/pct-org/scraper
