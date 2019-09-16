@@ -217,6 +217,10 @@ export default class ShowHelper extends AbstractHelper {
             : AbstractHelper.DefaultImageSizes,
           type: 'episode',
           torrents: this._formatTorrents(episodes[season][e.episode_number]),
+          watched: {
+            complete: false,
+            progress: 0,
+          },
         }
 
         updatedEpisodes.push(episode)
@@ -297,6 +301,10 @@ export default class ShowHelper extends AbstractHelper {
           },
           type: 'episode',
           torrents: this._formatTorrents(episodes[season][e.number]),
+          watched: {
+            complete: false,
+            progress: 0,
+          },
         }
 
         if (index === 0) {

@@ -359,7 +359,10 @@ export default class MovieHelper extends AbstractHelper {
           updatedAt: Number(new Date()),
           type: 'movie',
           torrents: [],
-          watched: false,
+          watched: {
+            complete: false,
+            progress: 0,
+          },
           bookmarked: false,
           bookmarkedOn: null,
         })
