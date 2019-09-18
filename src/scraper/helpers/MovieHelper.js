@@ -355,9 +355,9 @@ export default class MovieHelper extends AbstractHelper {
             percentage: ratingPercentage,
           },
           images: {
-            banner: null,
-            backdrop: null,
-            poster: null,
+            banner: AbstractHelper.DefaultImageSizes,
+            backdrop: AbstractHelper.DefaultImageSizes,
+            poster: AbstractHelper.DefaultImageSizes,
           },
           genres: traktMovie.genres ? traktMovie.genres : ['unknown'],
           trailer: traktMovie.trailer,

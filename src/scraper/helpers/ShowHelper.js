@@ -238,9 +238,13 @@ export default class ShowHelper extends AbstractHelper {
           title: e.name,
           synopsis: e.overview,
           firstAired: e.air_date ? new Date(e.air_date).getTime() : 0,
-          images: e.still_path
-            ? this._formatImdbImage(e.still_path)
-            : AbstractHelper.DefaultImageSizes,
+          images: {
+            poster: e.still_path
+              ? this._formatImdbImage(e.still_path)
+              : AbstractHelper.DefaultImageSizes,
+            banner: AbstractHelper.DefaultImageSizes,
+            backdrop: AbstractHelper.DefaultImageSizes,
+          },
           type: 'episode',
           torrents: this._formatTorrents(episodes[season][e.episode_number]),
           watched: {
@@ -270,9 +274,13 @@ export default class ShowHelper extends AbstractHelper {
         title: s.name,
         synopsis: s.overview,
         firstAired: s.air_date ? new Date(s.air_date).getTime() : 0,
-        images: s.poster_path
-          ? this._formatImdbImage(s.poster_path)
-          : AbstractHelper.DefaultImageSizes,
+        images: {
+          poster: s.poster_path
+            ? this._formatImdbImage(s.poster_path)
+            : AbstractHelper.DefaultImageSizes,
+          banner: AbstractHelper.DefaultImageSizes,
+          backdrop: AbstractHelper.DefaultImageSizes,
+        },
         type: 'season',
         episodes: this.sortSeasonsOrEpisodes(updatedEpisodes),
       })
@@ -320,10 +328,9 @@ export default class ShowHelper extends AbstractHelper {
           synopsis: e.overview,
           firstAired: e.first_aired ? new Date(e.first_aired).getTime() : 0,
           images: {
-            full: null,
-            high: null,
-            medium: null,
-            thumb: null,
+            banner: AbstractHelper.DefaultImageSizes,
+            backdrop: AbstractHelper.DefaultImageSizes,
+            poster: AbstractHelper.DefaultImageSizes,
           },
           type: 'episode',
           torrents: this._formatTorrents(episodes[season][e.number]),
@@ -360,10 +367,9 @@ export default class ShowHelper extends AbstractHelper {
         synopsis: null,
         firstAired: firstEpisode ? firstEpisode.firstAired : 0,
         images: {
-          full: null,
-          high: null,
-          medium: null,
-          thumb: null,
+          banner: AbstractHelper.DefaultImageSizes,
+          backdrop: AbstractHelper.DefaultImageSizes,
+          poster: AbstractHelper.DefaultImageSizes,
         },
         episodes: this.sortSeasonsOrEpisodes(updatedEpisodes),
       })
@@ -666,9 +672,9 @@ export default class ShowHelper extends AbstractHelper {
             percentage: ratingPercentage,
           },
           images: {
-            banner: null,
-            backdrop: null,
-            poster: null,
+            banner: AbstractHelper.DefaultImageSizes,
+            backdrop: AbstractHelper.DefaultImageSizes,
+            poster: AbstractHelper.DefaultImageSizes,
           },
           type: 'show',
           genres: traktShow.genres ? traktShow.genres : ['unknown'],

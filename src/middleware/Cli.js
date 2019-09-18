@@ -2,7 +2,6 @@
 import fs from 'fs'
 import inquirer from 'inquirer'
 import path from 'path'
-import webtorrentHealth from 'webtorrent-health'
 import { Cli as BaseCli, Database } from '@pct-org/pop-api'
 
 import promptSchemas from './promptschemas'
@@ -87,7 +86,7 @@ export default class Cli extends BaseCli {
   getHelp(): void {
     const baseHelp = super.getHelp()
     return baseHelp.concat([
-      `    $ ${this.name} --export <anime|movie|show>`,
+      `    $ ${this.name} --export <movie|show>`,
       `    $ ${this.name} --import <path-to-json>`,
     ])
   }
