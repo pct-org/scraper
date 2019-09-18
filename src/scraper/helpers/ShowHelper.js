@@ -49,6 +49,7 @@ export default class ShowHelper extends AbstractHelper {
 
   /**
    * Sorts the content like seasons and episodes
+   *
    * @param {Array} seasonsOrEpisodes - Seasons or episodes to sort
    * @returns {Array<T>} - Sorted seasons or episodes
    */
@@ -56,6 +57,13 @@ export default class ShowHelper extends AbstractHelper {
     return seasonsOrEpisodes.sort((a, b) => a.number - b.number)
   }
 
+  /**
+   * Updates or adds one show to the database
+   *
+   * @param {Show} show - Show to add / update
+   * @return {Promise<void>}
+   * @private
+   */
   async _updateShow(show: Show): Promise<Show> {
     try {
       // Create a copy
@@ -95,6 +103,13 @@ export default class ShowHelper extends AbstractHelper {
     }
   }
 
+  /**
+   * Updates or adds one season to the database
+   *
+   * @param {Show} show - Show the season belongs to
+   * @return {Promise<void>}
+   * @private
+   */
   async _updateShowSeasons(show: Show): Promise<Show> {
     try {
       const seasonsFound = await this.Model.Season.find({
@@ -140,6 +155,14 @@ export default class ShowHelper extends AbstractHelper {
     }
   }
 
+  /**
+   * Updates or adds one episode to the database
+   *
+   * @param {Show} show - Show the episode belongs to
+   * @param {Season} season - Season the episode belongs to
+   * @return {Promise<void>}
+   * @private
+   */
   async _updateShowEpisodes(show: Show, season: Season): Promise<Show> {
     try {
       const episodesFound = await this.Model.Episode.find({
@@ -158,6 +181,9 @@ export default class ShowHelper extends AbstractHelper {
             // Keep old attributes that could change
             e.createdAt = found.createdAt
             e.watched = found.watched
+            e.downloaded = found.downloaded
+            e.downloading = found.downloading
+            e.downloadedOn = found.downloadedOn
 
             if (found.torrents && found.torrents.length > 0) {
               e.torrents = this._updateTorrents(e.torrents, found.torrents)

@@ -70,13 +70,19 @@ export default class MovieHelper extends AbstractHelper {
         m.bookmarked = found.bookmarked
         m.bookmarkedOn = found.bookmarkedOn
         m.watched = found.watched
+        m.downloaded = found.downloaded
+        m.downloading = found.downloading
+        m.downloadedOn = found.downloadedOn
 
         return await this.Model.findOneAndUpdate({
-          _id: m.imdbId,
-        }, m, {
-          upsert: true,
-          new: true,
-        })
+            _id: m.imdbId,
+          },
+          m,
+          {
+            upsert: true,
+            new: true,
+          },
+        )
       }
 
       logger.info(`${this.name}: '${m.title}' is a new movie!`)

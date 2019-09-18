@@ -331,7 +331,7 @@ export default class BaseProvider extends AbstractProvider {
         content => this.getContent(content)
           .catch(err => logger.error(`BaseProvider.scrapeConfig: ${err.message || err}`)),
         {
-          concurrency: 1, // this.maxWebRequests,
+          concurrency: this.maxWebRequests,
         },
       )
     } catch (err) {
