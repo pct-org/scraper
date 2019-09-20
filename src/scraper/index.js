@@ -1,6 +1,6 @@
 // @flow
-import { bulkConfigs, ytsConfigs } from './configs'
-import { BulkProvider, YtsProvider } from './providers'
+import { eztvConfigs, ytsConfigs, katTvConfigs } from './configs'
+import { EztvProvider, YtsProvider, KatTvProvider } from './providers'
 
 /**
  * The max concurrent web requests at a time.
@@ -13,32 +13,30 @@ const maxWebRequests: number = 2
  * @type {Array<Object>}
  */
 export default [
+  // {
+  //   Provider: EztvProvider,
+  //   args: {
+  //     maxWebRequests,
+  //     configs: eztvConfigs,
   //   },
+  // },
+  // {
+  //   Provider: YtsProvider,
+  //   args: {
+  //     maxWebRequests,
+  //     configs: ytsConfigs,
+  //   },
+  // },
   {
-    Provider: BulkProvider,
+    Provider: KatTvProvider,
     args: {
       maxWebRequests,
-      configs: bulkConfigs,
-    },
-  },
-  {
-    Provider: YtsProvider,
-    args: {
-      maxWebRequests,
-      configs: ytsConfigs,
+      configs: katTvConfigs,
     },
   },
 ]
 
 // export default [
-//   // {
-//   //   Provider: BulkProvider,
-//   //   args: {
-//   //     maxWebRequests,
-//   //     configs: bulkConfigs,
-//   //   },
-//   // },
-//   /* {
 //    Provider: MovieProvider,
 //    args: {
 //    maxWebRequests,

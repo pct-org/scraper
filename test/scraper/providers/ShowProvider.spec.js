@@ -9,7 +9,7 @@ import {
 } from 'pop-api'
 import { PopApiScraper } from 'pop-api-scraper'
 
-import ShowProvider from '../../../src/scraper/providers/ShowProvider'
+import KatTvProvider from '../../../src/scraper/providers/ShowProvider'
 import showMap from '../../../src/scraper/providers/maps/showMap'
 import { logger } from '..'
 import { nyaaCommieConfig } from '../../../src/scraper/configs/showConfigs'
@@ -19,9 +19,9 @@ import { name } from '../../../package.json'
 describe('ShowProvider', () => {
   /**
    * The show provider to test.
-   * @type {ShowProvider}
+   * @type {KatTvProvider}
    */
-  let showProvider: ShowProvider
+  let showProvider: KatTvProvider
 
   /**
    * The database middleware from 'pop-api'.
@@ -38,7 +38,7 @@ describe('ShowProvider', () => {
       global.logger = logger
     }
 
-    showProvider = new ShowProvider(PopApiScraper, {
+    showProvider = new KatTvProvider(PopApiScraper, {
       configs: [nyaaCommieConfig]
     })
     showProvider.setConfig(nyaaCommieConfig)

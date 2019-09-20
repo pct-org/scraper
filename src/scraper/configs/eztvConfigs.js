@@ -3,7 +3,7 @@ import { ShowModel } from '@pct-org/mongo-models/dist/show/show.model'
 import { SeasonModel } from '@pct-org/mongo-models/dist/season/season.model'
 import { EpisodeModel } from '@pct-org/mongo-models/dist/episode/episode.model'
 
-import { BulkProvider } from '../providers'
+import { EztvProvider } from '../providers'
 import { eztv } from '../apiModules'
 import { ShowHelper } from '../helpers'
 
@@ -14,7 +14,7 @@ import { ShowHelper } from '../helpers'
 export const eztvConfig: Object = {
   name: 'EZTV',
   api: eztv,
-  contentType: BulkProvider.ContentTypes.Show,
+  contentType: EztvProvider.ContentTypes.Show,
   Helper: ShowHelper,
   Model: {
     Show: ShowModel,

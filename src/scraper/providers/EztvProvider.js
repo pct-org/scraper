@@ -5,11 +5,11 @@ import pMap from 'p-map'
 import BaseProvider from './BaseProvider'
 
 /**
- * Class for scraping content from EZTV and HorribleSubs.
+ * Class for scraping content from EZTV
  * @extends {BaseProvider}
- * @type {BulkProvider}
+ * @type {EztvProvider}
  */
-export default class BulkProvider extends BaseProvider {
+export default class EztvProvider extends BaseProvider {
 
   /**
    * Get the contents for a configuration.
@@ -28,22 +28,20 @@ export default class BulkProvider extends BaseProvider {
     api,
     contentType,
     Model,
-    Helper
+    Helper,
   }: Object): Promise<Array<Object>> {
     this.setConfig({ name, api, contentType, Model, Helper })
 
     logger.info(`${this.name}: Started scraping...`)
-    return this.api.getAll().then(contents => {
-      logger.info(
-        `${this.name}: Found ${contents.length} ${this.contentType}s.`
-      )
+    return this.api.getAll().then((contents) => {
+      logger.info(`${this.name}: Found ${contents.length} ${this.contentType}s.`)
 
       return pMap(contents, c => {
         return this.api.getData(c)
           .then(content => this.getContent(content))
           .catch(err => logger.error(`BulkProvider.scrapeConfig: ${err.message || err}`))
       }, {
-        concurrency: this.maxWebRequests
+        concurrency: this.maxWebRequests,
       })
     })
   }

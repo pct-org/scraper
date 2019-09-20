@@ -1,5 +1,4 @@
-// Export the necessary modules.
-export BulkProvider from './BulkProvider'
+export EztvProvider from './EztvProvider'
 export MovieProvider from './MovieProvider'
-export ShowProvider from './ShowProvider'
+export KatTvProvider from './KatTvProvider'
 export YtsProvider from './YtsProvider'

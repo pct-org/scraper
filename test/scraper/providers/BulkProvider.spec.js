@@ -9,7 +9,7 @@ import {
 } from 'pop-api'
 import { PopApiScraper } from 'pop-api-scraper'
 
-import BulkProvider from '../../../src/scraper/providers/BulkProvider'
+import EztvProvider from '../../../src/scraper/providers/BulkProvider'
 import { eztvConfig } from '../../../src/scraper/configs/bulkConfigs'
 import { logger } from '..'
 import { name } from '../../../package.json'
@@ -18,9 +18,9 @@ import { name } from '../../../package.json'
 describe('BulkProvider', () => {
   /**
    * The bulk provider to test.
-   * @type {BulkProvider}
+   * @type {EztvProvider}
    */
-  let bulkProvider: BulkProvider
+  let bulkProvider: EztvProvider
 
   /**
    * The database middleware from 'pop-api'.
@@ -37,7 +37,7 @@ describe('BulkProvider', () => {
       global.logger = logger
     }
 
-    bulkProvider = new BulkProvider(PopApiScraper, {
+    bulkProvider = new EztvProvider(PopApiScraper, {
       configs: [eztvConfig]
     })
 

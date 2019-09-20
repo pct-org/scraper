@@ -230,8 +230,12 @@ export default class BaseProvider extends AbstractProvider {
     return this.api.search(this.query).then(res => {
       if (res.data) { // Yts
         return Math.ceil(res.data.movie_count / 50)
-      } else if (res.total_pages) { // Kat & ET
+
+      } else if (res.total_pages) { // ET
         return res.total_pages
+
+      } else if (res.totalPages) { // Kat
+        return res.totalPages
       }
 
       return Math.ceil(res.totalRecordCount / res.queryRecordCount) // Nyaa
@@ -325,7 +329,6 @@ export default class BaseProvider extends AbstractProvider {
 
       logger.info(`${this.name}: Total content ${allContent.length}`)
 
-      console.log('maxWebRequests', this.maxWebRequests)
       return await pMap(
         allContent,
         content => this.getContent(content)

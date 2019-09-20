@@ -81,18 +81,9 @@ const fanart = new Fanart({
 /**
  * A configured Kat API.
  * @type {Kat}
- * @see https://github.com/ChrisAlderson/kat-api-pt
+ * @see https://github.com/pct-org/kat-api-pt
  */
 const kat = new Kat()
-
-/**
- * A configured Nyaa API.
- * @type {Nyaa}
- * @see https://github.com/ChrisAlderson/nyaa-api-pt
- */
-const nyaa = new Nyaa({
-  apiToken: process.env.NYAA_KEY,
-})
 
 /**
  * A configured Omdb API.
@@ -145,7 +136,6 @@ export {
   eztv,
   fanart,
   kat,
-  nyaa,
   omdb,
   tmdb,
   trakt,

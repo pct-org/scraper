@@ -34,4 +34,6 @@ export const katMovieConfig: Object = {
  * Export the configs for the MovieProvider.
  * @type {Array<Object>}
  */
-export default [katMovieConfig]
+export default [
+  katMovieConfig,
+]

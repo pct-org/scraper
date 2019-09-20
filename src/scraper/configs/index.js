@@ -1,4 +1,4 @@
-export bulkConfigs from './bulkConfigs'
+export eztvConfigs from './eztvConfigs'
 export movieConfigs from './movieConfigs'
-export showConfigs from './showConfigs'
+export katTvConfigs from './katTvConfigs'
 export ytsConfigs from './ytsConfigs'
