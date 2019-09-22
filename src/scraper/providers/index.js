@@ -1,4 +1,6 @@
 export EztvProvider from './EztvProvider'
 export MovieProvider from './MovieProvider'
+export KatMovieProvider from './KatMovieProvider'
 export KatTvProvider from './KatTvProvider'
 export YtsProvider from './YtsProvider'
+export EttvProvider from './EttvProvider'

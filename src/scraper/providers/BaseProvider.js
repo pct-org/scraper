@@ -77,6 +77,7 @@ export default class BaseProvider extends AbstractProvider {
       )
     }
 
+    // Delete specials
     if (episodes && episodes[0]) {
       delete episodes[0]
     }
@@ -154,7 +155,9 @@ export default class BaseProvider extends AbstractProvider {
    */
   getContentData({ torrent, lang = 'en' }: Object): Object | void {
     const regex = this.regexps.find(
-      r => r.regex.test(torrent.title) || r.regex.test(torrent.name),
+      r => r.regex.test(torrent.title)
+           || r.regex.test(torrent.name)
+           || r.regex.test(torrent.filename),
     )
 
     if (regex) {
@@ -231,7 +234,7 @@ export default class BaseProvider extends AbstractProvider {
       if (res.data) { // Yts
         return Math.ceil(res.data.movie_count / 50)
 
-      } else if (res.total_pages) { // ET
+      } else if (res.total_pages) { // eztv
         return res.total_pages
 
       } else if (res.totalPages) { // Kat

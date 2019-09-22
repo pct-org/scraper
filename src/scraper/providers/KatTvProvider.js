@@ -47,24 +47,21 @@ export default class KatTvProvider extends BaseProvider {
       .toLowerCase()
     slug = slug in showMap ? showMap[slug] : slug
 
-    season = 1
-    season = regex.dateBased ? parseInt(match[2], 10) : match[2]
+    season = parseInt(match[2], 10)
 
-    episode = match.length >= 4
-      ? parseInt(match[3], 10)
-      : parseInt(match[2], 10)
-
-    episode = regex.dateBased ? parseInt(match[3], 10) : match[3]
+    episode = parseInt(match[3], 10)
 
     const quality = t.match(/(\d{3,4})p/) !== null
       ? t.match(/(\d{3,4})p/)[0]
       : '480p'
 
     const torrentObj = {
+      title: torrent.title,
       url: torrent.torrentLink,
       seeds: torrent.seeds ? torrent.seeds : 0,
       peers: torrent.peers ? torrent.peers : 0,
       provider: this.name,
+      size: torrent.size,
     }
 
     const show = {
@@ -155,6 +152,8 @@ export default class KatTvProvider extends BaseProvider {
       if (!shows.has(slug)) {
         return shows.set(slug, show)
       }
+
+      // TODO:: This here needs to be checked and updated accordingly
 
       const torrent = show.episodes[season][episode][quality]
       const created = this.attachTorrent({

@@ -1,6 +1,18 @@
 // @flow
-import { eztvConfigs, ytsConfigs, katTvConfigs } from './configs'
-import { EztvProvider, YtsProvider, KatTvProvider } from './providers'
+import {
+  ettvConfigs,
+  eztvConfigs,
+  ytsConfigs,
+  katMovieConfigs,
+  katTvConfigs,
+} from './configs'
+import {
+  EttvProvider,
+  EztvProvider,
+  YtsProvider,
+  KatMovieProvider,
+  KatTvProvider,
+} from './providers'
 
 /**
  * The max concurrent web requests at a time.
@@ -13,6 +25,13 @@ const maxWebRequests: number = 2
  * @type {Array<Object>}
  */
 export default [
+  {
+    Provider: KatMovieProvider,
+    args: {
+      maxWebRequests,
+      configs: katMovieConfigs,
+    },
+  },
   // {
   //   Provider: EztvProvider,
   //   args: {
@@ -27,13 +46,21 @@ export default [
   //     configs: ytsConfigs,
   //   },
   // },
-  {
-    Provider: KatTvProvider,
-    args: {
-      maxWebRequests,
-      configs: katTvConfigs,
-    },
-  },
+  // Keep disabled for now!
+  // {
+  //   Provider: KatTvProvider,
+  //   args: {
+  //     maxWebRequests,
+  //     configs: katTvConfigs,
+  //   },
+  // },
+  // {
+  //   Provider: EttvProvider,
+  //   args: {
+  //     maxWebRequests,
+  //     configs: ettvConfigs,
+  //   },
+  // },
 ]
 
 // export default [

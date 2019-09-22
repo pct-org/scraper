@@ -13,22 +13,10 @@ import Eztv from 'eztv-api-pt'
 import Fanart from 'fanart.tv-api'
 
 /**
- * A HorribleSubs API wrapper to get data from horriblesubs.info
- * @external {HorribleSubs} https://github.com/ChrisAlderson/horriblesubs-api
- */
-import HorribleSubs from 'horriblesubs-api'
-
-/**
  * A KickassTorrents API wrapper for NodeJs.
  * @external {Kat} https://github.com/ChrisAlderson/kat-api-pt
  */
 import Kat from 'kat-api-pt'
-
-/**
- * A nyaa.se API wrapper for NodeJS.
- * @external {Nyaa} https://github.com/ChrisAlderson/nyaa-api-pt
- */
-import Nyaa from 'nyaa-api-pt'
 
 /**
  * An OMDB API wrapper for NodeJS.
@@ -59,6 +47,12 @@ import Tvdb from 'node-tvdb'
  * @external {Yts} https://github.com/ChrisAlderson/yts-api-pt
  */
 import Yts from 'yts-api-pt'
+
+/**
+ * A NodeJS wrapper for ettv.to
+ * @external {Ettv} https://github.com/ChrisAlderson/ettv-api-pt
+ */
+import Ettv from 'ettv-api'
 
 /**
  * A configured Eztv API.
@@ -127,6 +121,8 @@ const tvdb = new Tvdb(process.env.TVDB_KEY)
 const yts = new Yts()
 yts.search = yts.getMovies
 
+const ettv = new Ettv()
+
 /**
  * Export the API modules.
  * @type {Object}
@@ -141,4 +137,5 @@ export {
   trakt,
   tvdb,
   yts,
+  ettv
 }

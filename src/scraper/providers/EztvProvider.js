@@ -1,4 +1,3 @@
-// import the necessary modules.
 // @flow
 import pMap from 'p-map'
 

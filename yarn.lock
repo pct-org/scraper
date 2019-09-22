@@ -3945,6 +3945,13 @@ etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
 
+ettv-api@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/ettv-api/-/ettv-api-1.0.2.tgz#95f0aa443d40e03a1385ec117dc099baac0b359f"
+  integrity sha512-mqmCOl85WqWnAjoLNFuEVOh/myf7ipx/g6pIyqSxNFnGB2CpLw9mE8kb7n3cQM2XkylZvYzU4fvlDbdrXmAm1Q==
+  dependencies:
+    debug "^3.1.0"
+
 event-stream@~0.5:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/event-stream/-/event-stream-0.5.3.tgz#b77b9309f7107addfeab63f0c0eafd8db0bd8c1c"
@@ -5270,17 +5277,6 @@ homedir-polyfill@^1.0.1:
   integrity sha512-eSmmWE5bZTK2Nou4g0AI3zZ9rswp7GRKoKXS1BLUkvPviOqs4YTN1djQIqrXy9k5gEtdLPy86JjRwsNM9tnDcA==
   dependencies:
     parse-passwd "^1.0.0"
-
-horriblesubs-api@^1.0.8:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/horriblesubs-api/-/horriblesubs-api-1.0.8.tgz#6a848c40cc5d28e13a218af12958f080d8774998"
-  integrity sha512-89DQgVN83pPeIKbB6Ab9FemyChAOnTNTow8ge0o3ErVIyCeW7WJujZ7yCs98KAXBIo3EPaO4Sp0BqHjUPDEqgQ==
-  dependencies:
-    cheerio "^1.0.0-rc.2"
-    debug "^3.1.0"
-    got "^7.1.0"
-    p-map "^1.2.0"
-    p-whilst "^1.0.0"
 
 hosted-git-info@^2.1.4:
   version "2.8.4"
@@ -7363,14 +7359,6 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/nwmatcher/-/nwmatcher-1.4.4.tgz#2285631f34a95f0d0395cd900c96ed39b58f346e"
   integrity sha512-3iuY4N5dhgMpCUrOVnuAdGrgxVqV2cJpM+XNccjR2DKOB1RUP0aA+wGXEiNziG/UKboFyGBIoKOaNlJxx8bciQ==
 
-nyaa-api-pt@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/nyaa-api-pt/-/nyaa-api-pt-2.0.0.tgz#f034cf6d311c80f832079a65cc764fb0cc517030"
-  integrity sha512-s+i7JT9vbkq0YZBRXKJsd87QxdpU6PTFX3pcnDnab24AYhCCU4FkRC1ygjawBrNEvVmWba0p8gJr0NdhIN/24g==
-  dependencies:
-    debug "^3.1.0"
-    got "^7.1.0"
-
 nyc@14.1.1:
   version "14.1.1"
   resolved "https://registry.yarnpkg.com/nyc/-/nyc-14.1.1.tgz#151d64a6a9f9f5908a1b73233931e4a0a3075eeb"
@@ -7760,11 +7748,6 @@ p-map@3.0.0, p-map@^3.0.0:
   dependencies:
     aggregate-error "^3.0.0"
 
-p-map@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/p-map/-/p-map-1.2.0.tgz#e4e94f311eabbc8633a1e79908165fca26241b6b"
-  integrity sha512-r6zKACMNhjPJMTl8KcFH4li//gkrXWfbD6feV8l6doRHlzljFWGJ2AP6iKaCJXyZmAUMOPtvbW7EXkbWO/pLEA==
-
 p-map@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/p-map/-/p-map-2.1.0.tgz#310928feef9c9ecc65b68b17693018a665cea175"
@@ -7800,11 +7783,6 @@ p-try@^2.0.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/p-try/-/p-try-2.2.0.tgz#cb2868540e313d61de58fafbe35ce9004d5540e6"
   integrity sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==
-
-p-whilst@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/p-whilst/-/p-whilst-1.0.0.tgz#54668ead7f934799fc00f1e5230fd6addeb8e7e6"
-  integrity sha1-VGaOrX+TR5n8APHlIw/Wrd645+Y=
 
 package-hash@^3.0.0:
   version "3.0.0"
