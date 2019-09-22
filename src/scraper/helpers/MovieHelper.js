@@ -23,26 +23,47 @@ export default class MovieHelper extends AbstractHelper {
     torrents: Array<Object>,
     foundTorrents: Array<Object>,
   ): Object {
-    let newTorrents = torrents
+    const allTorrents = [
+      ...torrents,
+      ...foundTorrents,
+    ]
 
-    foundTorrents.forEach(torrent => {
-      const match = torrents.find(
+    let newTorrents = []
+
+    // Loop true all torrents
+    allTorrents.forEach((torrent) => {
+      const match = newTorrents.find(
         t => t.quality === torrent.quality && t.language === torrent.language,
       )
 
+      // No match add this one
       if (!match) {
         newTorrents.push(torrent)
 
-      } else if (match.seeds > torrent.seeds) {
+      } else if (torrent.quality === '2160p') {
+        // For 2160p we get the smallest one
+        if (torrent.size < match.size) {
+          // Remove the bigger one
+          newTorrents = newTorrents.filter(
+            t => t.quality !== torrent.quality && t.language !== torrent.language,
+          )
+
+          // Add the new one
+          newTorrents.push(torrent)
+        }
+
+      } else if (match.seeds < torrent.seeds) {
         // Remove the lesser one
         newTorrents = newTorrents.filter(
           t => t.quality !== torrent.quality && t.language !== torrent.language,
         )
 
-        newTorrents.push(match)
+        // Add the new one
+        newTorrents.push(torrent)
       }
     })
 
+    // Return all merged torrents
     return newTorrents
   }
 

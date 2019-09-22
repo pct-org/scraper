@@ -26,10 +26,10 @@ export default class YtsProvider extends MovieProvider {
       torrents: [],
     }
 
-    torrent.torrents.map(t => {
-      const { hash, peers, quality, seeds, size_bytes: sizeBytes } = t
+    torrent.torrents.forEach((torrent) => {
+      const { hash, peers, quality, seeds, size_bytes: sizeBytes } = torrent
 
-      const torrentObj = {
+      return movie.torrents.push({
         quality,
         provider: this.name,
         language: lang,
@@ -37,9 +37,7 @@ export default class YtsProvider extends MovieProvider {
         seeds: seeds || 0,
         peers: peers || 0,
         url: `magnet:?xt=urn:btih:${hash}&tr=udp://glotorrents.pw:6969/announce&tr=udp://tracker.opentrackr.org:1337/announce&tr=udp://torrent.gresille.org:80/announce&tr=udp://tracker.openbittorrent.com:80&tr=udp://tracker.coppersurfer.tk:6969&tr=udp://tracker.leechers-paradise.org:6969&tr=udp://p4p.arenabg.ch:1337&tr=udp://tracker.internetwarriors.net:1337`,
-      }
-
-      return movie.torrents.push(torrentObj)
+      })
     })
 
     return movie

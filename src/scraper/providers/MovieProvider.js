@@ -13,65 +13,6 @@ import movieMap from './maps/movieMap'
 export default class MovieProvider extends BaseProvider {
 
   /**
-   * Extract content information based on a regex.
-   *
-   * @override
-   * @protected
-   * @param {!Object} options - The options to extract content information.
-   * @param {!Object} options.torrent - The torrent to extract the content
-   * information.
-   * @param {!Object} options.regex - The regex object to extract the content
-   * information.
-   * @param {?string} [lang] - The language of the torrent.
-   * @returns {Object|undefined} - Information about the content from the
-   * torrent.
-   */
-  extractContent({ torrent, regex, lang }: Object): Object | void {
-    let movieTitle
-    let slug
-
-    const {
-      title, size, seeds, peers, magnet, torrentLink,
-    } = torrent
-
-    movieTitle = title.match(regex.regex)[1]
-    if (movieTitle.endsWith(' ')) {
-      movieTitle = movieTitle.substring(0, movieTitle.length - 1)
-    }
-
-    movieTitle = movieTitle.replace(/\./g, ' ')
-
-    slug = movieTitle.replace(/[^a-zA-Z0-9 ]/gi, '')
-      .replace(/\s+/g, '-')
-      .toLowerCase()
-
-    if (slug.endsWith('-')) {
-      slug = slug.substring(0, slug.length - 1)
-    }
-
-    slug = slug in movieMap ? movieMap[slug] : slug
-
-    const year = parseInt(title.match(regex.regex)[2], 10)
-    const quality = title.match(regex.regex)[3]
-
-    return {
-      movieTitle,
-      slug,
-      slugYear: `${slug}-${year}`,
-      year,
-      type: this.contentType,
-      torrent: {
-        quality,
-        provider: this.name,
-        size: bytes(size),
-        seeds: seeds || 0,
-        peers: peers || 0,
-        url: magnet || torrentLink,
-      },
-    }
-  }
-
-  /**
    * Put all the found content from the torrents in an array.
    *
    * @override
@@ -89,39 +30,32 @@ export default class MovieProvider extends BaseProvider {
   }: Object): Promise<Array<Object>> {
     const movies = new Map()
 
-    return pMap(torrents, t => {
-      if (!t) {
+    return pMap(torrents, (torrent) => {
+      if (!torrent) {
         return
       }
 
       const movie = this.getContentData({
         lang,
-        torrent: t,
+        torrent,
       })
 
       if (!movie) {
         return
       }
 
-      const { slug, language, quality } = movie
-      if (!movies.has(slug)) {
-        return movies.set(slug, movie)
+      const { slug } = movie
+
+      // If we already have the movie merge the torrents together
+      if (movies.has(slug)) {
+        // Reset the movies torrents
+        movie.torrents = this.helper._updateTorrents(
+          movies.get(slug).torrents,
+          movie.torrents,
+        )
       }
 
-      const torrent = movie.torrents.filter(
-        torrent => torrent.language === language && torrent.quality === quality,
-      )[0]
-
-      const created = {
-        movieTitle: movie.movieTitle,
-        slug: movie.slug,
-        slugYear: movie.slugYear,
-        year: movie.year,
-        type: this.contentType,
-        torrent,
-      }
-
-      return movies.set(slug, created)
+      return movies.set(slug, movie)
     }, {
       concurrency: 1,
     }).then(() => Array.from(movies.values()))

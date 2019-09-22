@@ -137,6 +137,7 @@ export default class AbstractHelper extends IHelper {
       if (add) {
         formattedTorrents.push({
           ...torrents[quality],
+          sizeString: this._formatTorrentSize(torrents[quality].size),
           quality,
         })
       }
@@ -173,4 +174,25 @@ export default class AbstractHelper extends IHelper {
     }
   }
 
+  /**
+   * Formats torrent it's size to human readable
+   *
+   * @param bytes
+   * @return {string}
+   * @private
+   */
+  _formatTorrentSize(bytes: number) {
+    if (!bytes || bytes === 0) {
+      return '0 Byte'
+    }
+
+    const i = parseInt(
+      `${Math.floor(
+        Math.log(bytes) / Math.log(1024),
+      )}`,
+      10,
+    )
+
+    return `${(bytes / (1024 ** i)).toFixed(2)} ${['Bytes/s', 'KB/s', 'MB/s', 'GB/s'][i]}`
+  }
 }
