@@ -1,12 +1,13 @@
 // @flow
 import MovieProvider from './MovieProvider'
+import movieMap from './maps/movieMap'
 
-import formatKbToString from '../formatKbToString'
+import AbstractHelper from './../helpers/AbstractHelper'
 
 /**
  * Class for scraping content from YTS.ag.
  */
-export default class YtsProvider extends MovieProvider {
+export default class KatMovieProvider extends MovieProvider {
 
   /**
    * Extract content information based on a regex.
@@ -20,6 +21,8 @@ export default class YtsProvider extends MovieProvider {
    * torrent.
    */
   extractContent({ torrent, lang, regex }: Object): Object | void {
+    console.log('torrent', torrent)
+
     const { title, name } = torrent
     const t = regex.regex.test(title)
       ? title
@@ -33,10 +36,13 @@ export default class YtsProvider extends MovieProvider {
 
     const match = t.match(regex.regex)
 
-    const movieTitle = match[1].replace(/\./g, ' ')
-    const slug = movieTitle.replace(/[^a-zA-Z0-9\- ]/gi, '')
-      .replace(/\s+/g, '-')
-      .toLowerCase() + '-' + match[2]
+    const movieTitle = match[1].replace(/\./g, ' ').trimEnd()
+    let slug = movieTitle.replace(/[^a-zA-Z0-9\- ]/gi, '')
+                 .replace(/\s+/g, '-')
+                 .toLowerCase()
+                 .trimEnd() + '-' + match[2]
+
+    slug = slug in movieMap ? movieMap[slug] : slug
 
     const quality = t.match(/(\d{3,4})p/) !== null
       ? t.match(/(\d{3,4})p/)[0]
@@ -44,11 +50,11 @@ export default class YtsProvider extends MovieProvider {
 
     // Add some file size restrictions
     if (
-      (quality === '1080p' && torrent.size > 3000000000)
-      || (quality === '720p' && torrent.size > 2000000000)
+      (quality === '1080p' && torrent.size > 3200000000)
+      || (quality === '720p' && torrent.size > 2200000000)
       || (quality === '480p' && torrent.size > 1500000000)
     ) {
-      logger.warn(`Not adding "${movieTitle}" to big`)
+      logger.warn(`Not adding "${title}" to big!. Size is: ${AbstractHelper._formatTorrentSize(torrent.size)} (${torrent.size})`)
 
       return false
     }
@@ -61,7 +67,6 @@ export default class YtsProvider extends MovieProvider {
           quality,
           title,
           size: torrent.size,
-          sizeString: formatKbToString(torrent.size),
           peers: torrent.peers,
           seeds: torrent.seeds,
           url: torrent.torrentLink,

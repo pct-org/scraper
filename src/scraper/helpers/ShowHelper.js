@@ -13,41 +13,6 @@ import { fanart, tmdb, trakt, tvdb } from '../apiModules'
 export default class ShowHelper extends AbstractHelper {
 
   /**
-   * Update the torrents for an existing episode.
-   *
-   * @param {Array} torrents - Array of new torrents
-   * @param {Array} foundTorrents - Array of existing torrents
-   * @returns {Array<Object>} - Array of the best torrents
-   * @private
-   */
-  _updateTorrents(
-    torrents: Array<Object>,
-    foundTorrents: Array<Object>,
-  ): Object {
-    let newTorrents = torrents
-
-    foundTorrents.forEach(torrent => {
-      const match = torrents.find(
-        t => t.quality === torrent.quality && t.language === torrent.language,
-      )
-
-      if (!match) {
-        newTorrents.push(torrent)
-
-      } else if (match.seeds > torrent.seeds) {
-        // Remove the lesser one
-        newTorrents = newTorrents.filter(
-          t => t.quality !== torrent.quality && t.language !== torrent.language,
-        )
-
-        newTorrents.push(match)
-      }
-    })
-
-    return newTorrents
-  }
-
-  /**
    * Sorts the content like seasons and episodes
    *
    * @param {Array} seasonsOrEpisodes - Seasons or episodes to sort
@@ -186,7 +151,7 @@ export default class ShowHelper extends AbstractHelper {
             e.downloadedOn = found.downloadedOn
 
             if (found.torrents && found.torrents.length > 0) {
-              e.torrents = this._updateTorrents(e.torrents, found.torrents)
+              e.torrents = this._formatTorrents(e.torrents, found.torrents)
             }
 
             await this.Model.Episode.findOneAndUpdate({

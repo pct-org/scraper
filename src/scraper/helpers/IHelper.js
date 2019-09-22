@@ -15,10 +15,7 @@ export default class IHelper {
    * @throws {Error} - Using default method: 'getTraktInfo'.
    * @returns {Promise<ContentModel, Error>} - A new content model.
    */
-  getTraktInfo(
-    traktSlug: string,
-    imdbId?: string
-  ): Promise<Error> {
+  getTraktInfo(traktSlug: string, imdbId?: string): Promise<Error> {
     throw new Error('Using default method: \'getTraktInfo\'')
   }
 

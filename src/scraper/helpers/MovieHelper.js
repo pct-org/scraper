@@ -11,61 +11,6 @@ import { fanart, tmdb, trakt, omdb } from '../apiModules'
  */
 export default class MovieHelper extends AbstractHelper {
 
-  /**
-   * Update the torrents for an existing movie.
-   *
-   * @param {Array} torrents - Array of new torrents
-   * @param {Array} foundTorrents - Array of existing torrents
-   * @returns {Array<Object>} - Array of the best torrents
-   * @private
-   */
-  _updateTorrents(
-    torrents: Array<Object>,
-    foundTorrents: Array<Object>,
-  ): Object {
-    const allTorrents = [
-      ...torrents,
-      ...foundTorrents,
-    ]
-
-    let newTorrents = []
-
-    // Loop true all torrents
-    allTorrents.forEach((torrent) => {
-      const match = newTorrents.find(
-        t => t.quality === torrent.quality && t.language === torrent.language,
-      )
-
-      // No match add this one
-      if (!match) {
-        newTorrents.push(torrent)
-
-      } else if (torrent.quality === '2160p') {
-        // For 2160p we get the smallest one
-        if (torrent.size < match.size) {
-          // Remove the bigger one
-          newTorrents = newTorrents.filter(
-            t => t.quality !== torrent.quality && t.language !== torrent.language,
-          )
-
-          // Add the new one
-          newTorrents.push(torrent)
-        }
-
-      } else if (match.seeds < torrent.seeds) {
-        // Remove the lesser one
-        newTorrents = newTorrents.filter(
-          t => t.quality !== torrent.quality && t.language !== torrent.language,
-        )
-
-        // Add the new one
-        newTorrents.push(torrent)
-      }
-    })
-
-    // Return all merged torrents
-    return newTorrents
-  }
 
   /**
    * Update a given movie.
@@ -83,7 +28,7 @@ export default class MovieHelper extends AbstractHelper {
         logger.info(`${this.name}: '${found.title}' is an existing movie.`)
 
         if (found.torrents) {
-          m.torrents = this._updateTorrents(m.torrents, found.torrents)
+          m.torrents = this._formatTorrents(m.torrents, found.torrents)
         }
 
         // Keep old attributes that could change
@@ -111,7 +56,7 @@ export default class MovieHelper extends AbstractHelper {
       return await new this.Model(m).save()
 
     } catch (err) {
-      logger.error(`_updateMovie: ${err.message || err}`)
+      logger.error(`_updateMovieInDb: ${err.message || err}`)
     }
   }
 
@@ -121,12 +66,8 @@ export default class MovieHelper extends AbstractHelper {
    * @param {!Object} torrents - The torrents to add to the movie.
    * @returns {Promise<AnimeMovie|Movie>} - A movie with torrents attached.
    */
-  addTorrents(
-    movie: Movie,
-    torrents: Object,
-  ): Promise<Movie> {
-
-    movie.torrents = torrents
+  addTorrents(movie: Movie, torrents: Object): Promise<Movie> {
+    movie.torrents = this._formatTorrents(torrents)
 
     return this._updateMovieInDb(movie)
   }
@@ -140,8 +81,6 @@ export default class MovieHelper extends AbstractHelper {
     return tmdb.movie.images({
       movie_id: movie.tmdbId,
     }).then(i => {
-      const baseUrl = 'https://image.tmdb.org/t/p/w500'
-
       const tmdbPoster = i.posters.filter(
         poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null,
       ).shift()
@@ -149,8 +88,6 @@ export default class MovieHelper extends AbstractHelper {
       const tmdbBackdrop = i.backdrops.filter(
         backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null,
       ).shift()
-
-      const { Holder } = AbstractHelper
 
       return this.checkImages({
         ...movie,
@@ -401,7 +338,7 @@ export default class MovieHelper extends AbstractHelper {
         message = `getTraktInfo: Could not find any data with slug: '${traktSlug}'`
       }
 
-      // BulkProvider will log it
+      // BaseProvider will log it
       return Promise.reject(Error(message))
     }
   }

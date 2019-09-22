@@ -82,7 +82,7 @@ export default class BaseProvider extends AbstractProvider {
       delete episodes[0]
     }
 
-    return this.helper.getTraktInfo(slug, imdb).then(res => {
+    return this.helper.getTraktInfo(slug, imdb).then((res) => {
       if (res && res.imdbId) {
         return this.helper.addEpisodes(res, episodes, slug)
       }
@@ -99,7 +99,7 @@ export default class BaseProvider extends AbstractProvider {
   _getMovieContent(content: Object): Promise<Object | Error> {
     const { slug, torrents } = content
 
-    return this.helper.getTraktInfo(slug).then(res => {
+    return this.helper.getTraktInfo(slug).then((res) => {
       if (res && res.imdbId) {
         return this.helper.addTorrents(res, torrents)
       }
@@ -183,10 +183,7 @@ export default class BaseProvider extends AbstractProvider {
    * @returns {Promise<Array<Object>, Error>} - A list of object with
    * content information extracted from the torrents.
    */
-  getAllContent({
-    torrents,
-    lang = 'en',
-  }: Object): Promise<Array<Object>> {
+  getAllContent({ torrents, lang = 'en' }: Object): Promise<Array<Object>> {
     throw new Error('Using default method: \'getAllContent\'')
   }
 
@@ -312,7 +309,7 @@ export default class BaseProvider extends AbstractProvider {
     try {
       this.setConfig({ name, api, contentType, Model, Helper, query, regexps })
 
-      const totalPages = await this.getTotalPages()
+      const totalPages = 5 //await this.getTotalPages()
 
       if (!totalPages) {
         return logger.error(

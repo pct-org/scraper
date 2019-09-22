@@ -24,10 +24,7 @@ export default class MovieProvider extends BaseProvider {
    * @returns {Promise<Array<Object>, Error>} - A list of object with
    * content information extracted from the torrents.
    */
-  getAllContent({
-    torrents,
-    lang = 'en',
-  }: Object): Promise<Array<Object>> {
+  getAllContent({ torrents, lang = 'en', }: Object): Promise<Array<Object>> {
     const movies = new Map()
 
     return pMap(torrents, (torrent) => {
@@ -49,7 +46,7 @@ export default class MovieProvider extends BaseProvider {
       // If we already have the movie merge the torrents together
       if (movies.has(slug)) {
         // Reset the movies torrents
-        movie.torrents = this.helper._updateTorrents(
+        movie.torrents = this.helper._formatTorrents(
           movies.get(slug).torrents,
           movie.torrents,
         )

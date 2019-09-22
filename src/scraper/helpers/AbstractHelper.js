@@ -104,53 +104,10 @@ export default class AbstractHelper extends IHelper {
   }
 
   /**
-   * Formats the torrents
-   * @param {Array} torrents Object torrents to format
-   * @returns {Array} of torrents
-   * @protected
-   */
-  _formatTorrents(torrents: Object) {
-    let formattedTorrents = []
-
-    if (!torrents) {
-      return formattedTorrents
-    }
-
-    Object.keys(torrents).forEach(quality => {
-      let add = true
-      const sameQuality = formattedTorrents.find(
-        torrent => torrent.quality === quality,
-      )
-
-      if (sameQuality) {
-        if (torrents[quality].seeds > sameQuality.seeds) {
-          // Remove the quality from the array
-          formattedTorrents = formattedTorrents.filter(
-            torrent => torrent.quality === quality,
-          )
-
-        } else {
-          add = false
-        }
-      }
-
-      if (add) {
-        formattedTorrents.push({
-          ...torrents[quality],
-          sizeString: this._formatTorrentSize(torrents[quality].size),
-          quality,
-        })
-      }
-    })
-
-    return formattedTorrents
-  }
-
-  /**
    * @param {!number} runtimeInMinutes - runtime in minutes of the item
    * @returns {{hours: number, minutes: number, short: string, full: string}}
    * formatted runtime object
-   * @private
+   * @protected
    */
   _formatRuntime(runtimeInMinutes: number) {
     const hours = runtimeInMinutes >= 60 ? Math.round(runtimeInMinutes / 60) : 0
@@ -175,13 +132,74 @@ export default class AbstractHelper extends IHelper {
   }
 
   /**
+   * Update the torrents for an item, can also merge existing torrents and new ones
+   * together
+   *
+   * @param {Array} torrents - Array of new torrents
+   * @param {Array} foundTorrents - Array of existing torrents
+   * @returns {Array<Object>} - Array of the best torrents
+   * @protected
+   */
+  _formatTorrents(torrents: Array<Object>, foundTorrents: Array<Object> = []): Array<Object> {
+    const allTorrents = [
+      ...torrents,
+      ...foundTorrents,
+    ]
+
+    let newTorrents = []
+
+    // Loop true all torrents
+    allTorrents.forEach((torrent) => {
+      let add = true
+      const match = newTorrents.find(
+        t => t.quality === torrent.quality,
+      )
+
+      // If we have a match we need additional checks to determine witch one to keep
+      if (match) {
+        // Put add to false
+        add = false
+
+        // For 2160p we get the smallest one
+        if (torrent.quality === '2160p') {
+          // Check fi existing torrent is bigger then the new one
+          if (torrent.size < match.size) {
+            add = true
+          }
+
+        } else if (match.seeds < torrent.seeds) {
+          add = true
+        }
+      }
+
+      if (add) {
+        // If add was true and we have a match we need to remove the old one
+        if (match) {
+          newTorrents = newTorrents.filter(
+            t => t.quality !== torrent.quality,
+          )
+        }
+
+        // Add the sizeString attribute
+        torrent.sizeString = AbstractHelper._formatTorrentSize(torrent.size)
+
+        newTorrents.push(torrent)
+      }
+    })
+
+    // Return all merged torrents
+    return newTorrents.sort((torrentA, torrentB) =>
+      parseInt(torrentA.quality, 10) < parseInt(torrentB.quality, 10),
+    )
+  }
+
+  /**
    * Formats torrent it's size to human readable
    *
    * @param bytes
    * @return {string}
-   * @private
    */
-  _formatTorrentSize(bytes: number) {
+  static _formatTorrentSize(bytes: number) {
     if (!bytes || bytes === 0) {
       return '0 Byte'
     }
@@ -193,6 +211,6 @@ export default class AbstractHelper extends IHelper {
       10,
     )
 
-    return `${(bytes / (1024 ** i)).toFixed(2)} ${['Bytes/s', 'KB/s', 'MB/s', 'GB/s'][i]}`
+    return `${(bytes / (1024 ** i)).toFixed(2)} ${['Bytes', 'KB', 'MB', 'GB'][i]}`
   }
 }

@@ -13,7 +13,7 @@ import { ShowHelper } from '../helpers'
  * @type {Object}
  */
 const katTvConfig: Object = {
-  name: 'KAT TV',
+  name: 'KAT',
   api: kat,
   contentType: KatTvProvider.ContentTypes.Show,
   Helper: ShowHelper,

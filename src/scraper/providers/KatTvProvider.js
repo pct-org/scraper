@@ -153,7 +153,7 @@ export default class KatTvProvider extends BaseProvider {
         return shows.set(slug, show)
       }
 
-      // TODO:: This here needs to be checked and updated accordingly
+      // TODO:: This fhere needs to be checked and updated accordingly
 
       const torrent = show.episodes[season][episode][quality]
       const created = this.attachTorrent({

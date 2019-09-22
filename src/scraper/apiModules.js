@@ -1,10 +1,9 @@
-// Import the necessary modules.
 // @flow
 /**
  * An EZTV API wrapper to get data from eztv.ag.
  * @external {Eztv} https://github.com/ChrisAlderson/eztv-api-pt
  */
-import Eztv from 'eztv-api-pt'
+import Eztv from '@pct-org/eztv-api-pt'
 
 /**
  * A Fanart.tv API wrapper for NodeJS.
@@ -16,7 +15,7 @@ import Fanart from 'fanart.tv-api'
  * A KickassTorrents API wrapper for NodeJs.
  * @external {Kat} https://github.com/ChrisAlderson/kat-api-pt
  */
-import Kat from 'kat-api-pt'
+import Kat from '@pct-org/kat-api-pt'
 
 /**
  * An OMDB API wrapper for NodeJS.
@@ -52,7 +51,13 @@ import Yts from 'yts-api-pt'
  * A NodeJS wrapper for ettv.to
  * @external {Ettv} https://github.com/ChrisAlderson/ettv-api-pt
  */
-import Ettv from 'ettv-api'
+import Ettv from '@pct-org/ettv-api'
+
+/**
+ * A NodeJS wrapper for zooqle.com
+ * @external {Ettv} https://github.com/ChrisAlderson/ettv-api-pt
+ */
+import { zooqle } from '@pct-org/zooqle'
 
 /**
  * A configured Eztv API.
@@ -137,5 +142,6 @@ export {
   trakt,
   tvdb,
   yts,
-  ettv
+  ettv,
+  zooqle,
 }

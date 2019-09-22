@@ -32,7 +32,7 @@ export default class EttvProvider extends BaseProvider {
     this.setConfig({ name, api, contentType, Model, Helper })
 
     logger.info(`${this.name}: Started scraping...`)
-    return this.api.getFull(['Movies']).then((contents) => {
+    return this.api.getDaily(['Movies']).then((contents) => {
 
       console.log('contents.length),', contents.length)
 

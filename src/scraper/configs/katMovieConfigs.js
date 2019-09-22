@@ -22,7 +22,7 @@ const regexps = [
  * @type {Object}
  */
 export const basekatMovieConfig: Object = {
-  name: 'KAT Movies',
+  name: 'KAT',
   api: kat,
   contentType: MovieProvider.ContentTypes.Movie,
   Helper: MovieHelper,
@@ -35,21 +35,24 @@ export const basekatMovieConfig: Object = {
  * @type {Array<Object>}
  */
 export default [
+  // Disabled for now to prevent non eng content
   // {
   //   ...basekatMovieConfig,
   //   query: {
   //     page: 1,
-  //     language: 'en',
+  //     language: 'english',
   //     verified: 1,
   //     category: 'movies',
   //     subcate: 'hd',
   //   },
   // },
+
+  // Only use cat for UltraHD
   {
     ...basekatMovieConfig,
     query: {
       page: 1,
-      language: 'en',
+      language: 'english',
       verified: 1,
       category: 'movies',
       subcate: 'ultrahd',

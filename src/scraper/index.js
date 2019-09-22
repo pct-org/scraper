@@ -5,6 +5,7 @@ import {
   ytsConfigs,
   katMovieConfigs,
   katTvConfigs,
+  zooqleConfigs
 } from './configs'
 import {
   EttvProvider,
@@ -12,6 +13,7 @@ import {
   YtsProvider,
   KatMovieProvider,
   KatTvProvider,
+  ZooqleProvider
 } from './providers'
 
 /**
@@ -26,19 +28,14 @@ const maxWebRequests: number = 2
  */
 export default [
   {
-    Provider: KatMovieProvider,
+    Provider: ZooqleProvider,
     args: {
       maxWebRequests,
-      configs: katMovieConfigs,
+      configs: zooqleConfigs,
     },
   },
-  // {
-  //   Provider: EztvProvider,
-  //   args: {
-  //     maxWebRequests,
-  //     configs: eztvConfigs,
-  //   },
-  // },
+
+  // // For Movies
   // {
   //   Provider: YtsProvider,
   //   args: {
@@ -46,40 +43,11 @@ export default [
   //     configs: ytsConfigs,
   //   },
   // },
-  // Keep disabled for now!
+  // // For Shows
   // {
-  //   Provider: KatTvProvider,
+  //   Provider: EztvProvider,
   //   args: {
   //     maxWebRequests,
-  //     configs: katTvConfigs,
+  //     configs: eztvConfigs,
   //   },
-  // },
-  // {
-  //   Provider: EttvProvider,
-  //   args: {
-  //     maxWebRequests,
-  //     configs: ettvConfigs,
-  //   },
-  // },
 ]
-
-// export default [
-//    Provider: MovieProvider,
-//    args: {
-//    maxWebRequests,
-//    configs: movieConfigs
-//    }
-//    }, {
-//    Provider: ShowProvider,
-//    args: {
-//    maxWebRequests,
-//    configs: showConfigs
-//    }
-//    }, */{
-//     Provider: YtsProvider,
-//     args: {
-//       maxWebRequests,
-//       configs: ytsConfigs,
-//     },
-//   },
-// ]
