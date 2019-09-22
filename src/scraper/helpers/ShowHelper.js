@@ -251,20 +251,12 @@ export default class ShowHelper extends AbstractHelper {
             complete: false,
             progress: 0,
           },
+          createdAt: Number(new Date()),
+          updatedAt: Number(new Date()),
         }
 
         updatedEpisodes.push(episode)
       })
-
-      // Check if the season has any torrents
-      const torrents = updatedEpisodes.filter(
-        episode => episode.torrents.length > 0,
-      )
-
-      if (torrents.length === 0) {
-        // Don't add the season if non of the episodes has torrents
-        return show
-      }
 
       show.seasons.push({
         _id: `${show.imdbId}-${s.season_number}`,
@@ -283,6 +275,8 @@ export default class ShowHelper extends AbstractHelper {
         },
         type: 'season',
         episodes: this.sortSeasonsOrEpisodes(updatedEpisodes),
+        createdAt: Number(new Date()),
+        updatedAt: Number(new Date()),
       })
 
       show.seasons = this.sortSeasonsOrEpisodes(show.seasons)
@@ -338,6 +332,8 @@ export default class ShowHelper extends AbstractHelper {
             complete: false,
             progress: 0,
           },
+          createdAt: Number(new Date()),
+          updatedAt: Number(new Date()),
         }
 
         if (index === 0) {
@@ -372,6 +368,8 @@ export default class ShowHelper extends AbstractHelper {
           poster: AbstractHelper.DefaultImageSizes,
         },
         episodes: this.sortSeasonsOrEpisodes(updatedEpisodes),
+        createdAt: Number(new Date()),
+        updatedAt: Number(new Date()),
       })
 
       show.seasons = this.sortSeasonsOrEpisodes(show.seasons)
@@ -618,11 +616,11 @@ export default class ShowHelper extends AbstractHelper {
   async getTraktInfo(traktSlug: string, imdbId?: string = null): Show {
     try {
       let traktShow = null
-      let idUsed = traktSlug
+      let idUsed = traktSlug || imdbId
 
       try {
         traktShow = await trakt.shows.summary({
-          id: traktSlug,
+          id: idUsed,
           extended: 'full',
         })
       } catch (err) {
@@ -631,13 +629,15 @@ export default class ShowHelper extends AbstractHelper {
           throw err
         }
 
-        logger.warn(`No show found for slug: '${traktSlug}' trying imdb id: '${imdbId}'`)
+        if (idUsed !== imdbId) {
+          logger.warn(`No show found for slug: '${traktSlug}' trying imdb id: '${imdbId}'`)
 
-        idUsed = imdbId
-        traktShow = await trakt.shows.summary({
-          id: imdbId,
-          extended: 'full',
-        })
+          idUsed = imdbId
+          traktShow = await trakt.shows.summary({
+            id: imdbId,
+            extended: 'full',
+          })
+        }
       }
 
       if (!traktShow) {
