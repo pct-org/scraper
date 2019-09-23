@@ -36,7 +36,7 @@
     "@pct-org/mongo-models": "^0.9.4",
     "@pct-org/pop-api": "^0.7.1",
     "@pct-org/pop-api-scraper": "^0.7.0",
-    "@pct-org/zooqle": "^1.0.46",
+    "@pct-org/zooqle": "^1.0.47",
     "bytes": "^3.0.0",
     "dotenv": "8.1.0",
     "fanart.tv-api": "^2.0.1",

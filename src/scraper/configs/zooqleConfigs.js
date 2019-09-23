@@ -7,7 +7,7 @@ import { MovieModel } from '@pct-org/mongo-models/dist/movie/movie.model'
 
 const regexps = [
   {
-    regex: /(.*).(\d{4}).[4k]\D+(\d{3,4}p)/i,
+    regex: /(.*).(\d{4}).+[4k]\D+(\d{3,4}p)/i,
   }, {
     regex: /(.*).(\d{4}).[UHD]\D+(\d{3,4}p)/i,
   }, {

@@ -28,7 +28,7 @@ export default class ZooqleProvider extends MovieProvider {
   getAllTorrents(totalPages: number): Promise<Array<Object>> {
     let torrents = []
 
-    return pTimes(totalPages, async page => {
+    return pTimes(totalPages, async (page) => {
       logger.info(`${this.name}: Started searching ${this.name} on page ${page + 1} out of ${totalPages}`)
 
       const res = await this.api.search(this.query.query, [`pg=${page + 1}`], ['movie'])
@@ -63,7 +63,7 @@ export default class ZooqleProvider extends MovieProvider {
         ? name
         : null
 
-    if (!t || torrent.languages.indexOf(lang) === -1) {
+    if (!t || torrent.languages.indexOf(lang) === -1 || torrent.quality.toLowerCase() === 'str') {
       return
     }
 

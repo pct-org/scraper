@@ -309,7 +309,7 @@ export default class BaseProvider extends AbstractProvider {
     try {
       this.setConfig({ name, api, contentType, Model, Helper, query, regexps })
 
-      const totalPages = 10 //await this.getTotalPages()
+      const totalPages = await this.getTotalPages()
 
       if (!totalPages) {
         return logger.error(

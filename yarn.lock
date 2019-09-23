@@ -1110,10 +1110,10 @@
     response-time "^2.3.2"
     winston "^3.2.1"
 
-"@pct-org/zooqle@^1.0.46":
-  version "1.0.46"
-  resolved "https://registry.yarnpkg.com/@pct-org/zooqle/-/zooqle-1.0.46.tgz#479f1d8f4730d166df6ca02bce4566c42d15bc5a"
-  integrity sha512-cxqrPRfVrpsJ41H1nahlbpZL44uOb4vXz62oYcRnwfFmr6W15EA9SnB1cCYsm2O+77Mg0yoKEMLKLUrO1nQVeA==
+"@pct-org/zooqle@^1.0.47":
+  version "1.0.47"
+  resolved "https://registry.yarnpkg.com/@pct-org/zooqle/-/zooqle-1.0.47.tgz#aac6671e71e715dc5a20dcc1607f7e3cd1f991b8"
+  integrity sha512-gJOpBI1QJZapakL7PeH59no0yNt8WyBAfifjqnW2+tXyOetflvVD2AqQ8CetTrILhvG1kKpDn5EFMOkJHSf6Hg==
   dependencies:
     axios "^0.18.0"
     bytes "^3.1.0"
