@@ -1,12 +1,7 @@
 // Import the necessary modules.
 // @flow
 import IHelper from './IHelper'
-import type {
-  AnimeMovie,
-  AnimeShow,
-  Movie,
-  Show,
-} from '../../models'
+import type { Movie, Show } from '@pct-org/mongo-models'
 
 /**
  * Abstract class for saving content.
@@ -42,15 +37,15 @@ export default class AbstractHelper extends IHelper {
 
   /**
    * The model to create or alter.
-   * @type {AnimeMovie|AnimeShow|Movie|Show}
+   * @type {Movie|Show}
    * @see http://mongoosejs.com/docs/models.html
    */
-  Model: AnimeMovie | AnimeShow | Movie | Show
+  Model: Movie | Show
 
   /**
    * Create a base helper class for content.
    * @param {!string} name - The name of the content provider.
-   * @param {!AnimeMovie|AnimeShow|Movie|Show} Model - The model to help fill.
+   * @param {!Movie|Show} Model - The model to help fill.
    */
   constructor({ name, Model }: Object): void {
     super()
@@ -62,7 +57,7 @@ export default class AbstractHelper extends IHelper {
     this.name = name
     /**
      * The model to create or alter.
-     * @type {AnimeMovie|AnimeShow|Movie|Show}
+     * @type {Movie|Show}
      * @see http://mongoosejs.com/docs/models.html
      */
     this.Model = Model
@@ -71,11 +66,11 @@ export default class AbstractHelper extends IHelper {
   /**
    * Method to check the given images against the default ones.
    * @protected
-   * @param {Show|AnimeShow|Show} item - The show to check the images for
+   * @param {Show|Show} item - The show to check the images for
    * @returns {Object|undefined} - Throws an error if the given images are the
    * same, otherwise it will return the given images.
    */
-  checkImages(item: Show | AnimeShow | Movie): Promise<Object> {
+  checkImages(item: Show | Movie): Promise<Object> {
     for (const i in item.images) {
       if (item.images[i] === AbstractHelper.Holder) {
         return Promise.reject(item)

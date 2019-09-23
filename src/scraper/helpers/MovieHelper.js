@@ -11,7 +11,6 @@ import { fanart, tmdb, trakt, omdb } from '../apiModules'
  */
 export default class MovieHelper extends AbstractHelper {
 
-
   /**
    * Update a given movie.
    * @param {!Movie} movie - The movie to update its torrent.
@@ -21,7 +20,7 @@ export default class MovieHelper extends AbstractHelper {
     try {
       const m = movie
       const found = await this.Model.findOne({
-        _id: m.imdbId,
+        _id: m._id,
       })
 
       if (found) {
@@ -41,7 +40,7 @@ export default class MovieHelper extends AbstractHelper {
         m.downloadedOn = found.downloadedOn
 
         return await this.Model.findOneAndUpdate({
-            _id: m.imdbId,
+            _id: m._id,
           },
           m,
           {

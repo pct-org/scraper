@@ -332,7 +332,16 @@ export default class BaseProvider extends AbstractProvider {
       return await pMap(
         allContent,
         content => this.getContent(content)
-          .catch(err => logger.error(`BaseProvider.scrapeConfig: ${err.message || err}`)),
+          .catch((err) => {
+            const errorMessage = err.message || err
+
+            logger.error(`BaseProvider.scrapeConfig: ${errorMessage}`)
+
+            // Log the content so it can be better debugged from logs
+            if (errorMessage.includes('Could not find any data with slug')) {
+              logger.error(JSON.stringify(content))
+            }
+          }),
         {
           concurrency: this.maxWebRequests,
         },

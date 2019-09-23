@@ -42,7 +42,7 @@
     "fanart.tv-api": "^2.0.1",
     "gulp": "4.0.2",
     "inquirer": "7.0.0",
-    "mongoose": "5.7.1",
+    "mongoose": "5.7.0",
     "node-tvdb": "4.1.0",
     "omdb-api-pt": "^2.0.1",
     "p-map": "3.0.0",
