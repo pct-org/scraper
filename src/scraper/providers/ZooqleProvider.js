@@ -86,12 +86,12 @@ export default class ZooqleProvider extends MovieProvider {
       slug,
       torrents: [
         {
-          quality: torrent.quality,
           title,
+          quality: torrent.quality,
           size: torrent.size,
           peers: torrent.leechers,
           seeds: torrent.seeders,
-          url: torrent.torrentLink,
+          url: torrent.magnet,
           language: torrent.languages.join(','),
           provider: this.name,
         },
