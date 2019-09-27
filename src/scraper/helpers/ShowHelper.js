@@ -37,6 +37,22 @@ export default class ShowHelper extends AbstractHelper {
         _id: s.imdbId,
       })
 
+
+      // Get the latestEpisodeAired
+      let latestEpisodeAired = null
+      s.seasons.forEach((season) => {
+        // Loop true all episodes
+        season.episodes.forEach((episode) => {
+          // If the firstAired is higher then that is a newer episode
+          if (episode.firstAired > latestEpisodeAired) {
+            latestEpisodeAired = episode.firstAired
+          }
+        })
+      })
+
+      // Set the latestEpisodeAired
+      s.latestEpisodeAired = latestEpisodeAired
+
       // We do not need to store the seasons here
       delete s.seasons
 
@@ -193,6 +209,7 @@ export default class ShowHelper extends AbstractHelper {
 
       s.episodes.map(e => {
         const number = parseInt(e.episode_number, 10)
+        const torrents = episodes[season][e.episode_number]
 
         const episode = {
           _id: `${show.imdbId}-${season}-${number}`,
@@ -211,7 +228,9 @@ export default class ShowHelper extends AbstractHelper {
             backdrop: AbstractHelper.DefaultImageSizes,
           },
           type: 'episode',
-          torrents: this._formatTorrents(episodes[season][e.episode_number]),
+          torrents: typeof torrents !== 'undefined'
+            ? this._formatTorrents(torrents)
+            : [],
           watched: {
             complete: false,
             progress: 0,
@@ -278,6 +297,8 @@ export default class ShowHelper extends AbstractHelper {
 
       s.map((e, index) => {
         const number = parseInt(e.number, 10)
+        const torrents = episodes[season][e.number]
+
         const episode = {
           _id: `${show.imdbId}-${season}-${number}`,
           showImdbId: show.imdbId,
@@ -292,7 +313,9 @@ export default class ShowHelper extends AbstractHelper {
             poster: AbstractHelper.DefaultImageSizes,
           },
           type: 'episode',
-          torrents: this._formatTorrents(episodes[season][e.number]),
+          torrents: typeof torrents !== 'undefined'
+            ? this._formatTorrents(torrents)
+            : [],
           watched: {
             complete: false,
             progress: 0,
@@ -653,6 +676,7 @@ export default class ShowHelper extends AbstractHelper {
           createdAt: Number(new Date()),
           updatedAt: Number(new Date()),
           seasons: [],
+          latestEpisodeAired: 0,
           numSeasons: 0,
         })
       }
