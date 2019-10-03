@@ -122,6 +122,10 @@ export default class BaseProvider extends AbstractProvider {
       return this._getMovieContent(content)
     }
 
+    // https://trakt.docs.apiary.io/#reference/movies/related/get-related-movies
+    // https://trakt.docs.apiary.io/#reference/shows/related/get-related-shows
+    // TODO:: Also add related somewhere
+
     return Promise.reject(new Error(`'${this.contentType}' is not a valid value for ContentTypes!`))
   }
 

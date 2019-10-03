@@ -1,6 +1,4 @@
 export eztvConfigs from './eztvConfigs'
-export katMovieConfigs from './katMovieConfigs'
-export katTvConfigs from './katTvConfigs'
 export ytsConfigs from './ytsConfigs'
 export ettvConfigs from './ettvConfigs'
 export zooqleConfigs from './zooqleConfigs'

@@ -185,7 +185,7 @@ export default class MovieHelper extends AbstractHelper {
    * @returns {Promise<Movie>} - A movie with torrents attached.
    */
   _addFanartImages(movie: Movie): Promise<Movie> {
-    return fanart.getMovieImages(movie.tmdb_id).then(i => {
+    return fanart.getMovieImages(movie.tmdbId).then(i => {
       const banner = !movie.images.banner && i.moviebanner
         ? i.moviebanner.shift()
         : null
@@ -246,7 +246,7 @@ export default class MovieHelper extends AbstractHelper {
 
     }).catch(err => {
       // If we have tmdb_id then the check images failed
-      if (err.tmdb_id) {
+      if (err.tmdbId) {
         return Promise.reject(err)
 
       } else if (err.statusCode && err.statusCode === 404) {

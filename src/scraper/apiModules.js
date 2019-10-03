@@ -12,12 +12,6 @@ import Eztv from '@pct-org/eztv-api-pt'
 import Fanart from 'fanart.tv-api'
 
 /**
- * A KickassTorrents API wrapper for NodeJs.
- * @external {Kat} https://github.com/ChrisAlderson/kat-api-pt
- */
-import Kat from '@pct-org/kat-api-pt'
-
-/**
  * An OMDB API wrapper for NodeJS.
  * @external {Omdb} https://github.com/ChrisAlderson/omdb-api-pt
  */
@@ -78,13 +72,6 @@ const fanart = new Fanart({
 })
 
 /**
- * A configured Kat API.
- * @type {Kat}
- * @see https://github.com/pct-org/kat-api-pt
- */
-const kat = new Kat()
-
-/**
  * A configured Omdb API.
  * @type {Omdb}
  * @see https://github.com/ChrisAlderson/omdb-api-pt
@@ -136,7 +123,6 @@ const ettv = new Ettv()
 export {
   eztv,
   fanart,
-  kat,
   omdb,
   tmdb,
   trakt,
