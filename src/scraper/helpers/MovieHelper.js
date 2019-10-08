@@ -35,9 +35,7 @@ export default class MovieHelper extends AbstractHelper {
         m.bookmarked = found.bookmarked
         m.bookmarkedOn = found.bookmarkedOn
         m.watched = found.watched
-        m.downloaded = found.downloaded
-        m.downloading = found.downloading
-        m.downloadedOn = found.downloadedOn
+        m.download = found.download
 
         return await this.Model.findOneAndUpdate({
             _id: m._id,
@@ -325,6 +323,12 @@ export default class MovieHelper extends AbstractHelper {
           watched: {
             complete: false,
             progress: 0,
+          },
+          download: {
+            downloaded: false,
+            downloading: false,
+            downloadStatus: null,
+            downloadProgress: null
           },
           bookmarked: false,
           bookmarkedOn: null,

@@ -162,9 +162,7 @@ export default class ShowHelper extends AbstractHelper {
             // Keep old attributes that could change
             e.createdAt = found.createdAt
             e.watched = found.watched
-            e.downloaded = found.downloaded
-            e.downloading = found.downloading
-            e.downloadedOn = found.downloadedOn
+            e.download = found.download
 
             if (found.torrents && found.torrents.length > 0) {
               e.torrents = this._formatTorrents(e.torrents, found.torrents)
@@ -234,6 +232,12 @@ export default class ShowHelper extends AbstractHelper {
           watched: {
             complete: false,
             progress: 0,
+          },
+          download: {
+            downloaded: false,
+            downloading: false,
+            downloadStatus: null,
+            downloadProgress: null
           },
           createdAt: Number(new Date()),
           updatedAt: Number(new Date()),
@@ -319,6 +323,12 @@ export default class ShowHelper extends AbstractHelper {
           watched: {
             complete: false,
             progress: 0,
+          },
+          download: {
+            downloaded: false,
+            downloading: false,
+            downloadStatus: null,
+            downloadProgress: null
           },
           createdAt: Number(new Date()),
           updatedAt: Number(new Date()),

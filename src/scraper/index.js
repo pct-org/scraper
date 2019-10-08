@@ -5,7 +5,7 @@ import {
   ytsConfigs,
   katMovieConfigs,
   katTvConfigs,
-  zooqleConfigs
+  zooqleConfigs,
 } from './configs'
 import {
   EttvProvider,
@@ -13,7 +13,7 @@ import {
   YtsProvider,
   KatMovieProvider,
   KatTvProvider,
-  ZooqleProvider
+  ZooqleProvider,
 } from './providers'
 
 /**
@@ -27,13 +27,14 @@ const maxWebRequests: number = 2
  * @type {Array<Object>}
  */
 export default [
-  {
-    Provider: ZooqleProvider,
-    args: {
-      maxWebRequests,
-      configs: zooqleConfigs,
-    },
-  },
+  // For UHD content
+  // {
+  //   Provider: ZooqleProvider,
+  //   args: {
+  //     maxWebRequests,
+  //     configs: zooqleConfigs,
+  //   },
+  // },
 
   // // For Movies
   // {
@@ -43,11 +44,12 @@ export default [
   //     configs: ytsConfigs,
   //   },
   // },
-  // // For Shows
-  // {
-  //   Provider: EztvProvider,
-  //   args: {
-  //     maxWebRequests,
-  //     configs: eztvConfigs,
-  //   },
+  // For Shows
+  {
+    Provider: EztvProvider,
+    args: {
+      maxWebRequests,
+      configs: eztvConfigs,
+    }
+  },
 ]
