@@ -1,7 +1,7 @@
 <h1 align="center">
   <img height="200" width="200" src="https://github.com/pct-org/getting-started/blob/master/.github/logo.png" alt="logo" />
   <br />
-  Getting Started
+  Scraper
 </h1>
 
 <div align="center">

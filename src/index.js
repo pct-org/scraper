@@ -52,6 +52,7 @@ import { name, version } from '../package.json'
       // Add the cron and enabled it if the scraper should start
       await PopApi.use(Cron, {
         start: PopApi.startScraper,
+        cronTime: process.env.CRON_TIME,
       })
     }
 
