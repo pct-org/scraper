@@ -1,18 +1,12 @@
 // @flow
 import {
-  ettvConfigs,
   eztvConfigs,
   ytsConfigs,
-  katMovieConfigs,
-  katTvConfigs,
   zooqleConfigs,
 } from './configs'
 import {
-  EttvProvider,
   EztvProvider,
   YtsProvider,
-  KatMovieProvider,
-  KatTvProvider,
   ZooqleProvider,
 } from './providers'
 
@@ -27,29 +21,28 @@ const maxWebRequests: number = 2
  * @type {Array<Object>}
  */
 export default [
-  // For UHD content
-  // {
-  //   Provider: ZooqleProvider,
-  //   args: {
-  //     maxWebRequests,
-  //     configs: zooqleConfigs,
-  //   },
-  // },
-
-  // // For Movies
-  // {
-  //   Provider: YtsProvider,
-  //   args: {
-  //     maxWebRequests,
-  //     configs: ytsConfigs,
-  //   },
-  // },
+  // For Movies
+  {
+    Provider: YtsProvider,
+    args: {
+      maxWebRequests,
+      configs: ytsConfigs,
+    },
+  },
   // For Shows
   {
     Provider: EztvProvider,
     args: {
       maxWebRequests,
       configs: eztvConfigs,
-    }
+    },
+  },
+  // For UHD content
+  {
+    Provider: ZooqleProvider,
+    args: {
+      maxWebRequests,
+      configs: zooqleConfigs,
+    },
   },
 ]
