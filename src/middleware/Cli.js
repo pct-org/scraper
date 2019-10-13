@@ -1,10 +1,6 @@
 /* eslint-disable no-console */
-import fs from 'fs'
-import inquirer from 'inquirer'
 import path from 'path'
 import { Cli as BaseCli, Database } from '@pct-org/pop-api'
-
-import promptSchemas from './promptschemas'
 
 /**
  * Class The class for the command line interface.
@@ -87,7 +83,6 @@ export default class Cli extends BaseCli {
     const baseHelp = super.getHelp()
     return baseHelp.concat([
       `    $ ${this.name} --export <movie|show>`,
-      `    $ ${this.name} --import <path-to-json>`,
     ])
   }
 
@@ -114,32 +109,6 @@ export default class Cli extends BaseCli {
         console.error(`An error occurred: ${err}`)
         return process.exit(1)
       })
-  }
-
-  /**
-   * Handle the --import CLI option.
-   * @param {!string} i - The collection to import.
-   * @throws {Error} - Error: no such file found for 'JSON_FILE'
-   * @returns {Promise<string, undefined>|undefined} - The promise to import a
-   * collection.
-   */
-  _import(i: string): Promise<string | void> {
-    if (!fs.existsSync(i)) {
-      console.error(`File '${i}' does not exists!`)
-      return Promise.reject(process.exit(1))
-    }
-
-    const { confirm } = promptSchemas
-    return inquirer.prompt([confirm]).then(({ confirm }) => {
-      if (confirm) {
-        return this.database.importFile(path.basename(i, '.json'), i)
-      }
-
-      return process.exit(0)
-    }).catch(err => {
-      console.error(`An error occurred: ${err}`)
-      return process.exit(1)
-    })
   }
 
   /**
