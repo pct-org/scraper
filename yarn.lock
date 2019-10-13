@@ -1050,25 +1050,15 @@
   dependencies:
     debug "^3.1.0"
 
-"@pct-org/eztv-api-pt@^1.3.2":
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/@pct-org/eztv-api-pt/-/eztv-api-pt-1.3.2.tgz#7abb241a9e63ed5345a7579649a167ce3f3bf924"
-  integrity sha512-s+SO5Fs2AMKJTVFl6tJ7+9rxGspRLNhxOt45AXz5X8vJnwD5yJOBVITAEOWc8ArU7F7HNCxcBVByZ34WQGy+gw==
+"@pct-org/eztv-api-pt@^1.3.3":
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/@pct-org/eztv-api-pt/-/eztv-api-pt-1.3.3.tgz#3306ac30c723acea64d475ff26d558c1ff1afcbc"
+  integrity sha512-Az8O5/pk0sebXnMghJmXZf3i+jNo/zSKVM2HFaDqdWzr2YZnlXJ1INaWE3WuRnG0FhNIGZGJyXZOFmWxcFx5eA==
   dependencies:
     bytes "^3.1.0"
     cheerio "^1.0.0-rc.2"
     debug "^3.1.0"
     got "^8.3.1"
-
-"@pct-org/kat-api-pt@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@pct-org/kat-api-pt/-/kat-api-pt-4.0.1.tgz#9c7ff75d4f7f633bb6b42635c52f9dedda0eec97"
-  integrity sha512-Gyc3WCwLURi1nm8DVR3dXh5Lg0Su3otgnbJ6SFvHU2MGnL4w1TbURdEH6Wh5B1SqMGMKrOpVdEHr8XxzBID90Q==
-  dependencies:
-    bytes "^3.0.0"
-    cheerio "^1.0.0-rc.2"
-    debug "^3.1.0"
-    got "^8.0.3"
 
 "@pct-org/mongo-models@^0.10.1":
   version "0.10.1"
@@ -1110,10 +1100,10 @@
     response-time "^2.3.2"
     winston "^3.2.1"
 
-"@pct-org/zooqle@^1.0.47":
-  version "1.0.47"
-  resolved "https://registry.yarnpkg.com/@pct-org/zooqle/-/zooqle-1.0.47.tgz#aac6671e71e715dc5a20dcc1607f7e3cd1f991b8"
-  integrity sha512-gJOpBI1QJZapakL7PeH59no0yNt8WyBAfifjqnW2+tXyOetflvVD2AqQ8CetTrILhvG1kKpDn5EFMOkJHSf6Hg==
+"@pct-org/zooqle@^1.0.49":
+  version "1.0.49"
+  resolved "https://registry.yarnpkg.com/@pct-org/zooqle/-/zooqle-1.0.49.tgz#8dea42f10142e7f66a67825d80038d7ad16c7275"
+  integrity sha512-XS3ZCRYFBmt5GG2s2+hh9UJZkmlgU+EhTYsYHqsSa00LV4L5mtmEZAaqvBVwjr26StNlvRyi2M9X4bZ7faoeLw==
   dependencies:
     axios "^0.18.0"
     bytes "^3.1.0"
@@ -5062,7 +5052,7 @@ got@^7.1.0:
     url-parse-lax "^1.0.0"
     url-to-options "^1.0.1"
 
-got@^8.0.3, got@^8.3.1, got@^8.3.2:
+got@^8.3.1, got@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/got/-/got-8.3.2.tgz#1d23f64390e97f776cac52e5b936e5f514d2e937"
   integrity sha512-qjUJ5U/hawxosMryILofZCkm3C84PLJS/0grRIpjAwu+Lkxxj5cxeCU25BG0/3mDSpXKTyZr8oh8wIgLaH0QCw==
