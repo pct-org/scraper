@@ -1,14 +1,6 @@
 // @flow
-import {
-  eztvConfigs,
-  ytsConfigs,
-  zooqleConfigs,
-} from './configs'
-import {
-  EztvProvider,
-  YtsProvider,
-  ZooqleProvider,
-} from './providers'
+import { eztvConfigs, ytsConfigs, zooqleConfigs } from './configs'
+import { EztvProvider, YtsProvider, ZooqleProvider } from './providers'
 
 /**
  * The max concurrent web requests at a time.

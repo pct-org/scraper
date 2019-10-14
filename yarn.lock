@@ -1069,10 +1069,10 @@
     mongoose "^5.7.0"
     type-graphql "^0.17.5"
 
-"@pct-org/pop-api-scraper@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@pct-org/pop-api-scraper/-/pop-api-scraper-0.7.0.tgz#50bfcbe5d54a715239ff8ede311b194b6aeb9f90"
-  integrity sha512-9XKiYqeC3TMAiv8QhABkcibJxAr/xT7pcV7aG3RZMja0jLd2kIUz2Cz85n0G8acgOSuxx4z5IC4K/elZNI94uA==
+"@pct-org/pop-api-scraper@0.7.2":
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/@pct-org/pop-api-scraper/-/pop-api-scraper-0.7.2.tgz#d171e5bb8c490a67ffcea6aebc6a452b05650a21"
+  integrity sha512-s6wxfceKY9GMuctBoHYsxRA4pjmJpmXNAD5kRqWKUL2B2RzfVLA31DPFXWxUt0e8BD4PsqY1XNyLTOStwbBY2Q==
   dependencies:
     cheerio "^1.0.0-rc.2"
     debug "4.1.1"

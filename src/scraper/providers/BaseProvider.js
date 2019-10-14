@@ -210,9 +210,7 @@ export default class BaseProvider extends AbstractProvider {
         ? res.results // Kat & ET
         : res.data
           ? res.data.movies // YTS
-          : res.torrents
-            ? res.torrents // Nyaa
-            : []
+          : []
 
       torrents = torrents.concat(data)
 
@@ -237,9 +235,6 @@ export default class BaseProvider extends AbstractProvider {
 
       } else if (res.total_pages) { // eztv
         return res.total_pages
-
-      } else if (res.totalPages) { // Kat
-        return res.totalPages
       }
 
       return Math.ceil(res.totalRecordCount / res.queryRecordCount) // Nyaa
@@ -355,4 +350,16 @@ export default class BaseProvider extends AbstractProvider {
     }
   }
 
+  async scrapedConfigs(scraped) {
+    try {
+      if (this.contentType === BaseProvider.ContentTypes.Show) {
+        // TODO:: Do post call to the GraphQL api to check and start downloading new my episodes
+        logger.info(`Calling GraphQL to update my episodes`)
+      }
+    } catch (e) {
+
+    }
+
+    return scraped
+  }
 }

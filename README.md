@@ -27,13 +27,25 @@ Popcorn Time consists of several projects, each doing it's own part.
 ## Installation
 
 ```bash
-// TODO
+$ yarn install
 ```
 
 ## Running the scraper
 
+**Requirements**
+- Make sure MongoDB is running, for Mac users see [`@pct-org/scraper`] repo for the docker-compose file.
+- Copy the `.env.example` file and fill it in
+
+### Development
 ```bash
-// TODO
+$ yarn start:dev
+```
+
+### Production
+
+```bash
+$ yarn build
+$ yarn start
 ```
 
 ## Contributing:
