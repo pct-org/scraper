@@ -31,7 +31,7 @@
   "dependencies": {
     "@pct-org/ettv-api": "^1.0.2",
     "@pct-org/eztv-api-pt": "^1.3.3",
-    "@pct-org/mongo-models": "^0.10.1",
+    "@pct-org/mongo-models": "^0.10.2",
     "@pct-org/pop-api": "^0.7.1",
     "@pct-org/pop-api-scraper": "^0.7.0",
     "@pct-org/zooqle": "^1.0.49",

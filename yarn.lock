@@ -1060,10 +1060,10 @@
     debug "^3.1.0"
     got "^8.3.1"
 
-"@pct-org/mongo-models@^0.10.1":
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/@pct-org/mongo-models/-/mongo-models-0.10.1.tgz#0e81eb68ae68fbd00fcd23fc5249a4e8901de138"
-  integrity sha512-uzv4HHSPbR98PiLFi+GUhUeMmZY+xZpqV6y81+2lOBoAznvOIxpF266h2uNtrE4Z6bgTH6KzhNr4AzqDEArBeg==
+"@pct-org/mongo-models@^0.10.2":
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/@pct-org/mongo-models/-/mongo-models-0.10.2.tgz#ac30cf6d9658b68f2ab6bbd4aa6f86b84fdd3522"
+  integrity sha512-pf5XmmcaHU3LZ9ESx5hhhAR1hrKRbzNIUXPtw4q3tzwdFMmlWZwgm7DRtsZJ5uOmcjkNTCDN5xUII0TS68bG5Q==
   dependencies:
     graphql "^14.5.4"
     mongoose "^5.7.0"
