@@ -1,6 +1,5 @@
 // @flow
 import 'dotenv/config'
-import { isMaster } from 'cluster'
 import { join } from 'path'
 import { Database, HttpServer, Logger, Routes, PopApi } from '@pct-org/pop-api'
 import { Cron, PopApiScraper } from '@pct-org/pop-api-scraper'
@@ -48,13 +47,11 @@ import { name, version } from '../package.json'
       PopApiScraper,
     ])
 
-    if (isMaster) {
-      // Add the cron and enabled it if the scraper should start
-      await PopApi.use(Cron, {
-        start: PopApi.startScraper,
-        cronTime: process.env.CRON_TIME,
-      })
-    }
+    // Add the cron and enabled it if the scraper should start
+    await PopApi.use(Cron, {
+      start: PopApi.startScraper,
+      cronTime: process.env.CRON_TIME,
+    })
 
   } catch (err) {
     throw err

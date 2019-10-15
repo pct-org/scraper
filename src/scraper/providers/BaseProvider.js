@@ -199,7 +199,7 @@ export default class BaseProvider extends AbstractProvider {
    */
   getAllTorrents(totalPages: number): Promise<Array<Object>> {
     let torrents = []
-    return pTimes(totalPages, async page => {
+    return pTimes(totalPages, async (page) => {
       this.query.page = page + 1
 
       logger.info(`${this.name}: Started searching ${this.name} on page ${page + 1} out of ${totalPages}`)

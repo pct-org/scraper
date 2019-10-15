@@ -39,11 +39,11 @@ tmp
 *.tgz
 
 # Transpiled code
-build
+dist
 
 # dotevn
 .env
 
 .idea
-data/db
 yarn-error.log
+data/

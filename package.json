@@ -2,25 +2,27 @@
   "name": "@pct-org/scraper",
   "version": "3.0.0",
   "description": "Scraper part of PCT environment",
-  "license": "MIT",
-  "files": [
-    "./build/**"
-  ],
-  "main": "./build/scraper.js",
-  "module": "./build/scraper.esm.js",
-  "bin": {
-    "scraper": "./build/scraper.js"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/pct-org/scraper.git"
+  },
+  "license": "MIT",
+  "files": [
+    "/dist/**"
+  ],
+  "main": "./dist/scraper.js",
+  "module": "./dist/scraper.esm.js",
+  "bin": {
+    "scraper": "./dist/scraper.js"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production rollup -c",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "forever": "cross-env NODE_ENV=production forever start ./build/popcorn-api.js",
+    "postinstall": "yarn build",
     "lint": "eslint {src,test}/** ./*.js",
     "lint:fix": "yarn lint --fix",
+    "prepublish": "yarn build",
     "start": "cross-env NODE_ENV=production node ./build/popcorn-api.js -s",
     "start:debug": "yarn start:dev --inspect-brk",
     "start:dev": "cross-env NODE_ENV=development babel-node ./src/index.js -m pretty -s",
