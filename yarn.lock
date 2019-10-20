@@ -1081,10 +1081,10 @@
     node-cron "^2.0.3"
     p-map "3.0.0"
 
-"@pct-org/pop-api@^0.7.1":
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/@pct-org/pop-api/-/pop-api-0.7.1.tgz#c4781f7aefc407a0210020cf6f58c95a2271dc3c"
-  integrity sha512-890XFLo1PcQxHn4JvOrmR3g0Nv8kXlZsaPspNW3ntZAYFXERVR9IM2wyg18aewdztYCHCn/19jJTGPX8r0+dKw==
+"@pct-org/pop-api@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@pct-org/pop-api/-/pop-api-0.8.0.tgz#950bcb37b0cd64789721f7ecb7f51121def3c6bb"
+  integrity sha512-JEEryEFoLB6ch0y4JsxwoSX1kJlX0FrXvASRdHdtKluVTBvGCYuOP0n7S332xNtjN4yKriEoDiM6Fb2/MI97vQ==
   dependencies:
     "@chrisalderson/express-winston" "^3.1.0"
     body-parser "^1.18.2"
