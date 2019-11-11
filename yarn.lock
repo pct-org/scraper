@@ -1060,13 +1060,13 @@
     debug "^3.1.0"
     got "^8.3.1"
 
-"@pct-org/mongo-models@^0.10.2":
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/@pct-org/mongo-models/-/mongo-models-0.10.2.tgz#ac30cf6d9658b68f2ab6bbd4aa6f86b84fdd3522"
-  integrity sha512-pf5XmmcaHU3LZ9ESx5hhhAR1hrKRbzNIUXPtw4q3tzwdFMmlWZwgm7DRtsZJ5uOmcjkNTCDN5xUII0TS68bG5Q==
+"@pct-org/mongo-models@0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@pct-org/mongo-models/-/mongo-models-0.14.0.tgz#76d4a57f33761724b45cca3721f5cbfd3f095b73"
+  integrity sha512-bszIJ43bzblIGT/GMzdizaNLZPDbD+vAhOz6XaOFs9OVmO9iYk+T7EF4Tf1MColR/QRPxsN26Gd6cIjH2K2hIA==
   dependencies:
-    graphql "^14.5.4"
-    mongoose "^5.7.0"
+    graphql "14.5.8"
+    mongoose "5.7.5"
     type-graphql "^0.17.5"
 
 "@pct-org/pop-api-scraper@0.7.2":
@@ -1099,6 +1099,15 @@
     p-map "3.0.0"
     response-time "^2.3.2"
     winston "^3.2.1"
+
+"@pct-org/solidtorrents-api-pt@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@pct-org/solidtorrents-api-pt/-/solidtorrents-api-pt-1.0.1.tgz#16f305493e0a59c2ff543cca654c94c79d67f7fb"
+  integrity sha512-lKclnLdIfPkowBdKcUBGL1DMoxh70CdVHrcP4IiMYkYDa6iLYzZMolyhPQkJMl4UN7vZC2J8mJ2MRP0qqpwJLQ==
+  dependencies:
+    bytes "^3.0.0"
+    debug "^3.1.0"
+    got "^8.0.3"
 
 "@pct-org/zooqle@^1.0.49":
   version "1.0.49"
@@ -5052,7 +5061,7 @@ got@^7.1.0:
     url-parse-lax "^1.0.0"
     url-to-options "^1.0.1"
 
-got@^8.3.1, got@^8.3.2:
+got@^8.0.3, got@^8.3.1, got@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/got/-/got-8.3.2.tgz#1d23f64390e97f776cac52e5b936e5f514d2e937"
   integrity sha512-qjUJ5U/hawxosMryILofZCkm3C84PLJS/0grRIpjAwu+Lkxxj5cxeCU25BG0/3mDSpXKTyZr8oh8wIgLaH0QCw==
@@ -5094,10 +5103,10 @@ graphql-subscriptions@^1.1.0:
   dependencies:
     iterall "^1.2.1"
 
-graphql@^14.5.4:
-  version "14.5.4"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-14.5.4.tgz#b33fe957854e90c10d4c07c7d26b6c8e9f159a13"
-  integrity sha512-dPLvHoxy5m9FrkqWczPPRnH0X80CyvRE6e7Fa5AWEqEAzg9LpxHvKh24po/482E6VWHigOkAmb4xCp6P9yT9gw==
+graphql@14.5.8:
+  version "14.5.8"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-14.5.8.tgz#504f3d3114cb9a0a3f359bbbcf38d9e5bf6a6b3c"
+  integrity sha512-MMwmi0zlVLQKLdGiMfWkgQD7dY/TUKt4L+zgJ/aR0Howebod3aNgP5JkgvAULiR2HPVZaP2VEElqtdidHweLkg==
   dependencies:
     iterall "^1.2.2"
 
@@ -7038,7 +7047,7 @@ mongoose-legacy-pluralize@1.0.2:
   resolved "https://registry.yarnpkg.com/mongoose-legacy-pluralize/-/mongoose-legacy-pluralize-1.0.2.tgz#3ba9f91fa507b5186d399fb40854bff18fb563e4"
   integrity sha512-Yo/7qQU4/EyIS8YDFSeenIvXxZN+ld7YdV9LqFVQJzTLye8unujAWPZ4NWKfFA+RNjh+wvTWKY9Z3E5XM6ZZiQ==
 
-mongoose@5.7.0, mongoose@^5.0.1, mongoose@^5.7.0:
+mongoose@5.7.0, mongoose@^5.0.1:
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.7.0.tgz#5a686d7a85342784a26d1afb875a2a8170a7a32f"
   integrity sha512-nE43r4kEUpUBfr32rf+zJKEtzd6I3F5YdbrSHp/DDdVQyej34Cv7gfBdcoRNehrPQDV3khOh0JpiS1aLN9/OCw==
@@ -7056,6 +7065,23 @@ mongoose@5.7.0, mongoose@^5.0.1, mongoose@^5.7.0:
     sift "7.0.1"
     sliced "1.0.1"
 
+mongoose@5.7.5:
+  version "5.7.5"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.7.5.tgz#b787b47216edf62036aa358c3ef0f1869c46cdc2"
+  integrity sha512-BZ4FxtnbTurc/wcm/hLltLdI4IDxo4nsE0D9q58YymTdZwreNzwO62CcjVtaHhmr8HmJtOInp2W/T12FZaMf8g==
+  dependencies:
+    bson "~1.1.1"
+    kareem "2.3.1"
+    mongodb "3.3.2"
+    mongoose-legacy-pluralize "1.0.2"
+    mpath "0.6.0"
+    mquery "3.2.2"
+    ms "2.1.2"
+    regexp-clone "1.0.0"
+    safe-buffer "5.1.2"
+    sift "7.0.1"
+    sliced "1.0.1"
+
 mpath@0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/mpath/-/mpath-0.6.0.tgz#aa922029fca4f0f641f360e74c5c1b6a4c47078e"
@@ -7065,6 +7091,17 @@ mquery@3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/mquery/-/mquery-3.2.1.tgz#8b059a49cdae0a8a9e804284ef64c2f58d3ac05d"
   integrity sha512-kY/K8QToZWTTocm0U+r8rqcJCp5PRl6e8tPmoDs5OeSO3DInZE2rAL6AYH+V406JTo8305LdASOQcxRDqHojyw==
+  dependencies:
+    bluebird "3.5.1"
+    debug "3.1.0"
+    regexp-clone "^1.0.0"
+    safe-buffer "5.1.2"
+    sliced "1.0.1"
+
+mquery@3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/mquery/-/mquery-3.2.2.tgz#e1383a3951852ce23e37f619a9b350f1fb3664e7"
+  integrity sha512-XB52992COp0KP230I3qloVUbkLUxJIu328HBP2t2EsxSFtf4W1HPSOBWOXf1bqxK4Xbb66lfMJ+Bpfd9/yZE1Q==
   dependencies:
     bluebird "3.5.1"
     debug "3.1.0"

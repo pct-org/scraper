@@ -1,10 +1,10 @@
 // @flow
-import MovieProvider from './MovieProvider'
+import BaseProvider from './BaseProvider'
 
 /**
  * Class for scraping content from YTS.ag.
  */
-export default class YtsProvider extends MovieProvider {
+export default class YtsProvider extends BaseProvider {
 
   /**
    * Extract content information based on a regex.

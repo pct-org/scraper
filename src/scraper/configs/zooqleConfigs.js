@@ -1,5 +1,5 @@
 // @flow
-import { MovieProvider } from '../providers'
+import { ZooqleProvider } from '../providers'
 import { zooqle } from '../apiModules'
 import { MovieHelper } from '../helpers'
 
@@ -9,7 +9,7 @@ export default [
   {
     name: 'Zooqle',
     api: zooqle,
-    contentType: MovieProvider.ContentTypes.Movie,
+    contentType: ZooqleProvider.ContentTypes.Movie,
     Helper: MovieHelper,
     Model: MovieModel,
     regexps: [

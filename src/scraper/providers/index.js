@@ -1,5 +1,4 @@
 export EztvProvider from './EztvProvider'
-export MovieProvider from './MovieProvider'
 export YtsProvider from './YtsProvider'
-export EttvProvider from './EttvProvider'
+export SolidProvider from './SolidProvider'
 export ZooqleProvider from './ZooqleProvider'

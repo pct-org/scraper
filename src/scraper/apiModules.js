@@ -42,10 +42,10 @@ import Tvdb from 'node-tvdb'
 import Yts from 'yts-api-pt'
 
 /**
- * A NodeJS wrapper for ettv.to
- * @external {Ettv} https://github.com/ChrisAlderson/ettv-api-pt
+ * A NodeJS wrapper for solidtorrents.net
+ * @external {Ettv} https://github.com/pct-org/solidtorrents-api-pt
  */
-import Ettv from '@pct-org/ettv-api'
+import Solid from '@pct-org/solidtorrents-api-pt'
 
 /**
  * A NodeJS wrapper for zooqle.com
@@ -113,7 +113,7 @@ const tvdb = new Tvdb(process.env.TVDB_KEY)
 const yts = new Yts()
 yts.search = yts.getMovies
 
-const ettv = new Ettv()
+const solid = new Solid()
 
 /**
  * Export the API modules.
@@ -128,6 +128,6 @@ export {
   trakt,
   tvdb,
   yts,
-  ettv,
+  solid,
   zooqle,
 }

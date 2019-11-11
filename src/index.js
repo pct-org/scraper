@@ -31,6 +31,7 @@ import { name, version } from '../package.json'
       version,
       logDir,
       controllers,
+      workers: 0,
       statusPath: join(...[logDir, 'status.json']),
       updatedPath: join(...[logDir, 'updated.json']),
 

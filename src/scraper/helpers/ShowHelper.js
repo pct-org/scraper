@@ -37,7 +37,6 @@ export default class ShowHelper extends AbstractHelper {
         _id: s.imdbId,
       })
 
-
       // Get the latestEpisodeAired
       let latestEpisodeAired = null
       s.seasons.forEach((season) => {

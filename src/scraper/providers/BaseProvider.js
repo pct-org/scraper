@@ -188,7 +188,36 @@ export default class BaseProvider extends AbstractProvider {
    * content information extracted from the torrents.
    */
   getAllContent({ torrents, lang = 'en' }: Object): Promise<Array<Object>> {
-    throw new Error('Using default method: \'getAllContent\'')
+    const items = new Map()
+
+    return pMap(torrents, (torrent) => {
+      if (!torrent) {
+        return
+      }
+
+      const item = this.getContentData({
+        torrent,
+      })
+
+      if (!item) {
+        return
+      }
+
+      const { slug } = item
+
+      // If we already have the movie merge the torrents together
+      if (items.has(slug)) {
+        // Reset the movies torrents
+        item.torrents = this.helper._formatTorrents(
+          items.get(slug).torrents,
+          item.torrents,
+        )
+      }
+
+      return items.set(slug, item)
+    }, {
+      concurrency: 1,
+    }).then(() => Array.from(items.values()))
   }
 
   /**
@@ -199,7 +228,7 @@ export default class BaseProvider extends AbstractProvider {
    */
   getAllTorrents(totalPages: number): Promise<Array<Object>> {
     let torrents = []
-    return pTimes(totalPages, async (page) => {
+    return pTimes(totalPages, async(page) => {
       this.query.page = page + 1
 
       logger.info(`${this.name}: Started searching ${this.name} on page ${page + 1} out of ${totalPages}`)
@@ -237,7 +266,7 @@ export default class BaseProvider extends AbstractProvider {
         return res.total_pages
       }
 
-      return Math.ceil(res.totalRecordCount / res.queryRecordCount) // Nyaa
+      return res.totalPages
     })
   }
 
@@ -308,7 +337,7 @@ export default class BaseProvider extends AbstractProvider {
     try {
       this.setConfig({ name, api, contentType, Model, Helper, query, regexps })
 
-      const totalPages = await this.getTotalPages()
+      const totalPages = 5 // await this.getTotalPages()
 
       if (!totalPages) {
         return logger.error(
@@ -328,6 +357,7 @@ export default class BaseProvider extends AbstractProvider {
 
       logger.info(`${this.name}: Total content ${allContent.length}`)
 
+      return
       return await pMap(
         allContent,
         content => this.getContent(content)

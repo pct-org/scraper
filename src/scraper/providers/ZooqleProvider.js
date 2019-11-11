@@ -1,12 +1,12 @@
 // @flow
 import pTimes from 'p-times'
-import MovieProvider from './MovieProvider'
+import BaseProvider from './BaseProvider'
 import movieMap from './maps/movieMap'
 
 /**
  * Class for scraping content from zooqle.com.
  */
-export default class ZooqleProvider extends MovieProvider {
+export default class ZooqleProvider extends BaseProvider {
 
   /**
    * Get the total pages to scrape for the provider query.
