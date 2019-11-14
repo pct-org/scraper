@@ -316,6 +316,9 @@ export default class MovieHelper extends AbstractHelper {
           },
           genres: traktMovie.genres ? traktMovie.genres : ['unknown'],
           trailer: traktMovie.trailer,
+          trailerId: traktMovie.trailer
+            ? traktMovie.trailer.split('v=').reverse().shift()
+            : null,
           createdAt: Number(new Date()),
           updatedAt: Number(new Date()),
           type: 'movie',

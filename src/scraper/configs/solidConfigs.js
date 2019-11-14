@@ -12,7 +12,7 @@ import { ShowHelper } from '../helpers'
  */
 
 /**
- * The configuration for EZTV.
+ * The configuration for SolidTorrents.
  * @type {Object}
  */
 export const solidConfig: Object = {

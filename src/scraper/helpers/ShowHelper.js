@@ -236,7 +236,7 @@ export default class ShowHelper extends AbstractHelper {
             downloaded: false,
             downloading: false,
             downloadStatus: null,
-            downloadProgress: null
+            downloadProgress: null,
           },
           createdAt: Number(new Date()),
           updatedAt: Number(new Date()),
@@ -327,7 +327,7 @@ export default class ShowHelper extends AbstractHelper {
             downloaded: false,
             downloading: false,
             downloadStatus: null,
-            downloadProgress: null
+            downloadProgress: null,
           },
           createdAt: Number(new Date()),
           updatedAt: Number(new Date()),
@@ -662,6 +662,9 @@ export default class ShowHelper extends AbstractHelper {
           synopsis: traktShow.overview,
           runtime: this._formatRuntime(traktShow.runtime),
           trailer: traktShow.trailer,
+          trailerId: traktShow.trailer
+            ? traktShow.trailer.split('v=').reverse().shift()
+            : null,
           rating: {
             stars: parseFloat(((ratingPercentage / 100) * 5).toFixed('2')),
             votes: traktShow.votes,
