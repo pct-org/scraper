@@ -357,7 +357,6 @@ export default class BaseProvider extends AbstractProvider {
 
       logger.info(`${this.name}: Total content ${allContent.length}`)
 
-      return
       return await pMap(
         allContent,
         content => this.getContent(content)
