@@ -19,9 +19,9 @@ import Omdb from 'omdb-api-pt'
 
 /**
  * TheMovieDB API wrapper, written in node.js
- * @external {Tmdb} https://github.com/vankasteelj/tmdbapi
+ * @external {Tmdb} https://github.com/gajus/tmdb
  */
-import Tmdb from 'tmdbapi'
+import { Tmdb } from 'tmdb'
 
 /**
  * A Trakt.tv API wrapper for Node.js
@@ -83,11 +83,9 @@ const omdb = new Omdb({
 /**
  * A configured Tmdb API.
  * @type {Tmdb}
- * @see https://github.com/vankasteelj/tmdbapi
+ * @external {Tmdb} https://github.com/gajus/tmdb
  */
-const tmdb = new Tmdb({
-  apiv3: process.env.TMDB_KEY,
-})
+const tmdb = new Tmdb(process.env.TMDB_KEY)
 
 /**
  * A configured Trakt API.

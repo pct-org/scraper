@@ -1,6 +1,6 @@
 // @flow
 import pMap from 'p-map'
-import type { Show, Season, Episode } from '@pct-org/mongo-models'
+import type { Show, Season } from '@pct-org/mongo-models'
 
 import AbstractHelper from './AbstractHelper'
 import { fanart, tmdb, trakt, tvdb } from '../apiModules'
@@ -198,10 +198,7 @@ export default class ShowHelper extends AbstractHelper {
    * @returns {Promise<Show>} - A newly updated show.
    */
   _addSeason(show: Show, episodes: Object, season: number): Promise<Show> {
-    return tmdb.tv.season.details({
-      tv_id: show.tmdbId,
-      season,
-    }).then(s => {
+    return tmdb.get(`/tv/${show.tmdbId}/season/${season}`).then(s => {
       const updatedEpisodes = []
 
       s.episodes.map(e => {
@@ -404,9 +401,7 @@ export default class ShowHelper extends AbstractHelper {
    * @returns {!Show} - Show with banner, fanart and poster images.
    */
   _addTmdbImages(show: Show): Promise<Show> {
-    return tmdb.tv.images({
-      tv_id: show.tmdbId,
-    }).then(i => {
+    return tmdb.get(`tv/${show.tmdbId}/images`).then(i => {
       const tmdbPoster = i.posters.filter(
         poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null,
       ).shift()
@@ -592,7 +587,7 @@ export default class ShowHelper extends AbstractHelper {
    * Get TV show images.
    * @override
    * @protected
-   * @param {!AnimeShow|Show} show - The show to fetch images for
+   * @param {Show} show - The show to fetch images for
    * @returns {Promise<Object>} - Object with banner, fanart and poster images.
    */
   addImages(show: Show | AnimeShow): Promise<Object> {
@@ -607,10 +602,10 @@ export default class ShowHelper extends AbstractHelper {
    * @override
    * @param {!string} traktSlug - The slug to query https://trakt.tv/.
    * @param {!string} imdbId - The imdb id to query trakt.tv
-   * @returns {Promise<AnimeShow | Show | Error>} - A new show without the
+   * @returns {Promise<Show | Error>} - A new show without the
    * episodes attached.
    */
-  async getTraktInfo(traktSlug: string, imdbId?: string = null): Show {
+  async getTraktInfo(traktSlug: string, imdbId: string = null): Show {
     try {
       let traktShow = null
       let idUsed = traktSlug || imdbId
