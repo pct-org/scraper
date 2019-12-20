@@ -182,9 +182,12 @@ export default class AbstractHelper extends IHelper {
       }
     })
 
+    // The order that we want it in
+    const order = ['2160p', '3D', '1080p', '720p', '480p']
+
     // Return all merged torrents
     return newTorrents.sort((torrentA, torrentB) =>
-      parseInt(torrentA.quality, 10) < parseInt(torrentB.quality, 10),
+      order.indexOf(torrentA.quality) - order.indexOf(torrentB.quality),
     )
   }
 
