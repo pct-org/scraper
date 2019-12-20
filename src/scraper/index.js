@@ -6,7 +6,7 @@ import { EztvProvider, SolidProvider, YtsProvider, ZooqleProvider } from './prov
  * The max concurrent web requests at a time.
  * @type {number}
  */
-const maxWebRequests: number = 2
+const maxWebRequests: number = 1
 
 /**
  * Export the providers to be attached to the PopApiScraper.
@@ -14,27 +14,27 @@ const maxWebRequests: number = 2
  */
 export default [
   // For Movies
-  {
-    Provider: YtsProvider,
-    args: {
-      maxWebRequests,
-      configs: ytsConfigs,
-    },
-  },
-  // For Shows
-  {
-    Provider: EztvProvider,
-    args: {
-      maxWebRequests,
-      configs: eztvConfigs,
-    },
-  },
+  // {
+  //   Provider: YtsProvider,
+  //   args: {
+  //     maxWebRequests,
+  //     configs: ytsConfigs,
+  //   },
+  // },
+  // // For Shows
+  // {
+  //   Provider: EztvProvider,
+  //   args: {
+  //     maxWebRequests,
+  //     configs: eztvConfigs,
+  //   },
+  // },
   // For UHD content
   {
-    Provider: ZooqleProvider,
+    Provider: SolidProvider,
     args: {
       maxWebRequests,
-      configs: zooqleConfigs,
+      configs: solidConfigs,
     },
   },
 ]

@@ -53,7 +53,7 @@ export default class MovieHelper extends AbstractHelper {
       return await new this.Model(m).save()
 
     } catch (err) {
-      logger.error(`_updateMovieInDb: ${err.message || err}`)
+      logger.error(`MovieHelper._updateMovieInDb: ${err.message || err}`)
     }
   }
 
@@ -61,7 +61,7 @@ export default class MovieHelper extends AbstractHelper {
    * Adds torrents to a movie.
    * @param {!Movie} movie - The movie to add the torrents to.
    * @param {!Object} torrents - The torrents to add to the movie.
-   * @returns {Promise<AnimeMovie|Movie>} - A movie with torrents attached.
+   * @returns {Promise<Movie>} - A movie with torrents attached.
    */
   addTorrents(movie: Movie, torrents: Object): Promise<Movie> {
     movie.torrents = this._formatTorrents(torrents)
@@ -75,9 +75,7 @@ export default class MovieHelper extends AbstractHelper {
    * @returns {Promise<Movie>} - A movie with torrents attached.
    */
   _addTmdbImages(movie: Movie): Promise<Movie> {
-    return tmdb.movie.images({
-      movie_id: movie.tmdbId,
-    }).then(i => {
+    return tmdb.get(`movie/${movie.tmdbId}/images`).then(i => {
       const tmdbPoster = i.posters.filter(
         poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null,
       ).shift()
@@ -109,10 +107,10 @@ export default class MovieHelper extends AbstractHelper {
         return Promise.reject(err)
 
       } else if (err.statusCode && err.statusCode === 404) {
-        logger.warn(`_addTmdbImages: can't find images for slug '${movie.slug}'`)
+        logger.warn(`MovieHelper._addTmdbImages: can't find images for slug '${movie.slug}'`)
 
       } else {
-        logger.error(`_addTmdbImages: ${err.message || err}`)
+        logger.error(`MovieHelper._addTmdbImages: ${err.message || err}`)
       }
 
       // Always return the movie
@@ -331,7 +329,7 @@ export default class MovieHelper extends AbstractHelper {
             downloaded: false,
             downloading: false,
             downloadStatus: null,
-            downloadProgress: null
+            downloadProgress: null,
           },
           bookmarked: false,
           bookmarkedOn: null,

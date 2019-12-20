@@ -1,6 +1,7 @@
 // @flow
 import pMap from 'p-map'
 import movieMap from './maps/movieMap'
+import showMap from './maps/showMap'
 
 import BaseProvider from './BaseProvider'
 
@@ -10,6 +11,60 @@ import BaseProvider from './BaseProvider'
  * @type {SolidProvider}
  */
 export default class SolidProvider extends BaseProvider {
+
+
+  solidTorrents = null
+  solidTotalPages = null
+
+  /**
+   * Put all the found content from the torrents in an array.
+   * @abstract
+   * @protected
+   * @param {!Object} options - The options to get the content.
+   * @param {!Array<Object>} options.torrents - A list of torrents to extract
+   * content information from.
+   * @param {!string} [options.lang=en] - The language of the torrents.
+   * @throws {Error} - Using default method: 'getAllContent'
+   * @returns {Promise<Array<Object>, Error>} - A list of object with
+   * content information extracted from the torrents.
+   */
+  getAllContent({ torrents, lang = 'en' }: Object): Promise<Array<Object>> {
+    const items = new Map()
+
+    return pMap(torrents, (torrent) => {
+      if (!torrent) {
+        return
+      }
+
+      const item = this.getContentData({
+        torrent,
+      })
+
+      if (!item) {
+        return
+      }
+
+      const { slug } = item
+
+      // If we already have the movie merge the torrents together
+      if (this.contentType === SolidProvider.ContentTypes.Movie && items.has(slug)) {
+        // Reset the movies torrents
+        item.torrents = this.helper._formatTorrents(
+          items.get(slug).torrents,
+          item.torrents,
+        )
+
+      } else if (this.contentType === SolidProvider.ContentTypes.Show && items.has(slug)) {
+        console.log('\n\n\n', 'duplicate')
+
+        console.log(item, items.get(slug))
+      }
+
+      return items.set(slug, item)
+    }, {
+      concurrency: 1,
+    }).then(() => Array.from(items.values()))
+  }
 
   /**
    * Extract content information based on a regex.
@@ -37,33 +92,68 @@ export default class SolidProvider extends BaseProvider {
       .trimEnd()
 
     let slug = itemTitle.replace(/[^a-zA-Z0-9\- ]/gi, '')
-                 .trimStart()
-                 .replace(/\s+/g, '-')
-                 .toLowerCase()
-                 .trim()
+      .trimStart()
+      .replace(/\s+/g, '-')
+      .toLowerCase()
+      .trim()
 
-    console.log(slug)
-    return
-
-    slug = slug in movieMap ? movieMap[slug] : slug
-
-    return null
-    return {
-      title: movieTitle,
-      slug,
-      torrents: [
-        {
-          title,
-          quality: torrent.quality,
-          size: torrent.size,
-          peers: torrent.leechers,
-          seeds: torrent.seeders,
-          url: torrent.magnet,
-          language: torrent.languages.join(','),
-          provider: this.name,
-        },
-      ],
+    const itemTorrent = {
+      title,
+      quality: '2160p',
+      size: torrent.size,
+      peers: torrent.leechers,
+      seeds: torrent.seeders,
+      url: torrent.magnet,
+      provider: this.name,
     }
+
+    if (this.contentType === SolidProvider.ContentTypes.Movie) {
+      // Adds the year to the slug for movies
+      slug = `${slug}-${match[2]}`
+
+      slug = slug in movieMap ? movieMap[slug] : slug
+
+      return {
+        slug,
+        torrents: [
+          itemTorrent,
+        ],
+      }
+
+    } else {
+      // Remove any - at the end of a string
+      slug = slug.replace(/[-]*$/i, '')
+        .replace(/(\-\d{4})*$/i, '')
+
+      slug = slug in showMap ? showMap[slug] : slug
+
+      return {
+        slug,
+        episodes: {
+          [match[2]]: { // Match 2 is the season
+            [match[3]]: [ // Match 3 is the episode
+              torrent,
+            ],
+          },
+        },
+      }
+    }
+  }
+
+  async getTotalPages(): Promise<number> {
+    if (!this.solidTotalPages) {
+      this.solidTotalPages = await super.getTotalPages()
+    }
+
+    return this.solidTotalPages
+  }
+
+  async getAllTorrents(totalPages: number): Promise<Array<Object>> {
+    if (!this.solidTorrents) {
+      this.solidTorrents = await super.getAllTorrents(totalPages)
+    }
+
+    return this.solidTorrents
   }
 
 }

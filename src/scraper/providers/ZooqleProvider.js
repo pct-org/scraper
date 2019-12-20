@@ -28,7 +28,7 @@ export default class ZooqleProvider extends BaseProvider {
   getAllTorrents(totalPages: number): Promise<Array<Object>> {
     let torrents = []
 
-    return pTimes(totalPages, async (page) => {
+    return pTimes(totalPages, async(page) => {
       logger.info(`${this.name}: Started searching ${this.name} on page ${page + 1} out of ${totalPages}`)
 
       const res = await this.api.search(this.query.query, [`pg=${page + 1}`], ['movie'])
@@ -40,6 +40,11 @@ export default class ZooqleProvider extends BaseProvider {
     }).then(() => {
       logger.info(`${this.name}: Found ${torrents.length} torrents.`)
 
+      return Promise.resolve(torrents)
+    }).catch((err) => {
+      logger.error(`Catch ${this.name}.getAllTorrents: ${err.message || err}`)
+
+      // When a error happens send all collected torrents
       return Promise.resolve(torrents)
     })
   }
