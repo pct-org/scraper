@@ -17,7 +17,7 @@ export const solidConfig: Object = {
   api: solid,
   query: {
     query: '2160p',
-    category: 'video',
+    // category: 'video',
   },
 }
 
@@ -26,24 +26,24 @@ export const solidConfig: Object = {
  * @type {Array<Object>}
  */
 export default [
-  {
-    ...solidConfig,
-    contentType: SolidProvider.ContentTypes.Movie,
-    Helper: MovieHelper,
-    Model: MovieModel,
-    regexps: [
-      {
-        regex: /(.*).(\d{4}).+[4k]\D+(\d{3,4}p)/i,
-      }, {
-        regex: /(.*).(\d{4}).[UHD]\D+(\d{3,4}p)/i,
-      }, {
-        // Some files have the quality in it twice
-        regex: /(.*).(\d{4}).(\d{3,4}p)\D+(\d{3,4}p)/i,
-      }, {
-        regex: /(.*).(\d{4})\D+(\d{3,4}p)/i,
-      },
-    ],
-  },
+  // {
+  //   ...solidConfig,
+  //   contentType: SolidProvider.ContentTypes.Movie,
+  //   Helper: MovieHelper,
+  //   Model: MovieModel,
+  //   regexps: [
+  //     {
+  //       regex: /(.*).(\d{4}).+[4k]\D+(\d{3,4}p)/i,
+  //     }, {
+  //       regex: /(.*).(\d{4}).[UHD]\D+(\d{3,4}p)/i,
+  //     }, {
+  //       // Some files have the quality in it twice
+  //       regex: /(.*).(\d{4}).(\d{3,4}p)\D+(\d{3,4}p)/i,
+  //     }, {
+  //       regex: /(.*).(\d{4})\D+(\d{3,4}p)/i,
+  //     },
+  //   ],
+  // },
   {
     ...solidConfig,
     contentType: SolidProvider.ContentTypes.Show,

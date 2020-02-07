@@ -167,7 +167,8 @@ export default class AbstractHelper extends IHelper {
         }
       }
 
-      if (add) {
+      // Only add if we are allowed and quality is not null
+      if (add && torrent.quality !== null) {
         // If add was true and we have a match we need to remove the old one
         if (match) {
           newTorrents = newTorrents.filter(

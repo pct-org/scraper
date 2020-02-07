@@ -1,5 +1,6 @@
 // @flow
 import pMap from 'p-map'
+import deepmerge from 'deepmerge'
 import movieMap from './maps/movieMap'
 import showMap from './maps/showMap'
 
@@ -11,7 +12,6 @@ import BaseProvider from './BaseProvider'
  * @type {SolidProvider}
  */
 export default class SolidProvider extends BaseProvider {
-
 
   solidTorrents = null
   solidTotalPages = null
@@ -36,7 +36,7 @@ export default class SolidProvider extends BaseProvider {
         return
       }
 
-      const item = this.getContentData({
+      let item = this.getContentData({
         torrent,
       })
 
@@ -55,9 +55,9 @@ export default class SolidProvider extends BaseProvider {
         )
 
       } else if (this.contentType === SolidProvider.ContentTypes.Show && items.has(slug)) {
-        console.log('\n\n\n', 'duplicate')
+        const existingItem = items.get(slug)
 
-        console.log(item, items.get(slug))
+        item = deepmerge(existingItem, item)
       }
 
       return items.set(slug, item)
@@ -130,9 +130,9 @@ export default class SolidProvider extends BaseProvider {
       return {
         slug,
         episodes: {
-          [match[2]]: { // Match 2 is the season
-            [match[3]]: [ // Match 3 is the episode
-              torrent,
+          [parseInt(match[2], 10)]: { // Match 2 is the season
+            [parseInt(match[3], 10)]: [ // Match 3 is the episode
+              itemTorrent,
             ],
           },
         },

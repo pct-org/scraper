@@ -1150,10 +1150,10 @@
     response-time "^2.3.2"
     winston "^3.2.1"
 
-"@pct-org/solidtorrents-api-pt@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@pct-org/solidtorrents-api-pt/-/solidtorrents-api-pt-1.0.1.tgz#16f305493e0a59c2ff543cca654c94c79d67f7fb"
-  integrity sha512-lKclnLdIfPkowBdKcUBGL1DMoxh70CdVHrcP4IiMYkYDa6iLYzZMolyhPQkJMl4UN7vZC2J8mJ2MRP0qqpwJLQ==
+"@pct-org/solidtorrents-api-pt@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@pct-org/solidtorrents-api-pt/-/solidtorrents-api-pt-1.0.5.tgz#62fedf0e8d1dae55826a4096a265dc73496e96ba"
+  integrity sha512-6JV49K20cuhiAMTNKkbPQSpNnxsuNmh1rEjfqyaAh7kACk8daenoBvcFl9UA1FOqA39jGIROGpiPsMNnvhWUwA==
   dependencies:
     bytes "^3.0.0"
     debug "^3.1.0"
@@ -3281,6 +3281,11 @@ deep-map-keys@^2.0.1:
     es6-weak-map "^2.0.1"
     lodash "^4.13.1"
 
+deepmerge@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/deepmerge/-/deepmerge-4.2.2.tgz#44d2ea3679b8f4d4ffba33f03d865fc1e7bf4955"
+  integrity sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==
+
 default-compare@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/default-compare/-/default-compare-1.0.0.tgz#cb61131844ad84d84788fb68fd01681ca7781a2f"
@@ -5209,7 +5214,7 @@ google-libphonenumber@^3.1.6:
   resolved "https://registry.yarnpkg.com/google-libphonenumber/-/google-libphonenumber-3.2.6.tgz#3d725b48ff44706b80246e77f95f2c2fdc6fd729"
   integrity sha512-6QCQAaKJlSd/1dUqvdQf7zzfb3uiZHsG8yhCfOdCVRfMuPZ/VDIEB47y5SYwjPQJPs7ebfW5jj6PeobB9JJ4JA==
 
-got@9.6.0, got@^9.5.0, got@^9.6.0:
+got@9.6.0, got@^9.6.0:
   version "9.6.0"
   resolved "https://registry.yarnpkg.com/got/-/got-9.6.0.tgz#edf45e7d67f99545705de1f7bbeeeb121765ed85"
   integrity sha512-R7eWptXuGYxwijs0eV+v3o6+XH1IqVK8dJOEecQfTmkncw9AV4dcw/Dhxi8MdlqPthxxpZyizMzyg8RTmEsG+Q==
@@ -9928,13 +9933,6 @@ tmdb@^2.5.0:
     lodash "^4.17.15"
     qs "^6.9.1"
     roarr "^2.14.6"
-
-tmdbapi@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/tmdbapi/-/tmdbapi-1.1.0.tgz#dac96af41992d3af8e88f2f4ed3f91197c6e837e"
-  integrity sha512-Qb4wd9aqfZmgizZ4klhwjQ8Kix4M3a0YkFTrbX7xNNECyQ34XPB+9YZYmX2jjOiEMFN4/Kx5a67xEQexOL+tkQ==
-  dependencies:
-    got "^9.5.0"
 
 tmp@^0.0.33:
   version "0.0.33"

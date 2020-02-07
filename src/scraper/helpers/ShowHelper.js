@@ -1,5 +1,6 @@
 // @flow
 import pMap from 'p-map'
+import { NotFoundError } from 'tmdb'
 import type { Show, Season } from '@pct-org/mongo-models'
 
 import AbstractHelper from './AbstractHelper'
@@ -198,12 +199,12 @@ export default class ShowHelper extends AbstractHelper {
    * @returns {Promise<Show>} - A newly updated show.
    */
   _addSeason(show: Show, episodes: Object, season: number): Promise<Show> {
-    return tmdb.get(`/tv/${show.tmdbId}/season/${season}`).then(s => {
+    return tmdb.get(`tv/${show.tmdbId}/season/${season}`).then(s => {
       const updatedEpisodes = []
 
       s.episodes.map(e => {
-        const number = parseInt(e.episode_number, 10)
-        const torrents = episodes[season][e.episode_number]
+        const number = parseInt(e.episodeNumber, 10)
+        const torrents = episodes[season][e.episodeNumber]
 
         const episode = {
           _id: `${show.imdbId}-${season}-${number}`,
@@ -213,10 +214,12 @@ export default class ShowHelper extends AbstractHelper {
           season,
           title: e.name,
           synopsis: e.overview,
-          firstAired: e.air_date ? new Date(e.air_date).getTime() : 0,
+          firstAired: e.airDate
+            ? new Date(e.airDate).getTime()
+            : 0,
           images: {
-            poster: e.still_path
-              ? this._formatImdbImage(e.still_path)
+            poster: e.stillPath
+              ? this._formatImdbImage(e.stillPath)
               : AbstractHelper.DefaultImageSizes,
             banner: AbstractHelper.DefaultImageSizes,
             backdrop: AbstractHelper.DefaultImageSizes,
@@ -243,16 +246,18 @@ export default class ShowHelper extends AbstractHelper {
       })
 
       show.seasons.push({
-        _id: `${show.imdbId}-${s.season_number}`,
+        _id: `${show.imdbId}-${s.seasonNumber}`,
         showImdbId: show.imdbId,
         tmdbId: s.id,
-        number: s.season_number,
+        number: s.seasonNumber,
         title: s.name,
         synopsis: s.overview,
-        firstAired: s.air_date ? new Date(s.air_date).getTime() : 0,
+        firstAired: s.airDate
+          ? new Date(s.airDate).getTime()
+          : 0,
         images: {
-          poster: s.poster_path
-            ? this._formatImdbImage(s.poster_path)
+          poster: s.posterPath
+            ? this._formatImdbImage(s.posterPath)
             : AbstractHelper.DefaultImageSizes,
           banner: AbstractHelper.DefaultImageSizes,
           backdrop: AbstractHelper.DefaultImageSizes,
@@ -268,11 +273,11 @@ export default class ShowHelper extends AbstractHelper {
       return show
 
     }).catch(err => {
-      if (err.statusCode === 404) {
+      if (err instanceof NotFoundError) {
         return this._addTraktSeason(show, episodes, season)
       }
 
-      logger.error(`_addSeason: ${err.path || err}`)
+      logger.error(`ShowHelper._addSeason: ${err.path || err}`)
     })
   }
 
@@ -306,7 +311,9 @@ export default class ShowHelper extends AbstractHelper {
           number,
           title: e.title,
           synopsis: e.overview,
-          firstAired: e.first_aired ? new Date(e.first_aired).getTime() : 0,
+          firstAired: e.first_aired
+            ? new Date(e.first_aired).getTime()
+            : 0,
           images: {
             banner: AbstractHelper.DefaultImageSizes,
             backdrop: AbstractHelper.DefaultImageSizes,
@@ -403,11 +410,11 @@ export default class ShowHelper extends AbstractHelper {
   _addTmdbImages(show: Show): Promise<Show> {
     return tmdb.get(`tv/${show.tmdbId}/images`).then(i => {
       const tmdbPoster = i.posters.filter(
-        poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null,
+        poster => poster.iso6391 === 'en' || poster.iso6391 === null,
       ).shift()
 
       const tmdbBackdrop = i.backdrops.filter(
-        backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null,
+        backdrop => backdrop.iso6391 === 'en' || backdrop.iso6391 === null,
       ).shift()
 
       return this.checkImages({
@@ -416,11 +423,11 @@ export default class ShowHelper extends AbstractHelper {
           banner: AbstractHelper.DefaultImageSizes,
 
           backdrop: tmdbBackdrop
-            ? this._formatImdbImage(tmdbBackdrop.file_path)
+            ? this._formatImdbImage(tmdbBackdrop.filePath)
             : AbstractHelper.DefaultImageSizes,
 
           poster: tmdbPoster
-            ? this._formatImdbImage(tmdbPoster.file_path)
+            ? this._formatImdbImage(tmdbPoster.filePath)
             : AbstractHelper.DefaultImageSizes,
 
           logo: AbstractHelper.DefaultImageSizes,

@@ -1,5 +1,6 @@
 // @flow
 import type { Movie } from '@pct-org/mongo-models'
+import { NotFoundError } from 'tmdb'
 
 import AbstractHelper from './AbstractHelper'
 import { fanart, tmdb, trakt, omdb } from '../apiModules'
@@ -77,11 +78,11 @@ export default class MovieHelper extends AbstractHelper {
   _addTmdbImages(movie: Movie): Promise<Movie> {
     return tmdb.get(`movie/${movie.tmdbId}/images`).then(i => {
       const tmdbPoster = i.posters.filter(
-        poster => poster.iso_639_1 === 'en' || poster.iso_639_1 === null,
+        poster => poster.iso6391 === 'en' || poster.iso6391 === null,
       ).shift()
 
       const tmdbBackdrop = i.backdrops.filter(
-        backdrop => backdrop.iso_639_1 === 'en' || backdrop.iso_639_1 === null,
+        backdrop => backdrop.iso6391 === 'en' || backdrop.iso6391 === null,
       ).shift()
 
       return this.checkImages({
@@ -90,11 +91,11 @@ export default class MovieHelper extends AbstractHelper {
           banner: AbstractHelper.DefaultImageSizes,
 
           backdrop: tmdbBackdrop
-            ? this._formatImdbImage(tmdbBackdrop.file_path)
+            ? this._formatImdbImage(tmdbBackdrop.filePath)
             : AbstractHelper.DefaultImageSizes,
 
           poster: tmdbPoster
-            ? this._formatImdbImage(tmdbPoster.file_path)
+            ? this._formatImdbImage(tmdbPoster.filePath)
             : AbstractHelper.DefaultImageSizes,
 
           logo: AbstractHelper.DefaultImageSizes,
@@ -106,7 +107,7 @@ export default class MovieHelper extends AbstractHelper {
       if (err.tmdbId) {
         return Promise.reject(err)
 
-      } else if (err.statusCode && err.statusCode === 404) {
+      } else if (err instanceof NotFoundError) {
         logger.warn(`MovieHelper._addTmdbImages: can't find images for slug '${movie.slug}'`)
 
       } else {
