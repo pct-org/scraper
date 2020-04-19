@@ -2,6 +2,7 @@
 import pMap from 'p-map'
 import pTimes from 'p-times'
 import { AbstractProvider } from '@pct-org/pop-api-scraper'
+import { BlacklistModel } from '@pct-org/mongo-models/dist/blacklist/blacklist.model'
 
 import type { MovieHelper, ShowHelper } from '../helpers'
 
@@ -104,6 +105,33 @@ export default class BaseProvider extends AbstractProvider {
         return this.helper.addTorrents(res, torrents)
       }
     })
+  }
+
+  /**
+   * Checks if the item is blacklisted, if so we skip it until the blacklist expires
+   * @param content - The content information.
+   * @returns {Promise<Boolean|Error>}
+   */
+  async _isItemBlackListed(content: Object): Promise<Boolean | Error> {
+    const { slug } = content
+
+    const blacklistedItem = await BlacklistModel.findOne({ _id: slug })
+
+    if (blacklistedItem) {
+      if (blacklistedItem.expires > Date.now()) {
+        logger.warn(
+          `${this.name}: '${slug}' is in the blacklist because of reason '${blacklistedItem.reason}', skipping...`,
+        )
+
+        return true
+
+      } else {
+        // Item is expired delete it
+        blacklistedItem.delete()
+      }
+    }
+
+    return false
   }
 
   /**
@@ -359,17 +387,22 @@ export default class BaseProvider extends AbstractProvider {
 
       return await pMap(
         allContent,
-        content => this.getContent(content)
-          .catch((err) => {
-            const errorMessage = err.message || err
+        content => this._isItemBlackListed(content).then(isInBlackList => {
+          // Only get data for this item if it's not in the blacklist
+          if (!isInBlackList) {
+            return this.getContent(content)
+              .catch((err) => {
+                const errorMessage = err.message || err
 
-            logger.error(`BaseProvider.scrapeConfig: ${errorMessage}`)
+                logger.error(`BaseProvider.scrapeConfig: ${errorMessage}`)
 
-            // Log the content so it can be better debugged from logs
-            if (errorMessage.includes('Could not find any data with slug')) {
-              logger.error(JSON.stringify(content))
-            }
-          }),
+                // Log the content so it can be better debugged from logs
+                if (errorMessage.includes('Could not find any data with slug')) {
+                  logger.error(JSON.stringify(content))
+                }
+              })
+          }
+        }),
         {
           concurrency: this.maxWebRequests,
         },

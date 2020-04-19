@@ -36,9 +36,14 @@ export default class EztvProvider extends BaseProvider {
       logger.info(`${this.name}: Found ${contents.length} ${this.contentType}s.`)
 
       return pMap(contents, c => {
-        return this.api.getData(c)
-          .then(content => this.getContent(content))
-          .catch(err => logger.error(`Eztv.scrapeConfig: ${err.message || err}`))
+        return this._isItemBlackListed(c).then(isInBlackList => {
+          // Only get data for this item if it's not in the blacklist
+          if(!isInBlackList) {
+            return this.api.getData(c)
+              .then(content => this.getContent(content))
+              .catch(err => logger.error(`Eztv.scrapeConfig: ${err.message || err}`))
+          }
+        })
       }, {
         concurrency: this.maxWebRequests,
       })

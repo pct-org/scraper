@@ -1,6 +1,7 @@
 // @flow
 import type { Movie } from '@pct-org/mongo-models'
 import { NotFoundError } from 'tmdb'
+import { BlacklistModel } from '@pct-org/mongo-models/dist/blacklist/blacklist.model'
 
 import AbstractHelper from './AbstractHelper'
 import { fanart, tmdb, trakt, omdb } from '../apiModules'
@@ -197,11 +198,11 @@ export default class MovieHelper extends AbstractHelper {
         ? i.movieposter.shift()
         : null
 
-      const logo = !movie.images.logo && i.movielogo
-        ? i.movielogo.shift()
-        : !movie.images.logo && i.hdmovielogo
-          ? i.hdmovielogo.shift()
-          : null
+      // const logo = !movie.images.logo && i.movielogo
+      //   ? i.movielogo.shift()
+      //   : !movie.images.logo && i.hdmovielogo
+      //     ? i.hdmovielogo.shift()
+      //     : null
 
       return this.checkImages({
         ...movie,
@@ -321,7 +322,7 @@ export default class MovieHelper extends AbstractHelper {
             : null,
           createdAt: Number(new Date()),
           updatedAt: Number(new Date()),
-          type: 'movie',
+          type: AbstractHelper.ContentTypes.Movie,
           torrents: [],
           watched: {
             complete: false,
@@ -340,8 +341,19 @@ export default class MovieHelper extends AbstractHelper {
     } catch (err) {
       let message = `getTraktInfo: ${err.path || err}`
 
-      if (err.statusCode === 404) {
+      if (err.message.indexOf('404') > -1) {
         message = `getTraktInfo: Could not find any data with slug: '${traktSlug}'`
+
+        logger.warn(`getTraktInfo: Adding "${traktSlug}" to the blacklist for 2 weeks as it could not be found`)
+        BlacklistModel({
+          _id: traktSlug,
+          type: AbstractHelper.ContentTypes.Movie,
+          reason: '404',
+
+          expires: Number(new Date(Date.now() + 12096e5)), // 2 weeks
+          createdAt: Number(new Date()),
+          updatedAt: Number(new Date()),
+        }).save()
       }
 
       // BaseProvider will log it

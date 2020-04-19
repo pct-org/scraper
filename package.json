@@ -24,7 +24,7 @@
     "lint:fix": "yarn lint --fix",
     "start": "cross-env NODE_ENV=production node ./build/popcorn-api.js -s",
     "start:debug": "yarn start:dev --inspect-brk",
-    "start:dev": "cross-env NODE_ENV=development cross-env DEBUG=* babel-node ./src/index.js -m pretty -s",
+    "start:dev": "cross-env NODE_ENV=development cross-env DEBUG=@pct-org/* babel-node ./src/index.js -m pretty -s",
     "pretest": "npm run build",
     "test": "echo 'RUN TESTS'",
     "test:watch": "echo 'RUN TESTS'"
@@ -35,7 +35,7 @@
   "dependencies": {
     "@pct-org/ettv-api": "^1.0.2",
     "@pct-org/eztv-api-pt": "^1.3.3",
-    "@pct-org/mongo-models": "^0.15.0",
+    "@pct-org/mongo-models": "^1.1.1",
     "@pct-org/pop-api": "^0.8.0",
     "@pct-org/pop-api-scraper": "0.7.2",
     "@pct-org/solidtorrents-api-pt": "^1.0.5",

@@ -30,6 +30,15 @@ export default class AbstractHelper extends IHelper {
   }
 
   /**
+   * Map of the available content types
+   * @type {Object}
+   */
+  static ContentTypes: Object = {
+    Movie: 'movie',
+    Show: 'show',
+  }
+
+  /**
    * The name of the torrent provider.
    * @type {string}
    */

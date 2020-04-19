@@ -1,4 +1,5 @@
 // @flow
+import { BlacklistModel } from '@pct-org/mongo-models/dist/blacklist/blacklist.model'
 import pMap from 'p-map'
 import { NotFoundError } from 'tmdb'
 import type { Show, Season } from '@pct-org/mongo-models'
@@ -624,7 +625,7 @@ export default class ShowHelper extends AbstractHelper {
         })
       } catch (err) {
         // If it's a 404 and we have don't have the imdbId then throw error
-        if (err.statusCode !== 404 || !imdbId || imdbId.indexOf('tt') === -1) {
+        if (err.message.indexOf('404') > -1 || !imdbId || imdbId.indexOf('tt') === -1) {
           throw err
         }
 
@@ -652,6 +653,21 @@ export default class ShowHelper extends AbstractHelper {
       if (traktShow && imdb && tmdb && tvdb) {
         const ratingPercentage = Math.round(traktShow.rating * 10)
 
+        // If the show is ended then add it to a blacklist for one week
+        // Ended shows don't need to be updated that frequently
+        if (traktShow.status === 'ended') {
+          logger.warn(`getTraktInfo: Adding "${traktSlug}" to the blacklist for 1 week as the status of the show is 'ended'`)
+          BlacklistModel({
+            _id: traktSlug,
+            type: AbstractHelper.ContentTypes.Show,
+            reason: 'ended',
+
+            expires: Number(new Date(Date.now() + 6.04e+8)), // 1 week
+            createdAt: Number(new Date()),
+            updatedAt: Number(new Date()),
+          }).save()
+        }
+
         return this.addImages({
           _id: imdb,
           slug: traktShow.ids.slug,
@@ -674,11 +690,12 @@ export default class ShowHelper extends AbstractHelper {
             percentage: ratingPercentage,
           },
           images: {
-            banner: AbstractHelper.DefaultImageSizes,
+            // banner: AbstractHelper.DefaultImageSizes,
             backdrop: AbstractHelper.DefaultImageSizes,
             poster: AbstractHelper.DefaultImageSizes,
+            // logo: AbstractHelper.DefaultImageSizes,
           },
-          type: 'show',
+          type: AbstractHelper.ContentTypes.Show,
           genres: traktShow.genres ? traktShow.genres : ['unknown'],
           airInfo: {
             network: traktShow.network,
@@ -697,8 +714,19 @@ export default class ShowHelper extends AbstractHelper {
     } catch (err) {
       let message = `getTraktInfo: ${err.path || err}`
 
-      if (err.statusCode === 404) {
+      if (err.message.indexOf('404') > -1) {
         message = `getTraktInfo: Could not find any data with slug: '${traktSlug}' or imdb id: '${imdbId}'`
+
+        logger.warn(`getTraktInfo: Adding "${traktSlug}" to the blacklist for 2 weeks as it could not be found`)
+        BlacklistModel({
+          _id: traktSlug,
+          type: AbstractHelper.ContentTypes.Show,
+          reason: '404',
+
+          expires: Number(new Date(Date.now() + 12096e5)), // 2 weeks
+          createdAt: Number(new Date()),
+          updatedAt: Number(new Date()),
+        }).save()
       }
 
       // BulkProvider will log it
