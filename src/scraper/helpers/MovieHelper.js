@@ -88,7 +88,7 @@ export default class MovieHelper extends AbstractHelper {
       return this.checkImages({
         ...movie,
         images: {
-          banner: AbstractHelper.DefaultImageSizes,
+          // banner: AbstractHelper.DefaultImageSizes,
 
           backdrop: tmdbBackdrop
             ? this._formatImdbImage(tmdbBackdrop.filePath)
@@ -98,7 +98,7 @@ export default class MovieHelper extends AbstractHelper {
             ? this._formatImdbImage(tmdbPoster.filePath)
             : AbstractHelper.DefaultImageSizes,
 
-          logo: AbstractHelper.DefaultImageSizes,
+          // logo: AbstractHelper.DefaultImageSizes,
         },
       })
 
@@ -139,7 +139,7 @@ export default class MovieHelper extends AbstractHelper {
       return this.checkImages({
         ...movie,
         images: {
-          banner: movie.images.banner,
+          // banner: movie.images.banner,
 
           backdrop: movie.images.backdrop,
 
@@ -152,7 +152,7 @@ export default class MovieHelper extends AbstractHelper {
             }
             : movie.images.poster,
 
-          logo: movie.images.logo,
+          // logo: movie.images.logo,
         },
       })
 
@@ -183,9 +183,9 @@ export default class MovieHelper extends AbstractHelper {
    */
   _addFanartImages(movie: Movie): Promise<Movie> {
     return fanart.getMovieImages(movie.tmdbId).then(i => {
-      const banner = !movie.images.banner && i.moviebanner
-        ? i.moviebanner.shift()
-        : null
+      // const banner = !movie.images.banner && i.moviebanner
+      //   ? i.moviebanner.shift()
+      //   : null
 
       const backdrop = !movie.images.backdrop && i.moviebackground
         ? i.moviebackground.shift()
@@ -206,14 +206,14 @@ export default class MovieHelper extends AbstractHelper {
       return this.checkImages({
         ...movie,
         images: {
-          banner: banner
-            ? {
-              full: banner.url,
-              high: banner.url,
-              medium: banner.url,
-              thumb: banner.url,
-            }
-            : movie.images.banner,
+          // banner: banner
+          //   ? {
+          //     full: banner.url,
+          //     high: banner.url,
+          //     medium: banner.url,
+          //     thumb: banner.url,
+          //   }
+          //   : movie.images.banner,
 
           backdrop: backdrop ? {
               full: backdrop.url,
@@ -231,13 +231,13 @@ export default class MovieHelper extends AbstractHelper {
             }
             : movie.images.poster,
 
-          logo: logo ? {
-              full: logo.url,
-              high: logo.url,
-              medium: logo.url,
-              thumb: logo.url,
-            }
-            : movie.images.logo,
+          // logo: logo ? {
+          //     full: logo.url,
+          //     high: logo.url,
+          //     medium: logo.url,
+          //     thumb: logo.url,
+          //   }
+          //   : movie.images.logo,
         },
       })
 
@@ -309,9 +309,10 @@ export default class MovieHelper extends AbstractHelper {
             percentage: ratingPercentage,
           },
           images: {
-            banner: AbstractHelper.DefaultImageSizes,
+            // banner: AbstractHelper.DefaultImageSizes,
             backdrop: AbstractHelper.DefaultImageSizes,
             poster: AbstractHelper.DefaultImageSizes,
+            // logo: AbstractHelper.DefaultImageSizes,
           },
           genres: traktMovie.genres ? traktMovie.genres : ['unknown'],
           trailer: traktMovie.trailer,

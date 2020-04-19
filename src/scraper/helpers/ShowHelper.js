@@ -420,7 +420,7 @@ export default class ShowHelper extends AbstractHelper {
       return this.checkImages({
         ...show,
         images: {
-          banner: AbstractHelper.DefaultImageSizes,
+          // banner: AbstractHelper.DefaultImageSizes,
 
           backdrop: tmdbBackdrop
             ? this._formatImdbImage(tmdbBackdrop.filePath)
@@ -430,7 +430,7 @@ export default class ShowHelper extends AbstractHelper {
             ? this._formatImdbImage(tmdbPoster.filePath)
             : AbstractHelper.DefaultImageSizes,
 
-          logo: AbstractHelper.DefaultImageSizes,
+          // logo: AbstractHelper.DefaultImageSizes,
         },
       })
     }).catch(err => {
@@ -462,14 +462,14 @@ export default class ShowHelper extends AbstractHelper {
       return this.checkImages({
         ...show,
         images: {
-          banner: !show.images.banner && i.banner
-            ? {
-              full: `${baseUrl}${i.banner}`,
-              high: `${baseUrl}${i.banner}`,
-              medium: `${baseUrl}${i.banner}`,
-              thumb: `${baseUrl}${i.banner}`,
-            }
-            : show.images.banner,
+          // banner: !show.images.banner && i.banner
+          //   ? {
+          //     full: `${baseUrl}${i.banner}`,
+          //     high: `${baseUrl}${i.banner}`,
+          //     medium: `${baseUrl}${i.banner}`,
+          //     thumb: `${baseUrl}${i.banner}`,
+          //   }
+          //   : show.images.banner,
 
           backdrop: !show.images.backdrop && i.fanart
             ? {
@@ -489,7 +489,7 @@ export default class ShowHelper extends AbstractHelper {
             }
             : show.images.poster,
 
-          logo: show.images.logo,
+          // logo: show.images.logo,
         },
       })
     }).catch(err => {
@@ -516,9 +516,9 @@ export default class ShowHelper extends AbstractHelper {
    */
   _addFanartImages(show: Show): Promise<Show> {
     return fanart.getShowImages(show.tvdbId).then(i => {
-      const banner = !show.images.banner && i.tvbanner
-        ? i.tvbanner.shift()
-        : null
+      // const banner = !show.images.banner && i.tvbanner
+      //   ? i.tvbanner.shift()
+      //   : null
 
       const backdrop = !show.images.backdrop && i.showbackground
         ? i.showbackground.shift()
@@ -530,23 +530,23 @@ export default class ShowHelper extends AbstractHelper {
         ? i.tvposter.shift()
         : null
 
-      const logo = !show.images.logo && i.clearlogo
-        ? i.clearlogo.shift()
-        : !show.images.logo && i.hdtvlogo
-          ? i.hdtvlogo.shift()
-          : null
+      // const logo = !show.images.logo && i.clearlogo
+      //   ? i.clearlogo.shift()
+      //   : !show.images.logo && i.hdtvlogo
+      //     ? i.hdtvlogo.shift()
+      //     : null
 
       return this.checkImages({
         ...show,
         images: {
-          banner: banner
-            ? {
-              full: banner.url,
-              high: banner.url,
-              medium: banner.url,
-              thumb: banner.url,
-            }
-            : show.images.banner,
+          // banner: banner
+          //   ? {
+          //     full: banner.url,
+          //     high: banner.url,
+          //     medium: banner.url,
+          //     thumb: banner.url,
+          //   }
+          //   : show.images.banner,
 
           backdrop: backdrop ? {
               full: backdrop.url,
@@ -564,13 +564,13 @@ export default class ShowHelper extends AbstractHelper {
             }
             : show.images.poster,
 
-          logo: logo ? {
-              full: logo.url,
-              high: logo.url,
-              medium: logo.url,
-              thumb: logo.url,
-            }
-            : show.images.logo,
+          // logo: logo ? {
+          //     full: logo.url,
+          //     high: logo.url,
+          //     medium: logo.url,
+          //     thumb: logo.url,
+          //   }
+          //   : show.images.logo,
         },
       })
     }).catch(err => {
