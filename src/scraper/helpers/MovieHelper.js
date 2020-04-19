@@ -276,18 +276,18 @@ export default class MovieHelper extends AbstractHelper {
   /**
    * Get info from Trakt and make a new movie object.
    * @override
-   * @param {!string} traktSlug - The slug to query trakt.tv.
+   * @param {!object} content - Containg the slug / imdb to query trakt.tv
    * @returns {Promise<Movie | Error>} - A new movie.
    */
-  async getTraktInfo(traktSlug: string): Promise<Movie | Error> {
+  async getTraktInfo(content: Object): Promise<Movie | Error> {
     try {
       const traktMovie = await trakt.movies.summary({
-        id: traktSlug,
+        id: content.slug,
         extended: 'full',
       })
 
       const traktWatchers = await trakt.movies.watching({
-        id: traktSlug,
+        id: content.slug,
       })
 
       if (traktMovie && traktMovie.ids.imdb && traktMovie.ids.tmdb) {
@@ -342,11 +342,12 @@ export default class MovieHelper extends AbstractHelper {
       let message = `getTraktInfo: ${err.path || err}`
 
       if (err.message.indexOf('404') > -1) {
-        message = `getTraktInfo: Could not find any data with slug: '${traktSlug}'`
+        message = `getTraktInfo: Could not find any data with slug: '${content.slug}'`
 
-        logger.warn(`getTraktInfo: Adding "${traktSlug}" to the blacklist for 2 weeks as it could not be found`)
+        logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist for 2 weeks as it could not be found`)
         BlacklistModel({
-          _id: traktSlug,
+          _id: content.slug,
+          title: content.movieTitle,
           type: AbstractHelper.ContentTypes.Movie,
           reason: '404',
 

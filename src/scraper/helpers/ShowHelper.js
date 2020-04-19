@@ -608,15 +608,14 @@ export default class ShowHelper extends AbstractHelper {
   /**
    * Get info from Trakt and make a new show object.
    * @override
-   * @param {!string} traktSlug - The slug to query https://trakt.tv/.
-   * @param {!string} imdbId - The imdb id to query trakt.tv
+   * @param {!object} content - Containg the slug / imdb to query trakt.tv
    * @returns {Promise<Show | Error>} - A new show without the
    * episodes attached.
    */
-  async getTraktInfo(traktSlug: string, imdbId: string = null): Show {
+  async getTraktInfo(content: Object): Show {
     try {
       let traktShow = null
-      let idUsed = traktSlug || imdbId
+      let idUsed = content.slug || content.imdb
 
       try {
         traktShow = await trakt.shows.summary({
@@ -629,10 +628,10 @@ export default class ShowHelper extends AbstractHelper {
           throw err
         }
 
-        if (idUsed !== imdbId) {
-          logger.warn(`No show found for slug: '${traktSlug}' trying imdb id: '${imdbId}'`)
+        if (idUsed !== content.imdb) {
+          logger.warn(`No show found for slug: '${content.slug}' trying imdb id: '${content.imdb}'`)
 
-          idUsed = imdbId
+          idUsed = content.imdb
           traktShow = await trakt.shows.summary({
             id: imdbId,
             extended: 'full',
@@ -641,7 +640,7 @@ export default class ShowHelper extends AbstractHelper {
       }
 
       if (!traktShow) {
-        return logger.error(`No show found for slug: '${traktSlug}' or imdb id: '${imdbId}'`)
+        return logger.error(`No show found for slug: '${content.slug}' or imdb id: '${content.imdb}'`)
       }
 
       const traktWatchers = await trakt.shows.watching({
@@ -656,9 +655,10 @@ export default class ShowHelper extends AbstractHelper {
         // If the show is ended then add it to a blacklist for one week
         // Ended shows don't need to be updated that frequently
         if (traktShow.status === 'ended') {
-          logger.warn(`getTraktInfo: Adding "${traktSlug}" to the blacklist for 1 week as the status of the show is 'ended'`)
+          logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist for 1 week as the status of the show is 'ended'`)
           BlacklistModel({
-            _id: traktSlug,
+            _id: content.slug,
+            title: content.show,
             type: AbstractHelper.ContentTypes.Show,
             reason: 'ended',
 
@@ -715,11 +715,12 @@ export default class ShowHelper extends AbstractHelper {
       let message = `getTraktInfo: ${err.path || err}`
 
       if (err.message.indexOf('404') > -1) {
-        message = `getTraktInfo: Could not find any data with slug: '${traktSlug}' or imdb id: '${imdbId}'`
+        message = `getTraktInfo: Could not find any data with slug: '${content.slug}' or imdb id: '${content.imdb}'`
 
-        logger.warn(`getTraktInfo: Adding "${traktSlug}" to the blacklist for 2 weeks as it could not be found`)
+        logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist for 2 weeks as it could not be found`)
         BlacklistModel({
-          _id: traktSlug,
+          _id: content.slug,
+          title: content.show,
           type: AbstractHelper.ContentTypes.Show,
           reason: '404',
 

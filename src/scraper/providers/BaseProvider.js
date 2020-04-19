@@ -70,7 +70,7 @@ export default class BaseProvider extends AbstractProvider {
    * @returns {Promise<Object | Error>} - A show object.
    */
   _getShowContent(content: Object): Promise<Object> {
-    const { episodes, slug, imdb } = content
+    const { episodes, slug } = content
 
     if (!episodes || episodes.length === 0) {
       return logger.warn(
@@ -83,7 +83,7 @@ export default class BaseProvider extends AbstractProvider {
       delete episodes[0]
     }
 
-    return this.helper.getTraktInfo(slug, imdb).then((res) => {
+    return this.helper.getTraktInfo(content).then((res) => {
       if (res && res.imdbId) {
         return this.helper.addEpisodes(res, episodes, slug)
       }
@@ -98,9 +98,9 @@ export default class BaseProvider extends AbstractProvider {
    * @returns {Promise<Object | Error>} - A movie object.
    */
   _getMovieContent(content: Object): Promise<Object | Error> {
-    const { slug, torrents } = content
+    const { torrents } = content
 
-    return this.helper.getTraktInfo(slug).then((res) => {
+    return this.helper.getTraktInfo(content).then((res) => {
       if (res && res.imdbId) {
         return this.helper.addTorrents(res, torrents)
       }
@@ -255,6 +255,8 @@ export default class BaseProvider extends AbstractProvider {
    * @returns {Promise<Array<Object>>} - A list of all the queried torrents.
    */
   getAllTorrents(totalPages: number): Promise<Array<Object>> {
+    // TODO:: Do something that if one page crashes it just skips it
+
     let torrents = []
     return pTimes(totalPages, async(page) => {
       this.query.page = page + 1
