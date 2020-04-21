@@ -113,6 +113,7 @@ export default class ShowHelper extends AbstractHelper {
             // Keep old attributes that could change
             s.createdAt = found.createdAt
 
+            // Update the season
             await this.Model.Season.findOneAndUpdate({
                 _id: season._id,
               },
@@ -125,6 +126,7 @@ export default class ShowHelper extends AbstractHelper {
           } else {
             // logger.info(`${this.name}: '${show.title}' add season '${season.number}'`)
 
+            // Add the season
             await new this.Model.Season(s).save()
           }
 
@@ -169,6 +171,7 @@ export default class ShowHelper extends AbstractHelper {
               e.torrents = this._formatTorrents(e.torrents, found.torrents)
             }
 
+            // Update the episode
             await this.Model.Episode.findOneAndUpdate({
                 _id: episode._id,
               },
@@ -182,6 +185,7 @@ export default class ShowHelper extends AbstractHelper {
           } else {
             // logger.info(`${this.name}: '${show.title}' add episode '${e.number}' of season '${season.number}'`)
 
+            // Add the episode
             await new this.Model.Episode(e).save()
           }
         }),
@@ -379,7 +383,7 @@ export default class ShowHelper extends AbstractHelper {
       return show
 
     }).catch(err => {
-      if (err.statusCode === 404) {
+      if (err.message.indexOf('404') > -1) {
         return logger.error(`_addTraktSeason: Trakt and TheMovieDB could not find any data for slug '${show.slug}' and season '${season}' with imdb id: '${show.imdbId}'`)
       }
 
@@ -439,7 +443,7 @@ export default class ShowHelper extends AbstractHelper {
       if (err.tmdbId) {
         return Promise.reject(err)
 
-      } else if (err.statusCode && err.statusCode === 404) {
+      } else if ((err.statusCode && err.statusCode === 404) || err.message.indexOf('404') > -1) {
         logger.warn(`_addTmdbImages: can't find images for slug '${show.slug}' with tmdb id '${show.tmdbId}'`)
 
       } else {
@@ -652,17 +656,17 @@ export default class ShowHelper extends AbstractHelper {
       if (traktShow && imdb && tmdb && tvdb) {
         const ratingPercentage = Math.round(traktShow.rating * 10)
 
-        // If the show is ended then add it to a blacklist for one week
-        // Ended shows don't need to be updated that frequently
+        // If the show is ended then add it to a blacklist for four weeks
+        // Ended shows don't need to be updated that frequently as it does not change anymore
         if (traktShow.status === 'ended') {
-          logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist for 1 week as the status of the show is 'ended'`)
+          logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist for 4 weeks as the status of the show is 'ended'`)
           BlacklistModel({
             _id: content.slug,
             title: content.show,
             type: AbstractHelper.ContentTypes.Show,
             reason: 'ended',
 
-            expires: Number(new Date(Date.now() + 6.04e+8)), // 1 week
+            expires: Number(new Date(Date.now() + (6.04e+8 * 4))), // 4 weeks
             createdAt: Number(new Date()),
             updatedAt: Number(new Date()),
           }).save()

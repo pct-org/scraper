@@ -255,23 +255,32 @@ export default class BaseProvider extends AbstractProvider {
    * @returns {Promise<Array<Object>>} - A list of all the queried torrents.
    */
   getAllTorrents(totalPages: number): Promise<Array<Object>> {
-    // TODO:: Do something that if one page crashes it just skips it
-
     let torrents = []
+    let errors = 0
+
     return pTimes(totalPages, async(page) => {
-      this.query.page = page + 1
+      try {
+        // If we got more then 2 errors then we skipp the rest of the pages
+        if (errors < 3) {
+          this.query.page = page + 1
 
-      logger.info(`${this.name}: Started searching ${this.name} on page ${page + 1} out of ${totalPages}`)
+          logger.info(`${this.name}: Started searching ${this.name} on page ${page + 1} out of ${totalPages}`)
 
-      const res = await this.api.search(this.query)
+          const res = await this.api.search(this.query)
 
-      const data = res.results
-        ? res.results // Kat & ET
-        : res.data
-          ? res.data.movies // YTS
-          : []
+          const data = res.results
+            ? res.results // Kat & ET
+            : res.data
+              ? res.data.movies // YTS
+              : []
 
-      torrents = torrents.concat(data)
+          torrents = torrents.concat(data)
+        }
+      } catch (e) {
+        if (e.message.includes('502')) {
+          errors += 1
+        }
+      }
 
     }, {
       concurrency: 1,
@@ -344,7 +353,7 @@ export default class BaseProvider extends AbstractProvider {
    * @param {!string} config.name - The name of the config.
    * @param {!Object} config.api - The API module ot get the content with.
    * @param {!string} config.contentType - The type of content to scrape.
-   * @param {!MongooseModel} config.Model - The model for the content to
+   * @param {!Model} config.Model - The model for the content to
    * scrape.
    * @param {!IHelper} config.Helper - The helper class to save the content to
    * the database.
