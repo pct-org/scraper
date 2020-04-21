@@ -51,14 +51,22 @@ export default class IndexController extends IController {
         'HEAD',
       ])
 
-      const updated = await PopApi.scraper.getUpdated()
+      let updated = null
+      let status = null
+
+      try {
+        updated = await PopApi.scraper.getUpdated()
+        status = await PopApi.scraper.getStatus()
+      } catch (e) {
+        // File does not exist do nothing
+      }
 
       return res.json({
         repo: repository.url,
         version,
         commit: commit.trim(),
         server: IndexController._Server,
-        status: await PopApi.scraper.getStatus() || 'idle',
+        status: status || 'idle',
         totalMovies: await MovieModel.countDocuments().exec(),
         totalShows: await ShowModel.countDocuments().exec(),
         updated: updated > 0
