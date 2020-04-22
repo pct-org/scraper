@@ -102,7 +102,7 @@ export default class ShowHelper extends AbstractHelper {
         show.seasons.map(async(season) => {
           // Create a copy
           const s = Object.assign({}, season)
-          const found = seasonsFound.find(sf => sf.number === season.number && sf._id === season._id)
+          const found = seasonsFound.find(sf => sf._id === season._id)
 
           // We do not need to store the episodes here
           delete s.episodes
@@ -157,7 +157,7 @@ export default class ShowHelper extends AbstractHelper {
       await Promise.all(
         season.episodes.map(async(episode) => {
           const e = episode
-          const found = episodesFound.find(se => se.number === episode.number && se._id === episode._id)
+          const found = episodesFound.find(se => se._id === episode._id)
 
           if (found) {
             // logger.info(`${this.name}: '${show.title}' update episode '${e.number}' of season '${season.number}'`)
@@ -305,7 +305,7 @@ export default class ShowHelper extends AbstractHelper {
       const updatedEpisodes = []
       let firstEpisode = null
 
-      s.map((e, index) => {
+      s.forEach((e, index) => {
         const number = parseInt(e.number, 10)
         const torrents = episodes[season][e.number]
 
