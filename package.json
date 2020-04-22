@@ -37,7 +37,7 @@
     "@pct-org/eztv-api-pt": "^1.3.3",
     "@pct-org/mongo-models": "^1.2.0",
     "@pct-org/pop-api": "^0.8.0",
-    "@pct-org/pop-api-scraper": "0.8.1",
+    "@pct-org/pop-api-scraper": "0.8.2",
     "@pct-org/solidtorrents-api-pt": "^1.0.5",
     "@pct-org/zooqle": "^1.0.49",
     "bytes": "^3.0.0",

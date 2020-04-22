@@ -1532,10 +1532,10 @@
     mongoose "5.9.7"
     rxjs "^6.5.5"
 
-"@pct-org/pop-api-scraper@0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@pct-org/pop-api-scraper/-/pop-api-scraper-0.8.1.tgz#4d07cd4e7f96b85a88024a70c3ab871f566515dc"
-  integrity sha512-Ym2fVxM9xYfZGHZA5uCmYrYkzxm7eYQAKcKQ1emfCgAvn5POVnjmbRt8m8ZlAoNyFK6yTVqSLN+xRtZuzepc2A==
+"@pct-org/pop-api-scraper@0.8.2":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@pct-org/pop-api-scraper/-/pop-api-scraper-0.8.2.tgz#04d24cc06afd8d002d523dcbbfe380fee5eba12f"
+  integrity sha512-n6Ue6W/oLMGMowi9fl5+nI+a+CcfcpyjrnLXju5IctHT3QEz3sNaSUbuHV8lPjIFHF2kKBZcGUy0DDnCoNwuwg==
   dependencies:
     cheerio "^1.0.0-rc.2"
     debug "4.1.1"
