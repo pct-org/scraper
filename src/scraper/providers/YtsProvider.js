@@ -21,7 +21,6 @@ export default class YtsProvider extends BaseProvider {
     const movie = {
       movieTitle: torrent.title,
       slug: torrent.imdb_code,
-      slugYear: torrent.imdb_code,
       year: torrent.year,
       torrents: [],
     }

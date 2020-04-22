@@ -43,6 +43,8 @@ export default class EztvProvider extends BaseProvider {
               .then(content => this.getContent(content))
               .catch(err => logger.error(`Eztv.scrapeConfig: ${err.message || err}`))
           }
+
+          return Promise.resolve()
         })
       }, {
         concurrency: this.maxWebRequests,

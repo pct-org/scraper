@@ -113,14 +113,14 @@ export default class BaseProvider extends AbstractProvider {
    * @returns {Promise<Boolean|Error>}
    */
   async _isItemBlackListed(content: Object): Promise<Boolean | Error> {
-    const { slug } = content
+    const { slug, imdb } = content
 
-    const blacklistedItem = await BlacklistModel.findOne({ _id: slug })
+    const blacklistedItem = await BlacklistModel.findOne({ _id: imdb || slug })
 
     if (blacklistedItem) {
       if (blacklistedItem.expires > Date.now()) {
         logger.warn(
-          `${this.name}: '${slug}' is in the blacklist because of reason '${blacklistedItem.reason}', skipping...`,
+          `${this.name}: '${imdb || slug}' is in the blacklist because of reason '${blacklistedItem.reason}', skipping...`,
         )
 
         return true
@@ -256,34 +256,25 @@ export default class BaseProvider extends AbstractProvider {
    */
   getAllTorrents(totalPages: number): Promise<Array<Object>> {
     let torrents = []
-    let errors = 0
 
     return pTimes(totalPages, async(page) => {
-      try {
-        // If we got more then 2 errors then we skipp the rest of the pages
-        if (errors < 3) {
-          this.query.page = page + 1
+      this.query.page = page + 1
 
-          logger.info(`${this.name}: Started searching ${this.name} on page ${page + 1} out of ${totalPages}`)
+      logger.info(`${this.name}: Started searching ${this.name} on page ${page + 1} out of ${totalPages}`)
 
-          const res = await this.api.search(this.query)
+      const res = await this.api.search(this.query)
 
-          const data = res.results
-            ? res.results // Kat & ET
-            : res.data
-              ? res.data.movies // YTS
-              : []
+      const data = res.results
+        ? res.results // Kat & ET
+        : res.data
+          ? res.data.movies // YTS
+          : []
 
-          torrents = torrents.concat(data)
-        }
-      } catch (e) {
-        if (e.message.includes('502')) {
-          errors += 1
-        }
-      }
+      torrents = torrents.concat(data)
 
     }, {
       concurrency: 1,
+      stopOnError: false,
     }).then(() => {
       logger.info(`${this.name}: Found ${torrents.length} torrents.`)
 
