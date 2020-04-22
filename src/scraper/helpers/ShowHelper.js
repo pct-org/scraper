@@ -647,9 +647,26 @@ export default class ShowHelper extends AbstractHelper {
         return logger.error(`No show found for slug: '${content.slug}' or imdb id: '${content.imdb}'`)
       }
 
-      const traktWatchers = await trakt.shows.watching({
-        id: idUsed,
-      })
+      let traktWatchers = null
+      let traktNextEpisode = null
+
+      try {
+        // Get the active ppl watching
+        traktWatchers = await trakt.shows.watching({
+          id: idUsed,
+        })
+
+        // We don't have to get it if show is ended
+        if (traktShow.status !== 'ended' && traktShow.status !== 'canceled') {
+          // Get the next airing episode so we can wait until that one airs
+          traktNextEpisode = await trakt.shows.next_episode({
+            id: traktShow.ids.slug,
+            extended: 'full',
+          })
+        }
+      } catch (e) {
+        // Do nothing then
+      }
 
       const { imdb, tmdb, tvdb } = traktShow.ids
 
@@ -658,18 +675,21 @@ export default class ShowHelper extends AbstractHelper {
 
         // If the show is ended then add it to a blacklist for four weeks
         // Ended shows don't need to be updated that frequently as it does not change anymore
-        if (traktShow.status === 'ended') {
-          logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist for 4 weeks as the status of the show is 'ended'`)
-          BlacklistModel({
-            _id: content.slug,
-            title: content.show,
-            type: AbstractHelper.ContentTypes.Show,
-            reason: 'ended',
+        if (traktShow.status === 'ended' || traktShow.status === 'canceled') {
+          this._addShowToBlacklist(content, traktShow.status, 4)
 
-            expires: Number(new Date(Date.now() + (6.04e+8 * 4))), // 4 weeks
-            createdAt: Number(new Date()),
-            updatedAt: Number(new Date()),
-          }).save()
+        } else if (traktNextEpisode) {
+          // If we have traktNextEpisode then add it to the blacklist until that item is aired
+          const nextEpisodefirstAired = new Date(traktNextEpisode.first_aired)
+
+          // We want start checking one day before
+          nextEpisodefirstAired.setDate(nextEpisodefirstAired.getDate() - 1)
+
+          // Double check if the item is still being aired later then now
+          if (nextEpisodefirstAired.getTime() > Date.now()) {
+            // Add it to the blacklist until the next episode is aired
+            this._addShowToBlacklist(content, 'nextEpisode', null, nextEpisodefirstAired)
+          }
         }
 
         return this.addImages({
@@ -700,7 +720,9 @@ export default class ShowHelper extends AbstractHelper {
             // logo: AbstractHelper.DefaultImageSizes,
           },
           type: AbstractHelper.ContentTypes.Show,
-          genres: traktShow.genres ? traktShow.genres : ['unknown'],
+          genres: traktShow.genres
+            ? traktShow.genres
+            : ['unknown'],
           airInfo: {
             network: traktShow.network,
             country: traktShow.country,
@@ -712,26 +734,20 @@ export default class ShowHelper extends AbstractHelper {
           updatedAt: Number(new Date()),
           seasons: [],
           latestEpisodeAired: 0,
+          nextEpisodeAired: traktNextEpisode ?
+            Number(traktNextEpisode.first_aired)
+            : null,
           numSeasons: 0,
         })
       }
     } catch (err) {
       let message = `getTraktInfo: ${err.path || err}`
 
-      if (err.message.indexOf('404') > -1) {
+      if (err.message.includes('404')) {
         message = `getTraktInfo: Could not find any data with slug: '${content.slug}' or imdb id: '${content.imdb}'`
 
-        logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist for 2 weeks as it could not be found`)
-        BlacklistModel({
-          _id: content.slug,
-          title: content.show,
-          type: AbstractHelper.ContentTypes.Show,
-          reason: '404',
-
-          expires: Number(new Date(Date.now() + 12096e5)), // 2 weeks
-          createdAt: Number(new Date()),
-          updatedAt: Number(new Date()),
-        }).save()
+        // Try again in 2 weeks
+        this._addShowToBlacklist(content, '404', 2)
       }
 
       // BulkProvider will log it
@@ -739,4 +755,35 @@ export default class ShowHelper extends AbstractHelper {
     }
   }
 
+  /**
+   * Add's a show to the blacklist
+   *
+   * @param {!object} content - Containg the slug / imdb to query trakt.tv
+   * @param {string} reason - The reason why it's blacklisted
+   * @param {number} weeks - Amount of weeks it should be blackisted
+   * @param {Date} until - Datetime until when it should be in the blacklist
+   */
+  _addShowToBlacklist(content, reason, weeks = null, until = null) {
+    let expires = 0
+
+    if (until) {
+      logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist until '${until}' because of reason '${reason}'`)
+      expires = Number(until)
+
+    } else if (weeks) {
+      logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist for ${weeks} weeks because of reason '${reason}'`)
+      expires = Number(new Date(Date.now() + (6.04e+8 * weeks)))
+    }
+
+    BlacklistModel({
+      _id: content.slug,
+      title: content.show,
+      type: AbstractHelper.ContentTypes.Show,
+      reason,
+
+      expires,
+      createdAt: Number(new Date()),
+      updatedAt: Number(new Date()),
+    }).save()
+  }
 }

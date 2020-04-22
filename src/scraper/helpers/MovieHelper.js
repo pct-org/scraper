@@ -341,7 +341,7 @@ export default class MovieHelper extends AbstractHelper {
     } catch (err) {
       let message = `getTraktInfo: ${err.path || err}`
 
-      if (err.message.indexOf('404') > -1) {
+      if (err.message.includes('404')) {
         message = `getTraktInfo: Could not find any data with slug: '${content.slug}'`
 
         logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist for 2 weeks as it could not be found`)
