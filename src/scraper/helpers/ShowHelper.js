@@ -619,7 +619,8 @@ export default class ShowHelper extends AbstractHelper {
   async getTraktInfo(content: Object): Show {
     try {
       let traktShow = null
-      let idUsed = content.slug || content.imdb
+      // We prefer the imdb id above a slug
+      let idUsed = content.imdb || content.slug
 
       try {
         traktShow = await trakt.shows.summary({
@@ -628,16 +629,16 @@ export default class ShowHelper extends AbstractHelper {
         })
       } catch (err) {
         // If it's a 404 and we have don't have the imdbId then throw error
-        if (err.message.indexOf('404') > -1 || !imdbId || imdbId.indexOf('tt') === -1) {
+        if (err.message.indexOf('404') > -1 || !content.imdb || content.imdb.indexOf('tt') === -1) {
           throw err
         }
 
-        if (idUsed !== content.imdb) {
-          logger.warn(`No show found for slug: '${content.slug}' trying imdb id: '${content.imdb}'`)
+        if (idUsed !== content.slug) {
+          logger.warn(`No show found for imdb id: '${content.imdb}' trying slug: '${content.slug}'`)
 
-          idUsed = content.imdb
+          idUsed = content.slug
           traktShow = await trakt.shows.summary({
-            id: imdbId,
+            id: content.slug,
             extended: 'full',
           })
         }
@@ -776,7 +777,7 @@ export default class ShowHelper extends AbstractHelper {
     }
 
     BlacklistModel({
-      _id: content.slug,
+      _id: content.imdb || content.slug,
       title: content.show,
       type: AbstractHelper.ContentTypes.Show,
       reason,
