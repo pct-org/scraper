@@ -18,11 +18,10 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production rollup -c",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "forever": "cross-env NODE_ENV=production forever start ./build/popcorn-api.js",
     "postinstall": "yarn build",
     "lint": "eslint {src,test}/** ./*.js",
     "lint:fix": "yarn lint --fix",
-    "start": "cross-env NODE_ENV=production node ./build/popcorn-api.js",
+    "start": "cross-env NODE_ENV=production node ./dist/scraper.js -m pretty",
     "start:debug": "yarn start:dev --inspect-brk",
     "start:dev": "cross-env NODE_ENV=development cross-env DEBUG=@pct-org/* babel-node ./src/index.js -m pretty -s",
     "pretest": "npm run build",
@@ -30,7 +29,8 @@
     "test:watch": "echo 'RUN TESTS'"
   },
   "resolutions": {
-    "mongoose": "5.7.6"
+    "mongoose": "5.7.6",
+    "p-map": "4.0.0"
   },
   "dependencies": {
     "@pct-org/ettv-api": "^1.0.2",
@@ -87,11 +87,9 @@
     "flow": "^0.2.3",
     "flow-bin": "0.122.0",
     "flow-typed": "3.1.0",
-    "forever": "2.0.0",
     "husky": "4.2.5",
     "mkdirp": "1.0.4",
     "mocha": "7.1.1",
-    "nyc": "15.0.1",
     "rollup": "1.21.2",
     "rollup-plugin-babel": "4.4.0",
     "rollup-plugin-commonjs": "10.1.0",

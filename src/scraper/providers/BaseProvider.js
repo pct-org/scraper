@@ -279,6 +279,12 @@ export default class BaseProvider extends AbstractProvider {
       logger.info(`${this.name}: Found ${torrents.length} torrents.`)
 
       return Promise.resolve(torrents)
+    }).catch((err) => {
+      // Only log the errors
+      logger.error(`Catch BaseProvider.getAllTorrents: ${err.message || err}`)
+
+      // We still want to resolve all the pages that did go well
+      return Promise.resolve(torrents)
     })
   }
 
@@ -419,6 +425,10 @@ export default class BaseProvider extends AbstractProvider {
       if (this.contentType === BaseProvider.ContentTypes.Show) {
         // TODO:: Do post call to the GraphQL api to check and start downloading new my episodes
         logger.info(`Calling GraphQL to update my episodes`)
+
+      } else if (this.contentType === BaseProvider.ContentTypes.Movie) {
+        // TODO:: Do post call to the GraphQL api to check and start downloading better qualities
+        logger.info(`Calling GraphQL to qualities of downloaded movies`)
       }
     } catch (e) {
 
