@@ -768,16 +768,18 @@ export default class ShowHelper extends AbstractHelper {
     let expires = 0
 
     if (until) {
-      logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist until '${until}' because of reason '${reason}'`)
+      logger.warn(`getTraktInfo: Adding "${content.show}" with identifier "${content.slug}" to the blacklist until '${until}' because of reason '${reason}'`)
       expires = Number(until)
 
     } else if (weeks) {
-      logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist for ${weeks} weeks because of reason '${reason}'`)
+      logger.warn(`getTraktInfo: Adding "${content.show}" with identifier "${content.slug}" to the blacklist for ${weeks} weeks because of reason '${reason}'`)
       expires = Number(new Date(Date.now() + (6.04e+8 * weeks)))
     }
 
     BlacklistModel({
-      _id: content.imdb || content.slug,
+      // We don't use the content.imdb as when the showlist is retrieved it does not have
+      // a imdb id
+      _id: content.slug,
       title: content.show,
       type: AbstractHelper.ContentTypes.Show,
       reason,
