@@ -1,4 +1,13 @@
-# 3.1.0 (2020-04-26)
+## [3.1.1](https://github.com/pct-org/scraper/compare/v3.1.0...v3.1.1) (2020-04-26)
+
+
+### Bug Fixes
+
+* Fixes in mongo models ([e75ac36](https://github.com/pct-org/scraper/commit/e75ac367c5d088dea86ace177194ee3d257cce32))
+
+
+
+# [3.1.0](https://github.com/pct-org/scraper/compare/65d233e1b7f719543c42502353a69136fc4c0407...v3.1.0) (2020-04-26)
 
 
 ### Bug Fixes
