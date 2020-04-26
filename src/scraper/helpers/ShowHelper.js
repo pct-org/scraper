@@ -735,7 +735,7 @@ export default class ShowHelper extends AbstractHelper {
           updatedAt: Number(new Date()),
           seasons: [],
           latestEpisodeAired: 0,
-          nextEpisodeAired: traktNextEpisode ?
+          nextEpisodeAirs: traktNextEpisode ?
             Number(traktNextEpisode.first_aired)
             : null,
           numSeasons: 0,
