@@ -333,6 +333,7 @@ export default class MovieHelper extends AbstractHelper {
             downloading: false,
             downloadStatus: null,
             downloadProgress: null,
+            downloadQuality: null,
           },
           bookmarked: false,
           bookmarkedOn: null,
