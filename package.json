@@ -23,7 +23,7 @@
     "lint:fix": "yarn lint --fix",
     "start": "cross-env NODE_ENV=production node ./dist/scraper.js -m pretty",
     "start:debug": "yarn start:dev --inspect-brk",
-    "start:dev": "cross-env NODE_ENV=development cross-env DEBUG=@pct-org/* babel-node ./src/index.js -m pretty -s",
+    "start:dev": "cross-env NODE_ENV=development cross-env DEBUG=@pct-org/* babel-node ./src/index.js -m pretty",
     "pretest": "npm run build",
     "test": "echo 'RUN TESTS'",
     "test:watch": "echo 'RUN TESTS'"
@@ -41,6 +41,7 @@
     "@pct-org/solidtorrents-api-pt": "^1.0.5",
     "@pct-org/zooqle": "^1.0.49",
     "bytes": "^3.0.0",
+    "cron-parser": "^2.13.0",
     "deepmerge": "^4.2.2",
     "dotenv": "8.2.0",
     "fanart.tv-api": "^2.0.1",

@@ -1,6 +1,7 @@
 // @flow
 import fs from 'fs'
 import { join } from 'path'
+import { parseExpression } from 'cron-parser'
 import { ApiError, IController, PopApi, utils } from '@pct-org/pop-api'
 import type { $Request, $Response, NextFunction } from 'express'
 import { MovieModel } from '@pct-org/mongo-models/dist/movie/movie.model'
@@ -52,11 +53,14 @@ export default class IndexController extends IController {
       ])
 
       let updated = null
+      let nextUpdate = null
       let status = null
 
       try {
         updated = await PopApi.scraper.getUpdated()
         status = await PopApi.scraper.getStatus()
+
+        nextUpdate = parseExpression(process.env.CRON_TIME, {}).next().toString()
       } catch (e) {
         // File does not exist do nothing
       }
@@ -72,6 +76,7 @@ export default class IndexController extends IController {
         updated: updated > 0
           ? (new Date(updated * 1000)).toISOString().slice(0, 19).replace('T', ' ')
           : 'never',
+        nextUpdate: nextUpdate,
         uptime: process.uptime() | 0, // eslint-disable-line no-bitwise
       })
     } catch (err) {
