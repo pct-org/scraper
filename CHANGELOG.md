@@ -1,3 +1,12 @@
+## [3.1.2](https://github.com/pct-org/scraper/compare/v3.1.1...v3.1.2) (2020-04-26)
+
+
+### Bug Fixes
+
+* Adde default values for downloadQuality ([f16a4bb](https://github.com/pct-org/scraper/commit/f16a4bb5b821492ab6809f6d12a3bc7129ebc559))
+
+
+
 ## [3.1.1](https://github.com/pct-org/scraper/compare/v3.1.0...v3.1.1) (2020-04-26)
 
 
