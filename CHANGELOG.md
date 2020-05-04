@@ -1,3 +1,12 @@
+# [3.2.0](https://github.com/pct-org/scraper/compare/v3.1.2...v3.2.0) (2020-05-04)
+
+
+### Features
+
+* Added next update to status call ([0badeaa](https://github.com/pct-org/scraper/commit/0badeaad08cf7d4056e062f7f7b1230e29398d65))
+
+
+
 ## [3.1.2](https://github.com/pct-org/scraper/compare/v3.1.1...v3.1.2) (2020-04-26)
 
 
