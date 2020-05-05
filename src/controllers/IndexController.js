@@ -74,9 +74,11 @@ export default class IndexController extends IController {
         totalMovies: await MovieModel.countDocuments().exec(),
         totalShows: await ShowModel.countDocuments().exec(),
         updated: updated > 0
-          ? (new Date(updated * 1000)).toISOString().slice(0, 19).replace('T', ' ')
+          ? new Date(updated * 1000).toLocaleString()
           : 'never',
-        nextUpdate: nextUpdate,
+        nextUpdate: nextUpdate
+          ? new Date(nextUpdate).toLocaleString()
+          : 'unknown',
         uptime: process.uptime() | 0, // eslint-disable-line no-bitwise
       })
     } catch (err) {
