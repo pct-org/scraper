@@ -1,3 +1,12 @@
+## [3.2.1](https://github.com/pct-org/scraper/compare/v3.2.0...v3.2.1) (2020-05-12)
+
+
+### Bug Fixes
+
+* Aligend updated and nextUpdate to output same date format ([395e87b](https://github.com/pct-org/scraper/commit/395e87b0576eb6d877a6cc6f7b0d10a69938cd01))
+
+
+
 # [3.2.0](https://github.com/pct-org/scraper/compare/v3.1.2...v3.2.0) (2020-05-04)
 
 
