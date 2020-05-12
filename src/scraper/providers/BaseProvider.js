@@ -249,6 +249,37 @@ export default class BaseProvider extends AbstractProvider {
   }
 
   /**
+   * Get's the torrents for one page
+   * @param {!number} page - The page number to get
+   * @param {boolean} retry - If we are allowed to retry when a error happens
+   * @returns {Promise<*|[]|undefined>}
+   */
+  async getOnePage(page, retry = true) {
+    this.query.page = page
+
+    try {
+      const res = await this.api.search(this.query)
+
+      return res.results
+        ? res.results // Kat & ET
+        : res.data
+          ? res.data.movies // YTS
+          : []
+
+    } catch (e) {
+      // If we are allowed to retry then do else throw the error
+      if (retry) {
+        logger.warn(`${this.name}: On page ${page} "${e}", going to retry.`)
+        return this.getOnePage(page, false)
+
+      } else {
+        logger.error(`${this.name}: On page ${page} "${e}"`)
+        throw e
+      }
+    }
+  }
+
+  /**
    * Get all the torrents of a given torrent provider.
    * @protected
    * @param {!number} totalPages - The total pages of the query.
@@ -258,18 +289,12 @@ export default class BaseProvider extends AbstractProvider {
     let torrents = []
 
     return pTimes(totalPages, async(page) => {
-      this.query.page = page + 1
-
       logger.info(`${this.name}: Started searching ${this.name} on page ${page + 1} out of ${totalPages}`)
 
-      const res = await this.api.search(this.query)
+      // Get the page
+      const data = await this.getOnePage(page + 1)
 
-      const data = res.results
-        ? res.results // Kat & ET
-        : res.data
-          ? res.data.movies // YTS
-          : []
-
+      // Add it to the torrent collection
       torrents = torrents.concat(data)
 
     }, {
