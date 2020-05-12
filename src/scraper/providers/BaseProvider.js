@@ -298,7 +298,7 @@ export default class BaseProvider extends AbstractProvider {
       torrents = torrents.concat(data)
 
     }, {
-      concurrency: 3,
+      concurrency: 1,
       stopOnError: false,
     }).then(() => {
       logger.info(`${this.name}: Found ${torrents.length} torrents.`)
