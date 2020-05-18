@@ -1,3 +1,12 @@
+## [3.4.1](https://github.com/pct-org/scraper/compare/v3.4.0...v3.4.1) (2020-05-18)
+
+
+### Bug Fixes
+
+* Fixed build process ([7be6f88](https://github.com/pct-org/scraper/commit/7be6f880f78c15cc01da6360c60477eccf4de8bf))
+
+
+
 # [3.4.0](https://github.com/pct-org/scraper/compare/v3.3.0...v3.4.0) (2020-05-18)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * Added next update to status call ([0badeaa](https://github.com/pct-org/scraper/commit/0badeaad08cf7d4056e062f7f7b1230e29398d65))
-
-
-
-## [3.1.2](https://github.com/pct-org/scraper/compare/v3.1.1...v3.1.2) (2020-04-26)
-
-
-### Bug Fixes
-
-* Adde default values for downloadQuality ([f16a4bb](https://github.com/pct-org/scraper/commit/f16a4bb5b821492ab6809f6d12a3bc7129ebc559))
 
 
 
