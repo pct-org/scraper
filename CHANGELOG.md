@@ -1,3 +1,17 @@
+# [3.4.0](https://github.com/pct-org/scraper/compare/v3.3.0...v3.4.0) (2020-05-18)
+
+
+### Bug Fixes
+
+* Fixed bextEpisodeAirs could not transform to number ([6d3c498](https://github.com/pct-org/scraper/commit/6d3c4981f5dd4f3f3be1c242c566e27f4735a88d))
+
+
+### Features
+
+* Added the /files route ([7d79a58](https://github.com/pct-org/scraper/commit/7d79a58ad36eb3ef7ea702cfcd5122a16fc4b794))
+
+
+
 # [3.3.0](https://github.com/pct-org/scraper/compare/v3.2.1...v3.3.0) (2020-05-12)
 
 
@@ -31,15 +45,6 @@
 ### Bug Fixes
 
 * Adde default values for downloadQuality ([f16a4bb](https://github.com/pct-org/scraper/commit/f16a4bb5b821492ab6809f6d12a3bc7129ebc559))
-
-
-
-## [3.1.1](https://github.com/pct-org/scraper/compare/v3.1.0...v3.1.1) (2020-04-26)
-
-
-### Bug Fixes
-
-* Fixes in mongo models ([e75ac36](https://github.com/pct-org/scraper/commit/e75ac367c5d088dea86ace177194ee3d257cce32))
 
 
 
