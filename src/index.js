@@ -36,6 +36,7 @@ import { name, version } from '../package.json'
       updatedPath: join(...[logDir, 'updated.json']),
 
       dbName: process.env.MONGO_DATABASE,
+      hosts: [process.env.MONGO_URI],
 
       // This starts the scraping on the master node and sets up the cron
       // start: isMaster

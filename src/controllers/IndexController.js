@@ -1,11 +1,12 @@
 // @flow
-import fs from 'fs'
-import { join } from 'path'
+import { join, resolve } from 'path'
 import { parseExpression } from 'cron-parser'
-import { ApiError, IController, PopApi, utils } from '@pct-org/pop-api'
+import { IController, PopApi, utils } from '@pct-org/pop-api'
+import { static as serveStatic } from 'express'
 import type { $Request, $Response, NextFunction } from 'express'
 import { MovieModel } from '@pct-org/mongo-models/dist/movie/movie.model'
 import { ShowModel } from '@pct-org/mongo-models/dist/show/show.model'
+import serveIndex from 'serve-index'
 
 import { name, repository, version } from '../../package.json'
 
@@ -29,8 +30,19 @@ export default class IndexController extends IController {
    * @returns {undefined}
    */
   registerRoutes(router: any, PopApi?: any): void {
+    process.env.TEMP_DIR = typeof process.env.TEMP_DIR === 'string'
+      ? process.env.TEMP_DIR
+      : join(...[
+        __dirname,
+        '..',
+        '..',
+        'tmp',
+      ])
+
+    const root = resolve(process.env.TEMP_DIR)
+
+    router.use('/files', serveStatic(root), serveIndex(root, { 'icons': true }))
     router.get('/status', this.getIndex)
-    router.get('/logs/error', this.getErrorLog)
   }
 
   /**
@@ -84,48 +96,6 @@ export default class IndexController extends IController {
     } catch (err) {
       return next(err)
     }
-  }
-
-  /**
-   * Displays the 'popcorn-api.log' file.
-   * @param {!Object} req - The ExpressJS request object.
-   * @param {!Object} res - The ExpressJS response object.
-   * @param {!Function} next - The ExpressJS next function.
-   * @returns {Object|Error} - The content of the log file.
-   */
-  getErrorLog(
-    req: $Request,
-    res: $Response,
-    next: NextFunction,
-  ): Object | mixed {
-    process.env.TEMP_DIR = typeof process.env.TEMP_DIR === 'string'
-      ? process.env.TEMP_DIR
-      : join(...[
-        __dirname,
-        '..',
-        '..',
-        'tmp',
-      ])
-
-    const root = process.env.TEMP_DIR
-    const file = `${name}-app.log`
-    const filePath = join(...[
-      process.env.TEMP_DIR,
-      file,
-    ])
-
-    if (fs.existsSync(filePath)) {
-      return res.sendFile(file, {
-        root,
-        headers: {
-          'Content-Type': 'text/plain; charset=UTF-8',
-        },
-      })
-    }
-
-    return next(new ApiError({
-      message: `Could not find file: '${filePath}'`,
-    }))
   }
 
 }
