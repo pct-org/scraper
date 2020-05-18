@@ -2,13 +2,13 @@
 import { join, resolve } from 'path'
 import { parseExpression } from 'cron-parser'
 import { IController, PopApi, utils } from '@pct-org/pop-api'
-import { static as serveStatic } from 'express'
 import type { $Request, $Response, NextFunction } from 'express'
 import { MovieModel } from '@pct-org/mongo-models/dist/movie/movie.model'
 import { ShowModel } from '@pct-org/mongo-models/dist/show/show.model'
+import express from 'express'
 import serveIndex from 'serve-index'
 
-import { name, repository, version } from '../../package.json'
+import { repository, version } from '../../package.json'
 
 /**
  * Class for displaying information about the server the API is running on.
@@ -41,7 +41,7 @@ export default class IndexController extends IController {
 
     const root = resolve(process.env.TEMP_DIR)
 
-    router.use('/files', serveStatic(root), serveIndex(root, { 'icons': true }))
+    router.use('/files', express.static(root), serveIndex(root, { 'icons': true }))
     router.get('/status', this.getIndex)
   }
 
