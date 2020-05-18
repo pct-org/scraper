@@ -315,6 +315,7 @@ export default class ShowHelper extends AbstractHelper {
           showImdbId: show.imdbId,
           tmdbId: null,
           number,
+          season,
           title: e.title,
           synopsis: e.overview,
           firstAired: e.first_aired
