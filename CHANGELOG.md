@@ -1,3 +1,12 @@
+## [3.4.2](https://github.com/pct-org/scraper/compare/v3.4.1...v3.4.2) (2020-05-18)
+
+
+### Bug Fixes
+
+* Fixed that season was not set when it's found on trakt ([f15b896](https://github.com/pct-org/scraper/commit/f15b896f9003bfa30f83cc32c0099125917688be))
+
+
+
 ## [3.4.1](https://github.com/pct-org/scraper/compare/v3.4.0...v3.4.1) (2020-05-18)
 
 
@@ -36,15 +45,6 @@
 ### Bug Fixes
 
 * Aligend updated and nextUpdate to output same date format ([395e87b](https://github.com/pct-org/scraper/commit/395e87b0576eb6d877a6cc6f7b0d10a69938cd01))
-
-
-
-# [3.2.0](https://github.com/pct-org/scraper/compare/v3.1.2...v3.2.0) (2020-05-04)
-
-
-### Features
-
-* Added next update to status call ([0badeaa](https://github.com/pct-org/scraper/commit/0badeaad08cf7d4056e062f7f7b1230e29398d65))
 
 
 
