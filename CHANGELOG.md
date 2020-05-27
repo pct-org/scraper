@@ -1,3 +1,12 @@
+# [3.5.0](https://github.com/pct-org/scraper/compare/v3.4.2...v3.5.0) (2020-05-27)
+
+
+### Features
+
+* Collect more metadata about shows ([9fbdb09](https://github.com/pct-org/scraper/commit/9fbdb098b17e5de8d3a0f7a630bce41569984bff))
+
+
+
 ## [3.4.2](https://github.com/pct-org/scraper/compare/v3.4.1...v3.4.2) (2020-05-18)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * Added retry for getting a page ([cc587ab](https://github.com/pct-org/scraper/commit/cc587ab7d5bb091ce6c0ae3223082c20077da7b0))
-
-
-
-## [3.2.1](https://github.com/pct-org/scraper/compare/v3.2.0...v3.2.1) (2020-05-12)
-
-
-### Bug Fixes
-
-* Aligend updated and nextUpdate to output same date format ([395e87b](https://github.com/pct-org/scraper/commit/395e87b0576eb6d877a6cc6f7b0d10a69938cd01))
 
 
 
