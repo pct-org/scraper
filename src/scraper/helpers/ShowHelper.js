@@ -196,202 +196,215 @@ export default class ShowHelper extends AbstractHelper {
   }
 
   /**
-   * Adds one season to a show.
+   * Add's default information to the episode
+   *
+   * @param {!Object} episode - The episode to add the default info t
+   * @param {Array} torrents - Array of the torrents for the episode
+   * @returns {{createdAt: *, images: {backdrop: Object, banner: Object, poster: Object}, watched: {progress: number, complete: boolean}, download: {downloading: boolean, downloadProgress: null, downloadQuality: null, downloadStatus: null, downloaded: boolean}, torrents: (Array<Object>|[]), synopsis: null, type: string, updatedAt: *}}
+   * @private
+   */
+  _addDefaultEpisodeInfo(episode, torrents) {
+    return {
+      synopsis: null,
+      images: {
+        banner: AbstractHelper.DefaultImageSizes,
+        backdrop: AbstractHelper.DefaultImageSizes,
+        poster: AbstractHelper.DefaultImageSizes,
+      },
+      torrents: torrents
+        ? this._formatTorrents(torrents)
+        : [],
+      type: 'episode',
+      watched: {
+        complete: false,
+        progress: 0,
+      },
+      download: {
+        downloaded: false,
+        downloading: false,
+        downloadStatus: null,
+        downloadProgress: null,
+        downloadQuality: null,
+      },
+      createdAt: Number(new Date()),
+      updatedAt: Number(new Date()),
+      ...episode,
+    }
+  }
+
+  /**
+   * Enhances a season for an show
    *
    * @param {!Show} show - The show to add the torrents to.
-   * @param {!Object} episodes - The episodes containing the torrents.
-   * @param {!number} season - The season number.
-   * @returns {Promise<Show>} - A newly updated show.
+   * @param {!Object} season - The trakt season with episodes.
+   * @returns {Promise<Season>} - Enhanced season.
    */
-  _addSeason(show: Show, episodes: Object, season: number): Promise<Show> {
-    return tmdb.get(`tv/${show.tmdbId}/season/${season}`).then(s => {
-      const updatedEpisodes = []
+  _enhanceSeason(show: Show, season: Object): Promise<Season> {
+    return tmdb.get(`tv/${show.tmdbId}/season/${season.number}`).then((tmdbSeason) => {
+      season.episodes = season.episodes.map((episode) => {
+        const tmdbEpisode = tmdbSeason.episodes.find(tmdbEpisode => tmdbEpisode.episodeNumber === episode.number)
 
-      s.episodes.map(e => {
-        const number = parseInt(e.episodeNumber, 10)
-        const torrents = episodes[season][e.episodeNumber]
-
-        const episode = {
-          _id: `${show.imdbId}-${season}-${number}`,
-          showImdbId: show.imdbId,
-          tmdbId: parseInt(e.id, 10),
-          number: number,
-          season,
-          title: e.name,
-          synopsis: e.overview,
-          firstAired: e.airDate
-            ? new Date(e.airDate).getTime()
-            : 0,
-          images: {
-            poster: e.stillPath
-              ? this._formatImdbImage(e.stillPath)
-              : AbstractHelper.DefaultImageSizes,
-            banner: AbstractHelper.DefaultImageSizes,
-            backdrop: AbstractHelper.DefaultImageSizes,
-          },
-          type: 'episode',
-          torrents: typeof torrents !== 'undefined'
-            ? this._formatTorrents(torrents)
-            : [],
-          watched: {
-            complete: false,
-            progress: 0,
-          },
-          download: {
-            downloaded: false,
-            downloading: false,
-            downloadStatus: null,
-            downloadProgress: null,
-            downloadQuality: null,
-          },
-          createdAt: Number(new Date()),
-          updatedAt: Number(new Date()),
+        if (tmdbEpisode) {
+          return {
+            ...episode,
+            title: tmdbEpisode.name,
+            synopsis: tmdbEpisode.overview,
+            firstAired: tmdbEpisode.airDate
+              ? new Date(tmdbEpisode.airDate).getTime()
+              : 0,
+            images: {
+              poster: tmdbEpisode.stillPath
+                ? this._formatImdbImage(tmdbEpisode.stillPath)
+                : AbstractHelper.DefaultImageSizes,
+              banner: AbstractHelper.DefaultImageSizes,
+              backdrop: AbstractHelper.DefaultImageSizes,
+            },
+          }
         }
 
-        updatedEpisodes.push(episode)
+        return episode
       })
 
-      show.seasons.push({
-        _id: `${show.imdbId}-${s.seasonNumber}`,
-        showImdbId: show.imdbId,
-        tmdbId: s.id,
-        number: s.seasonNumber,
-        title: s.name,
-        synopsis: s.overview,
-        firstAired: s.airDate
-          ? new Date(s.airDate).getTime()
+      return {
+        ...season,
+        title: tmdbSeason.name,
+        synopsis: tmdbSeason.overview,
+        firstAired: tmdbSeason.airDate
+          ? new Date(tmdbSeason.airDate).getTime()
           : 0,
         images: {
-          poster: s.posterPath
-            ? this._formatImdbImage(s.posterPath)
+          poster: tmdbSeason.posterPath
+            ? this._formatImdbImage(tmdbSeason.posterPath)
             : AbstractHelper.DefaultImageSizes,
           banner: AbstractHelper.DefaultImageSizes,
           backdrop: AbstractHelper.DefaultImageSizes,
         },
-        type: 'season',
-        episodes: this.sortSeasonsOrEpisodes(updatedEpisodes),
-        createdAt: Number(new Date()),
-        updatedAt: Number(new Date()),
-      })
-
-      show.seasons = this.sortSeasonsOrEpisodes(show.seasons)
-
-      return show
+      }
 
     }).catch(err => {
       if (err instanceof NotFoundError) {
-        return this._addTraktSeason(show, episodes, season)
+        logger.error(`ShowHelper._enhanceSeason: Could not find season "${season.number}" for show with imdb id "${show.imdbId}"`)
+
+      } else {
+        logger.error(`ShowHelper._enhanceSeason: ${err.path || err}`)
       }
 
-      logger.error(`ShowHelper._addSeason: ${err.path || err}`)
+      return season
     })
   }
 
   /**
-   * Adds one season to a show but is only used when the season
-   * could not be found by TheMovieDB
+   * Formats the trakt seasons for a show
    *
-   * @param {!Show} show - The show to add the torrents to.
+   * @param {!Show} show - The show to add the seasons to.
+   * @param {!Array} traktSeasons - Seasons as returned from Trakt
    * @param {!Object} episodes - The episodes containing the torrents.
-   * @param {!number} season - The season number.
-   * @returns {Promise<Show>} - A newly updated show.
+   * @returns {Array}
    * @private
    */
-  _addTraktSeason(show: Show, episodes: Object, season: number): Promise<Show> {
-    return trakt.seasons.season({
-      season,
-      id: show.imdbId,
-      extended: 'full',
-    }).then(s => {
-      const updatedEpisodes = []
-      let firstEpisode = null
+  _formatTraktSeasons(show: Object, traktSeasons, episodes: Object): Promise<Show> {
+    const formattedSeasons = []
+    let seasons = Object.keys(episodes)
 
-      s.forEach((e, index) => {
-        const number = parseInt(e.number, 10)
-        const torrents = episodes[season][e.number]
+    // If we don't have any episodes for specials then also remove it from trakt
+    if (!seasons.includes(0)) {
+      traktSeasons = traktSeasons.filter(traktSeason => traktSeason.number !== 0)
+    }
 
-        const episode = {
-          _id: `${show.imdbId}-${season}-${number}`,
-          showImdbId: show.imdbId,
-          tmdbId: null,
-          number,
-          season,
-          title: e.title,
-          synopsis: e.overview,
-          firstAired: e.first_aired
-            ? new Date(e.first_aired).getTime()
-            : 0,
-          images: {
-            banner: AbstractHelper.DefaultImageSizes,
-            backdrop: AbstractHelper.DefaultImageSizes,
-            poster: AbstractHelper.DefaultImageSizes,
-          },
-          type: 'episode',
-          torrents: typeof torrents !== 'undefined'
-            ? this._formatTorrents(torrents)
-            : [],
-          watched: {
-            complete: false,
-            progress: 0,
-          },
-          download: {
-            downloaded: false,
-            downloading: false,
-            downloadStatus: null,
-            downloadProgress: null,
-            downloadQuality: null,
-          },
-          createdAt: Number(new Date()),
-          updatedAt: Number(new Date()),
-        }
+    traktSeasons.forEach((traktSeason) => {
+      const formattedEpisodes = []
 
-        if (index === 0) {
-          firstEpisode = episode
-        }
-
-        updatedEpisodes.push(episode)
+      // Loop through all the episodes and format / add them
+      traktSeason?.episodes?.forEach((episode) => {
+        formattedEpisodes.push(
+          this._addDefaultEpisodeInfo({
+              _id: `${show.imdbId}-${episode.season}-${episode.number}`,
+              showImdbId: show.imdbId,
+              tmdbId: episode.ids.tmdb,
+              number: episode.number,
+              season: episode.season,
+              title: episode.title,
+              synopsis: episode.overview,
+              firstAired: Number(new Date(episode?.first_aired)) ?? 0,
+            },
+            episodes?.[episode.season]?.[episode.number] ?? null,
+          ),
+        )
       })
 
-      // Check if the season has any torrents
-      const torrents = updatedEpisodes.filter(
-        episode => episode.torrents.length > 0,
-      )
+      // Remove it from the episodes seasons
+      seasons = seasons.filter(season => parseInt(season, 10) !== parseInt(traktSeason.number, 10))
 
-      if (torrents.length === 0) {
-        // Don't add the season if non of the episodes has torrents
-        return show
-      }
-
-      show.seasons.push({
-        _id: `${show.imdbId}-${season}`,
+      formattedSeasons.push({
+        _id: `${show.imdbId}-${traktSeason.number}`,
         showImdbId: show.imdbId,
-        tmdbId: s.id,
-        number: season,
-        title: `Season ${season}`,
+        tmdbId: traktSeason.ids.tmdb,
+        number: traktSeason.number,
+        title: traktSeason.title,
         type: 'season',
         synopsis: null,
-        firstAired: firstEpisode ? firstEpisode.firstAired : 0,
+        firstAired: Number(new Date(traktSeason?.first_aired)) ?? 0,
         images: {
           banner: AbstractHelper.DefaultImageSizes,
           backdrop: AbstractHelper.DefaultImageSizes,
           poster: AbstractHelper.DefaultImageSizes,
         },
-        episodes: this.sortSeasonsOrEpisodes(updatedEpisodes),
+        episodes: this.sortSeasonsOrEpisodes(formattedEpisodes),
         createdAt: Number(new Date()),
         updatedAt: Number(new Date()),
+
+        // This flag is used to determine of we can enhance it from tmdb
+        enhanceSeason: true,
       })
-
-      show.seasons = this.sortSeasonsOrEpisodes(show.seasons)
-
-      return show
-
-    }).catch(err => {
-      if (err.message.indexOf('404') > -1) {
-        return logger.error(`_addTraktSeason: Trakt and TheMovieDB could not find any data for slug '${show.slug}' and season '${season}' with imdb id: '${show.imdbId}'`)
-      }
-
-      logger.error(`_addTraktSeason: ${err.path || err}`)
     })
+
+    // If we still have some seasons left add them with what we can
+    if (seasons.length > 0) {
+      seasons.forEach((season) => {
+        const formattedEpisodes = []
+
+        // Add all the episodes
+        Object.keys(episodes[season]).forEach((episodeNr) => {
+          formattedEpisodes.push(
+            this._addDefaultEpisodeInfo(
+              {
+                _id: `${show.imdbId}-${season}-${episodeNr}`,
+                showImdbId: show.imdbId,
+                tmdbId: null,
+                number: episodeNr,
+                season: season,
+                title: `Episode ${episodeNr}`,
+                synopsis: null,
+                firstAired: 0,
+              },
+              episodes[season][episodeNr],
+            ),
+          )
+        })
+
+        // Add all the seasons
+        formattedSeasons.push({
+          _id: `${show.imdbId}-${season}`,
+          showImdbId: show.imdbId,
+          tmdbId: null,
+          number: season,
+          title: `Season ${season}`,
+          type: 'season',
+          synopsis: null,
+          firstAired: 0,
+          images: {
+            banner: AbstractHelper.DefaultImageSizes,
+            backdrop: AbstractHelper.DefaultImageSizes,
+            poster: AbstractHelper.DefaultImageSizes,
+          },
+          episodes: this.sortSeasonsOrEpisodes(formattedEpisodes),
+          createdAt: Number(new Date()),
+          updatedAt: Number(new Date()),
+        })
+      })
+    }
+
+    return this.sortSeasonsOrEpisodes(formattedSeasons)
   }
 
   /**
@@ -401,13 +414,33 @@ export default class ShowHelper extends AbstractHelper {
    * @param {!Object} episodes - The episodes containing the torrents.
    * @returns {Show} - A show with updated torrents.
    */
-  addEpisodes(show: Show, episodes: Object): Show {
-    return pMap(Object.keys(episodes), season => {
-      return this._addSeason(show, episodes, season)
+  async addEpisodes(show: Show, episodes: Object): Show {
+    try {
+      // First format the trakt seasons
+      show.seasons = this._formatTraktSeasons(show, show.seasons, episodes)
+      show.numSeasons = show.seasons.length + 1
 
-    }).then(() => this._updateShow(show))
-      .then(() => this._updateShowSeasons(show))
-      .catch(err => logger.error(`addEpisodes: ${err.message || err}`))
+      // Now we loop through the seasons and enhance them
+      show.seasons = await pMap(show.seasons, (season) => {
+        // Only enhance it if the flat says so
+        if (season.enhanceSeason) {
+          return this._enhanceSeason(show, season)
+
+        } else {
+          return season
+        }
+      }, {
+        concurrency: 1,
+      })
+
+      await this._updateShow(show)
+      await this._updateShowSeasons(show)
+
+    } catch (err) {
+      logger.error(`addEpisodes: ${err.message || err}`)
+    }
+
+    return show
   }
 
   /**
@@ -622,6 +655,8 @@ export default class ShowHelper extends AbstractHelper {
   async getTraktInfo(content: Object): Show {
     try {
       let traktShow = null
+      let traktSeasons = []
+
       // We prefer the imdb id above a slug
       let idUsed = content.imdb || content.slug
 
@@ -647,8 +682,22 @@ export default class ShowHelper extends AbstractHelper {
         }
       }
 
+      try {
+        // Get all the trakt seasons
+        traktSeasons = await trakt.seasons.summary({
+          id: idUsed,
+          extended: 'episodes,full',
+        })
+      } catch (err) {
+        // An error happened, we ignore it and continue as normal
+      }
+
       if (!traktShow) {
         return logger.error(`No show found for slug: '${content.slug}' or imdb id: '${content.imdb}'`)
+      }
+
+      if (!traktSeasons || traktSeasons.length === 0) {
+        return logger.error(`No seasons found for slug: '${content.slug}' or imdb id: '${content.imdb}'`)
       }
 
       let traktWatchers = null
@@ -708,13 +757,11 @@ export default class ShowHelper extends AbstractHelper {
           synopsis: traktShow.overview,
           runtime: this._formatRuntime(traktShow.runtime),
           trailer: traktShow.trailer,
-          trailerId: traktShow.trailer
-            ? traktShow.trailer.split('v=').reverse().shift()
-            : null,
+          trailerId: traktShow?.trailer?.split('v=')?.reverse()?.shift() ?? null,
           rating: {
             stars: parseFloat(((ratingPercentage / 100) * 5).toFixed('2')),
             votes: traktShow.votes,
-            watching: traktWatchers ? traktWatchers.length : 0,
+            watching: traktWatchers?.length ?? 0,
             percentage: ratingPercentage,
           },
           images: {
@@ -736,10 +783,10 @@ export default class ShowHelper extends AbstractHelper {
           },
           createdAt: Number(new Date()),
           updatedAt: Number(new Date()),
-          seasons: [],
+          seasons: traktSeasons,
           latestEpisodeAired: 0,
-          nextEpisodeAirs: traktNextEpisode ?
-            Number(new Date(traktNextEpisode.first_aired))
+          nextEpisodeAirs: traktNextEpisode
+            ? Number(new Date(traktNextEpisode.first_aired))
             : null,
           numSeasons: 0,
         })
