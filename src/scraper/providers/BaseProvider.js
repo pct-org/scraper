@@ -321,7 +321,7 @@ export default class BaseProvider extends AbstractProvider {
   getTotalPages(): Promise<number> {
     return this.api.search(this.query).then(res => {
       if (res.data) { // Yts
-        return Math.ceil(res.data.movie_count / 50)
+        return Math.ceil(res.data.movie_count / (this.query?.limit ?? 50))
 
       } else if (res.total_pages) { // eztv
         return res.total_pages

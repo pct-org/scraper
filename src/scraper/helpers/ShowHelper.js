@@ -281,7 +281,7 @@ export default class ShowHelper extends AbstractHelper {
         },
       }
 
-    }).catch(err => {
+    }).catch((err) => {
       if (err instanceof NotFoundError) {
         logger.error(`ShowHelper._enhanceSeason: Could not find season "${season.number}" for show with imdb id "${show.imdbId}"`)
 
@@ -729,7 +729,12 @@ export default class ShowHelper extends AbstractHelper {
         // If the show is ended then add it to a blacklist for four weeks
         // Ended shows don't need to be updated that frequently as it does not change anymore
         if (traktShow.status === 'ended' || traktShow.status === 'canceled') {
-          this._addShowToBlacklist(content, traktShow.status, 4)
+          this._addToBlacklist(
+            content,
+            AbstractHelper.ContentTypes.Show,
+            traktShow.status,
+            4,
+          )
 
         } else if (traktNextEpisode) {
           // If we have traktNextEpisode then add it to the blacklist until that item is aired
@@ -741,7 +746,13 @@ export default class ShowHelper extends AbstractHelper {
           // Double check if the item is still being aired later then now
           if (nextEpisodefirstAired.getTime() > Date.now()) {
             // Add it to the blacklist until the next episode is aired
-            this._addShowToBlacklist(content, 'nextEpisode', null, nextEpisodefirstAired)
+            this._addToBlacklist(
+              content,
+              AbstractHelper.ContentTypes.Show,
+              'nextEpisode',
+              null,
+              nextEpisodefirstAired,
+            )
           }
         }
 
@@ -798,7 +809,12 @@ export default class ShowHelper extends AbstractHelper {
         message = `getTraktInfo: Could not find any data with slug: '${content.slug}' or imdb id: '${content.imdb}'`
 
         // Try again in 2 weeks
-        this._addShowToBlacklist(content, '404', 2)
+        this._addToBlacklist(
+          content,
+          AbstractHelper.ContentTypes.Show,
+          '404',
+          2,
+        )
       }
 
       // BulkProvider will log it
@@ -806,37 +822,4 @@ export default class ShowHelper extends AbstractHelper {
     }
   }
 
-  /**
-   * Add's a show to the blacklist
-   *
-   * @param {!object} content - Containg the slug / imdb to query trakt.tv
-   * @param {string} reason - The reason why it's blacklisted
-   * @param {number} weeks - Amount of weeks it should be blackisted
-   * @param {Date} until - Datetime until when it should be in the blacklist
-   */
-  _addShowToBlacklist(content, reason, weeks = null, until = null) {
-    let expires = 0
-
-    if (until) {
-      logger.warn(`getTraktInfo: Adding "${content.show}" with identifier "${content.slug}" to the blacklist until '${until}' because of reason '${reason}'`)
-      expires = Number(until)
-
-    } else if (weeks) {
-      logger.warn(`getTraktInfo: Adding "${content.show}" with identifier "${content.slug}" to the blacklist for ${weeks} weeks because of reason '${reason}'`)
-      expires = Number(new Date(Date.now() + (6.04e+8 * weeks)))
-    }
-
-    BlacklistModel({
-      // We don't use the content.imdb as when the showlist is retrieved it does not have
-      // a imdb id
-      _id: content.slug,
-      title: content.show,
-      type: AbstractHelper.ContentTypes.Show,
-      reason,
-
-      expires,
-      createdAt: Number(new Date()),
-      updatedAt: Number(new Date()),
-    }).save()
-  }
 }
