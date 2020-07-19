@@ -1,3 +1,12 @@
+# [3.6.0](https://github.com/pct-org/scraper/compare/v3.5.0...v3.6.0) (2020-07-19)
+
+
+### Features
+
+* Add movies to the blacklist ([5cb3763](https://github.com/pct-org/scraper/commit/5cb3763cc2e1e3f89e0a8e307ce07c057253487a))
+
+
+
 # [3.5.0](https://github.com/pct-org/scraper/compare/v3.4.2...v3.5.0) (2020-05-27)
 
 
@@ -36,15 +45,6 @@
 ### Features
 
 * Added the /files route ([7d79a58](https://github.com/pct-org/scraper/commit/7d79a58ad36eb3ef7ea702cfcd5122a16fc4b794))
-
-
-
-# [3.3.0](https://github.com/pct-org/scraper/compare/v3.2.1...v3.3.0) (2020-05-12)
-
-
-### Features
-
-* Added retry for getting a page ([cc587ab](https://github.com/pct-org/scraper/commit/cc587ab7d5bb091ce6c0ae3223082c20077da7b0))
 
 
 
