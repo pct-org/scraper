@@ -1,4 +1,5 @@
 // Import the necessary modules.
+import { BlacklistModel } from '@pct-org/mongo-models/dist/blacklist/blacklist.model'
 // @flow
 import IHelper from './IHelper'
 import type { Movie, Show } from '@pct-org/mongo-models'
@@ -221,4 +222,59 @@ export default class AbstractHelper extends IHelper {
 
     return `${(bytes / (1024 ** i)).toFixed(2)} ${['Bytes', 'KB', 'MB', 'GB'][i]}`
   }
+
+  /**
+   * Add's a movie to the blacklist
+   *
+   * @param {!object} content - Contains the slug / imdb to query trakt.tv
+   * @param {!string} type - The content type, movie | show
+   * @param {string} reason - The reason why it's blacklisted
+   * @param {number} weeks - Amount of weeks it should be blacklisted
+   * @param {Date} until - Datetime until when it should be in the blacklist
+   * @protected
+   */
+  _addToBlacklist(content, type, reason, weeks = null, until = null) {
+    let expires = 0
+    let title
+
+    if (until) {
+      logger.warn(`getTraktInfo: Adding "${content.movieTitle}" with identifier "${content.slug}" to the blacklist until '${until}' because of reason '${reason}'`)
+      expires = Number(until)
+
+    } else if (weeks) {
+      logger.warn(`getTraktInfo: Adding "${content.movieTitle}" with identifier "${content.slug}" to the blacklist for ${weeks} weeks because of reason '${reason}'`)
+      expires = Number(new Date(Date.now() + (6.04e+8 * weeks)))
+    }
+
+    // Use the correct title
+    if (type === AbstractHelper.ContentTypes.Movie) {
+      title = content.movieTitle
+
+    } else {
+      title = content.show
+    }
+
+    BlacklistModel({
+      _id: content.slug,
+      title,
+      type,
+      reason,
+
+      expires,
+      createdAt: Number(new Date()),
+      updatedAt: Number(new Date()),
+    }).save()
+  }
+
+  /**
+   * Generates a random date between two dates
+   *
+   * @param {!Date} start - Start date
+   * @param {!Date} end - End date
+   * @protected
+   */
+  _generateRandomDateBetween(start, end) {
+    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
+  }
+
 }

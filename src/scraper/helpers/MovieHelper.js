@@ -293,6 +293,20 @@ export default class MovieHelper extends AbstractHelper {
       if (traktMovie && traktMovie.ids.imdb && traktMovie.ids.tmdb) {
         const ratingPercentage = Math.round(traktMovie.rating * 10)
 
+        // Add the movie to the blacklist to minimize the update frequency
+        // (Se we dont update thousands of movies each time)
+        this._addToBlacklist(
+          content,
+          AbstractHelper.ContentTypes.Movie,
+          'minimizeUpdateFrequency',
+          null,
+          // Update it on a random day between now and 2 weeks
+          this._generateRandomDateBetween(
+            new Date,
+            new Date(Date.now() + 12096e5),
+          ),
+        )
+
         return this.addImages({
           _id: traktMovie.ids.imdb,
           imdbId: traktMovie.ids.imdb,
@@ -315,7 +329,9 @@ export default class MovieHelper extends AbstractHelper {
             poster: AbstractHelper.DefaultImageSizes,
             // logo: AbstractHelper.DefaultImageSizes,
           },
-          genres: traktMovie.genres ? traktMovie.genres : ['unknown'],
+          genres: traktMovie.genres
+            ? traktMovie.genres
+            : ['unknown'],
           trailer: traktMovie.trailer,
           trailerId: traktMovie.trailer
             ? traktMovie.trailer.split('v=').reverse().shift()
@@ -345,17 +361,13 @@ export default class MovieHelper extends AbstractHelper {
       if (err.message.includes('404')) {
         message = `getTraktInfo: Could not find any data with slug: '${content.slug}'`
 
-        logger.warn(`getTraktInfo: Adding "${content.slug}" to the blacklist for 2 weeks as it could not be found`)
-        BlacklistModel({
-          _id: content.slug,
-          title: content.movieTitle,
-          type: AbstractHelper.ContentTypes.Movie,
-          reason: '404',
-
-          expires: Number(new Date(Date.now() + 12096e5)), // 2 weeks
-          createdAt: Number(new Date()),
-          updatedAt: Number(new Date()),
-        }).save()
+        // Try again in 1 week
+        this._addToBlacklist(
+          content,
+          AbstractHelper.ContentTypes.Movie,
+          '404',
+          1,
+        )
       }
 
       // BaseProvider will log it
