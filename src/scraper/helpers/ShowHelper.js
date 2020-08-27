@@ -243,15 +243,16 @@ export default class ShowHelper extends AbstractHelper {
     return tmdb.get(`tv/${show.tmdbId}/season/${season.number}`).then((tmdbSeason) => {
       season.episodes = season.episodes.map((episode) => {
         const tmdbEpisode = tmdbSeason.episodes.find(tmdbEpisode => tmdbEpisode.episodeNumber === episode.number)
-
         if (tmdbEpisode) {
           return {
             ...episode,
-            title: tmdbEpisode.name,
-            synopsis: tmdbEpisode.overview,
-            firstAired: tmdbEpisode.airDate
+            title: episode.title !== `Episode ${episode.number}`
+              ? episode.title
+              : tmdbEpisode.name,
+            synopsis: episode.synopsis || tmdbEpisode.overview,
+            firstAired: tmdbEpisode.airDate && episode.firstAired === 0
               ? new Date(tmdbEpisode.airDate).getTime()
-              : 0,
+              : episode.firstAired,
             images: {
               poster: tmdbEpisode.stillPath
                 ? this._formatImdbImage(tmdbEpisode.stillPath)
@@ -267,11 +268,13 @@ export default class ShowHelper extends AbstractHelper {
 
       return {
         ...season,
-        title: tmdbSeason.name,
-        synopsis: tmdbSeason.overview,
-        firstAired: tmdbSeason.airDate
+        title: season.title !== `Season ${season.num}`
+          ? season.title
+          : tmdbSeason.name,
+        synopsis: season.synopsis || tmdbSeason.overview,
+        firstAired: tmdbSeason.airDate && season.firstAired === 0
           ? new Date(tmdbSeason.airDate).getTime()
-          : 0,
+          : season.firstAired,
         images: {
           poster: tmdbSeason.posterPath
             ? this._formatImdbImage(tmdbSeason.posterPath)
@@ -352,9 +355,6 @@ export default class ShowHelper extends AbstractHelper {
         episodes: this.sortSeasonsOrEpisodes(formattedEpisodes),
         createdAt: Number(new Date()),
         updatedAt: Number(new Date()),
-
-        // This flag is used to determine of we can enhance it from tmdb
-        enhanceSeason: true,
       })
     })
 
@@ -422,13 +422,7 @@ export default class ShowHelper extends AbstractHelper {
 
       // Now we loop through the seasons and enhance them
       show.seasons = await pMap(show.seasons, (season) => {
-        // Only enhance it if the flat says so
-        if (season.enhanceSeason) {
-          return this._enhanceSeason(show, season)
-
-        } else {
-          return season
-        }
+        return this._enhanceSeason(show, season)
       }, {
         concurrency: 1,
       })
