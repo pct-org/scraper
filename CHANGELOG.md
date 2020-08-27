@@ -1,3 +1,12 @@
+## [3.6.1](https://github.com/pct-org/scraper/compare/v3.6.0...v3.6.1) (2020-08-27)
+
+
+### Bug Fixes
+
+* Small fixes for shows ([f91b254](https://github.com/pct-org/scraper/commit/f91b2542293b00a8f0c82273d36d6d58cd743316))
+
+
+
 # [3.6.0](https://github.com/pct-org/scraper/compare/v3.5.0...v3.6.0) (2020-07-19)
 
 
@@ -31,20 +40,6 @@
 ### Bug Fixes
 
 * Fixed build process ([7be6f88](https://github.com/pct-org/scraper/commit/7be6f880f78c15cc01da6360c60477eccf4de8bf))
-
-
-
-# [3.4.0](https://github.com/pct-org/scraper/compare/v3.3.0...v3.4.0) (2020-05-18)
-
-
-### Bug Fixes
-
-* Fixed bextEpisodeAirs could not transform to number ([6d3c498](https://github.com/pct-org/scraper/commit/6d3c4981f5dd4f3f3be1c242c566e27f4735a88d))
-
-
-### Features
-
-* Added the /files route ([7d79a58](https://github.com/pct-org/scraper/commit/7d79a58ad36eb3ef7ea702cfcd5122a16fc4b794))
 
 
 
