@@ -1,3 +1,12 @@
+## [3.6.2](https://github.com/pct-org/scraper/compare/v3.6.1...v3.6.2) (2020-09-04)
+
+
+### Bug Fixes
+
+* Fixed language mis match ([f8e4a91](https://github.com/pct-org/scraper/commit/f8e4a9126ebd74fb290ec03ee4987aa13ff3c0a9))
+
+
+
 ## [3.6.1](https://github.com/pct-org/scraper/compare/v3.6.0...v3.6.1) (2020-08-27)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * Fixed that season was not set when it's found on trakt ([f15b896](https://github.com/pct-org/scraper/commit/f15b896f9003bfa30f83cc32c0099125917688be))
-
-
-
-## [3.4.1](https://github.com/pct-org/scraper/compare/v3.4.0...v3.4.1) (2020-05-18)
-
-
-### Bug Fixes
-
-* Fixed build process ([7be6f88](https://github.com/pct-org/scraper/commit/7be6f880f78c15cc01da6360c60477eccf4de8bf))
 
 
 
