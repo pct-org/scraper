@@ -57,7 +57,7 @@ export default class YtsProvider extends BaseProvider {
     if (
       torrent && torrent.torrents &&
       torrent.imdb_code &&
-      torrent.language.match(/english/i)
+      (torrent.language.match(/english/i) || torrent.language === lang)
     ) {
       return this.extractContent({
         torrent,
