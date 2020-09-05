@@ -356,7 +356,7 @@ export default class MovieHelper extends AbstractHelper {
         })
       }
     } catch (err) {
-      let message = `getTraktInfo: ${err.path || err}`
+      let message = `getTraktInfo: ${err.message || err}`
 
       if (err.message.includes('404')) {
         message = `getTraktInfo: Could not find any data with slug: '${content.slug}'`

@@ -81,7 +81,7 @@ export default class ShowHelper extends AbstractHelper {
       return await new this.Model.Show(s).save()
 
     } catch (err) {
-      logger.error(`_updateShow: ${err.path || err}`)
+      logger.error(`_updateShow: ${err.message || err}`)
     }
   }
 
@@ -135,7 +135,7 @@ export default class ShowHelper extends AbstractHelper {
         }),
       )
     } catch (err) {
-      logger.error(`_updateShowSeasons: ${err.path || err}`)
+      logger.error(`_updateShowSeasons: ${err.message || err}`)
     }
   }
 
@@ -191,7 +191,7 @@ export default class ShowHelper extends AbstractHelper {
         }),
       )
     } catch (err) {
-      logger.error(`_updateShowEpisodes: ${err.path || err}`)
+      logger.error(`_updateShowEpisodes: ${err.message || err}`)
     }
   }
 
@@ -289,7 +289,7 @@ export default class ShowHelper extends AbstractHelper {
         logger.error(`ShowHelper._enhanceSeason: Could not find season "${season.number}" for show with imdb id "${show.imdbId}"`)
 
       } else {
-        logger.error(`ShowHelper._enhanceSeason: ${err.path || err}`)
+        logger.error(`ShowHelper._enhanceSeason: ${err.message || err}`)
       }
 
       return season
@@ -797,7 +797,7 @@ export default class ShowHelper extends AbstractHelper {
         })
       }
     } catch (err) {
-      let message = `getTraktInfo: ${err.path || err}`
+      let message = `getTraktInfo: ${err.message || err}`
 
       if (err.message.includes('404')) {
         message = `getTraktInfo: Could not find any data with slug: '${content.slug}' or imdb id: '${content.imdb}'`
