@@ -1,3 +1,12 @@
+## [3.6.3](https://github.com/pct-org/scraper/compare/v3.6.2...v3.6.3) (2020-09-05)
+
+
+### Bug Fixes
+
+* Small fix for EZTV ([21af657](https://github.com/pct-org/scraper/commit/21af657923921563491dc0d2b4e98af87c213cef))
+
+
+
 ## [3.6.2](https://github.com/pct-org/scraper/compare/v3.6.1...v3.6.2) (2020-09-04)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * Collect more metadata about shows ([9fbdb09](https://github.com/pct-org/scraper/commit/9fbdb098b17e5de8d3a0f7a630bce41569984bff))
-
-
-
-## [3.4.2](https://github.com/pct-org/scraper/compare/v3.4.1...v3.4.2) (2020-05-18)
-
-
-### Bug Fixes
-
-* Fixed that season was not set when it's found on trakt ([f15b896](https://github.com/pct-org/scraper/commit/f15b896f9003bfa30f83cc32c0099125917688be))
 
 
 
