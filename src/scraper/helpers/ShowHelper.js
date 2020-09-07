@@ -375,7 +375,9 @@ export default class ShowHelper extends AbstractHelper {
                 season: season,
                 title: `Episode ${episodeNr}`,
                 synopsis: null,
-                firstAired: 0,
+                // Use the createdAt date, otherwise it wont show in the app, will be overwritten when
+                // metadata becomes available
+                firstAired: Number(new Date()),
               },
               episodes[season][episodeNr],
             ),
@@ -391,7 +393,9 @@ export default class ShowHelper extends AbstractHelper {
           title: `Season ${season}`,
           type: 'season',
           synopsis: null,
-          firstAired: 0,
+          // Use the createdAt date, otherwise it wont show in the app, will be overwritten when metadata becomes
+          // available
+          firstAired: Number(new Date()),
           images: {
             banner: AbstractHelper.DefaultImageSizes,
             backdrop: AbstractHelper.DefaultImageSizes,
@@ -652,6 +656,7 @@ export default class ShowHelper extends AbstractHelper {
       let traktSeasons = []
 
       // We prefer the imdb id above a slug
+      let idType = 'imdb'
       let idUsed = content.imdb || content.slug
 
       try {
@@ -669,6 +674,7 @@ export default class ShowHelper extends AbstractHelper {
           logger.warn(`No show found for imdb id: '${content.imdb}' trying slug: '${content.slug}'`)
 
           idUsed = content.slug
+          idType = 'slug'
           traktShow = await trakt.shows.summary({
             id: content.slug,
             extended: 'full',
@@ -682,6 +688,14 @@ export default class ShowHelper extends AbstractHelper {
           id: idUsed,
           extended: 'episodes,full',
         })
+
+        if (traktSeasons.length === 0 && idType === 'imdb') {
+          // Also try it with the slug
+          traktSeasons = await trakt.seasons.summary({
+            id: content.slug,
+            extended: 'episodes,full',
+          })
+        }
       } catch (err) {
         // An error happened, we ignore it and continue as normal
       }
@@ -691,7 +705,7 @@ export default class ShowHelper extends AbstractHelper {
       }
 
       if (!traktSeasons || traktSeasons.length === 0) {
-        return logger.error(`No seasons found for slug: '${content.slug}' or imdb id: '${content.imdb}'`)
+        logger.warn(`No seasons found for slug: '${content.slug}' or imdb id: '${content.imdb}'`)
       }
 
       let traktWatchers = null
