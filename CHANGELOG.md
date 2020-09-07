@@ -1,3 +1,12 @@
+## [3.6.4](https://github.com/pct-org/scraper/compare/v3.6.3...v3.6.4) (2020-09-07)
+
+
+### Bug Fixes
+
+* Fixed that when no seasons where found the show was skipepd ([955b205](https://github.com/pct-org/scraper/commit/955b205a38e5cb5611813ef3a2c3a461160d3bfb))
+
+
+
 ## [3.6.3](https://github.com/pct-org/scraper/compare/v3.6.2...v3.6.3) (2020-09-05)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * Add movies to the blacklist ([5cb3763](https://github.com/pct-org/scraper/commit/5cb3763cc2e1e3f89e0a8e307ce07c057253487a))
-
-
-
-# [3.5.0](https://github.com/pct-org/scraper/compare/v3.4.2...v3.5.0) (2020-05-27)
-
-
-### Features
-
-* Collect more metadata about shows ([9fbdb09](https://github.com/pct-org/scraper/commit/9fbdb098b17e5de8d3a0f7a630bce41569984bff))
 
 
 
