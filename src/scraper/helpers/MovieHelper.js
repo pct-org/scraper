@@ -38,6 +38,7 @@ export default class MovieHelper extends AbstractHelper {
         m.bookmarkedOn = found.bookmarkedOn
         m.watched = found.watched
         m.download = found.download
+        m.searchedTorrents = found.searchedTorrents
 
         return await this.Model.findOneAndUpdate({
             _id: m._id,
