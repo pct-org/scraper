@@ -754,21 +754,21 @@ export default class ShowHelper extends AbstractHelper {
 
         } else if (traktNextEpisode) {
           // If we have traktNextEpisode then add it to the blacklist until that item is aired
-          const nextEpisodeFirstAired = new Date(traktNextEpisode.first_aired)
-          let lastEpisodeFirstAired = null
+          const nextEpisodeAirs = new Date(traktNextEpisode.first_aired)
+          let lastEpisodeAired = null
 
           if (traktLastEpisode) {
-            lastEpisodeFirstAired = new Date(traktLastEpisode.first_aired)
-            lastEpisodeFirstAired.setDate(lastEpisodeFirstAired.getDate() + 1)
+            lastEpisodeAired = new Date(traktLastEpisode.first_aired)
+            lastEpisodeAired.setDate(lastEpisodeAired.getDate() + 1)
           }
 
           // We want start checking one day before
-          nextEpisodeFirstAired.setDate(nextEpisodeFirstAired.getDate() - 1)
+          nextEpisodeAirs.setDate(nextEpisodeAirs.getDate() - 1)
 
           // Double check if the item is still being aired later then now
           // And if the previous item has not aired within the last 24 hours
-          if (nextEpisodeFirstAired.getTime() > Date.now() && (
-              !lastEpisodeFirstAired || lastEpisodeFirstAired.getTime() < Date.now()
+          if (nextEpisodeAirs.getTime() > Date.now() && (
+              !lastEpisodeAired || lastEpisodeAired.getTime() < Date.now()
           )) {
             // Add it to the blacklist until the next episode is aired
             this._addToBlacklist(
@@ -776,7 +776,7 @@ export default class ShowHelper extends AbstractHelper {
               AbstractHelper.ContentTypes.Show,
               'nextEpisode',
               null,
-              nextEpisodeFirstAired,
+              nextEpisodeAirs,
             )
           }
         }
