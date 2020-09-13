@@ -215,6 +215,7 @@ export default class ShowHelper extends AbstractHelper {
       torrents: torrents
         ? this._formatTorrents(torrents)
         : [],
+      searchedTorrents: [],
       type: 'episode',
       watched: {
         complete: false,
