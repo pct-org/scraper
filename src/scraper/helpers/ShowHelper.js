@@ -166,6 +166,7 @@ export default class ShowHelper extends AbstractHelper {
             e.createdAt = found.createdAt
             e.watched = found.watched
             e.download = found.download
+            e.searchedTorrents = found.searchedTorrents
 
             if (found.torrents && found.torrents.length > 0) {
               e.torrents = this._formatTorrents(e.torrents, found.torrents)

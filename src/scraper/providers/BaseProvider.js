@@ -119,8 +119,10 @@ export default class BaseProvider extends AbstractProvider {
 
     if (blacklistedItem) {
       if (blacklistedItem.expires > Date.now()) {
+        const expires = new Date(blacklistedItem.expires)
+
         logger.warn(
-          `${this.name}: '${imdb || slug}' is in the blacklist because of reason '${blacklistedItem.reason}', skipping...`,
+          `${this.name}: '${imdb || slug}' is in the blacklist until '${expires}' because of reason '${blacklistedItem.reason}', skipping...`,
         )
 
         return true
