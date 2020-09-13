@@ -1,3 +1,12 @@
+# [3.7.0](https://github.com/pct-org/scraper/compare/v3.6.4...v3.7.0) (2020-09-13)
+
+
+### Features
+
+* Changes so searchForBetter is not removed / overwritten ([819e7b4](https://github.com/pct-org/scraper/commit/819e7b4d5671d9e7536572843da1db707dd50dc8))
+
+
+
 ## [3.6.4](https://github.com/pct-org/scraper/compare/v3.6.3...v3.6.4) (2020-09-07)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * Small fixes for shows ([f91b254](https://github.com/pct-org/scraper/commit/f91b2542293b00a8f0c82273d36d6d58cd743316))
-
-
-
-# [3.6.0](https://github.com/pct-org/scraper/compare/v3.5.0...v3.6.0) (2020-07-19)
-
-
-### Features
-
-* Add movies to the blacklist ([5cb3763](https://github.com/pct-org/scraper/commit/5cb3763cc2e1e3f89e0a8e307ce07c057253487a))
 
 
 
