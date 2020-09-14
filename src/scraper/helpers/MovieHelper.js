@@ -291,6 +291,7 @@ export default class MovieHelper extends AbstractHelper {
         id: content.slug,
       })
 
+      // TODO:: If traktMovie can't be found use the info from yts
       if (traktMovie && traktMovie.ids.imdb && traktMovie.ids.tmdb) {
         const ratingPercentage = Math.round(traktMovie.rating * 10)
 
@@ -341,6 +342,7 @@ export default class MovieHelper extends AbstractHelper {
           updatedAt: Number(new Date()),
           type: AbstractHelper.ContentTypes.Movie,
           torrents: [],
+          searchedTorrents: [],
           watched: {
             complete: false,
             progress: 0,
