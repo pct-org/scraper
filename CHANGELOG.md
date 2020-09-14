@@ -1,3 +1,12 @@
+## [3.7.1](https://github.com/pct-org/scraper/compare/v3.7.0...v3.7.1) (2020-09-14)
+
+
+### Bug Fixes
+
+* Updated mongo models that contains a fix ([2694d1e](https://github.com/pct-org/scraper/commit/2694d1ec793674fa1e56509ffcf1082439052e52))
+
+
+
 # [3.7.0](https://github.com/pct-org/scraper/compare/v3.6.4...v3.7.0) (2020-09-13)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * Fixed language mis match ([f8e4a91](https://github.com/pct-org/scraper/commit/f8e4a9126ebd74fb290ec03ee4987aa13ff3c0a9))
-
-
-
-## [3.6.1](https://github.com/pct-org/scraper/compare/v3.6.0...v3.6.1) (2020-08-27)
-
-
-### Bug Fixes
-
-* Small fixes for shows ([f91b254](https://github.com/pct-org/scraper/commit/f91b2542293b00a8f0c82273d36d6d58cd743316))
 
 
 
