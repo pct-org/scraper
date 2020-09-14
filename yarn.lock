@@ -1590,10 +1590,10 @@
     debug "^3.1.0"
     got "^8.3.1"
 
-"@pct-org/mongo-models@^1.6.2":
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/@pct-org/mongo-models/-/mongo-models-1.6.2.tgz#be254b370f923b67bae3bb3933b63e0bf2680c8e"
-  integrity sha512-SQm3QoGmtiHSIFPRlJkC3C3l1AxYDCA/LK/L8GBq8V+XbEmYkWC7axE3Y57yD9oyRlGjthYa7Qb9s5KarVcr6w==
+"@pct-org/mongo-models@^1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@pct-org/mongo-models/-/mongo-models-1.8.0.tgz#b679b168f45b7f06be7b979bb01aebc17ebfebf7"
+  integrity sha512-AyUhZHbK7+arMyu6lPmsM2P2ozHsbmGjco/epxvt5SE03Qy28AQmb8oPrFrM0oWl4GKE5HmUWExBJzttks+kmQ==
   dependencies:
     "@nestjs/common" "7.0.9"
     "@nestjs/core" "7.0.9"
