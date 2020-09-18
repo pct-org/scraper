@@ -39,13 +39,15 @@ export default class ShowHelper extends AbstractHelper {
         _id: s.imdbId,
       })
 
+      const today = Date.now()
+
       // Get the latestEpisodeAired
       let latestEpisodeAired = null
       s.seasons.forEach((season) => {
         // Loop true all episodes
         season.episodes.forEach((episode) => {
-          // If the firstAired is higher then that is a newer episode
-          if (episode.firstAired > latestEpisodeAired) {
+          // If the firstAired is higher then that is a newer episode, it should also have been aired
+          if (episode.firstAired > latestEpisodeAired && episode.firstAired < today) {
             latestEpisodeAired = episode.firstAired
           }
         })
