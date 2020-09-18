@@ -39,13 +39,15 @@ export default class ShowHelper extends AbstractHelper {
         _id: s.imdbId,
       })
 
+      const today = Date.now()
+
       // Get the latestEpisodeAired
       let latestEpisodeAired = null
       s.seasons.forEach((season) => {
         // Loop true all episodes
         season.episodes.forEach((episode) => {
-          // If the firstAired is higher then that is a newer episode
-          if (episode.firstAired > latestEpisodeAired) {
+          // If the firstAired is higher then that is a newer episode, it should also have been aired
+          if (episode.firstAired > latestEpisodeAired && episode.firstAired < today) {
             latestEpisodeAired = episode.firstAired
           }
         })
@@ -340,6 +342,15 @@ export default class ShowHelper extends AbstractHelper {
       // Remove it from the episodes seasons
       seasons = seasons.filter(season => parseInt(season, 10) !== parseInt(traktSeason.number, 10))
 
+      let seasonFirstAired = Number(new Date(traktSeason?.first_aired)) ?? 0
+
+      // If it's null then use the one from the first episode
+      if (seasonFirstAired === 0 && formattedEpisodes.length > 0) {
+        const firstEpisode = formattedEpisodes[0]
+
+        seasonFirstAired = firstEpisode.firstAired
+      }
+
       formattedSeasons.push({
         _id: `${show.imdbId}-${traktSeason.number}`,
         showImdbId: show.imdbId,
@@ -348,7 +359,7 @@ export default class ShowHelper extends AbstractHelper {
         title: traktSeason.title,
         type: 'season',
         synopsis: null,
-        firstAired: Number(new Date(traktSeason?.first_aired)) ?? 0,
+        firstAired: seasonFirstAired,
         images: {
           banner: AbstractHelper.DefaultImageSizes,
           backdrop: AbstractHelper.DefaultImageSizes,
