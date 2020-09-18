@@ -1,3 +1,13 @@
+## [3.7.2](https://github.com/pct-org/scraper/compare/v3.7.1...v3.7.2) (2020-09-18)
+
+
+### Bug Fixes
+
+* Acutally check if the episode has been aired for latestEpisodeAired ([6f42cc5](https://github.com/pct-org/scraper/commit/6f42cc55448f2d2ce2462be123ba578e5c7a14d6))
+* Fix season first aired ([15b4f9d](https://github.com/pct-org/scraper/commit/15b4f9d88ec4e2dcf00171c08ad113ba1523af4f))
+
+
+
 ## [3.7.1](https://github.com/pct-org/scraper/compare/v3.7.0...v3.7.1) (2020-09-14)
 
 
@@ -31,15 +41,6 @@
 ### Bug Fixes
 
 * Small fix for EZTV ([21af657](https://github.com/pct-org/scraper/commit/21af657923921563491dc0d2b4e98af87c213cef))
-
-
-
-## [3.6.2](https://github.com/pct-org/scraper/compare/v3.6.1...v3.6.2) (2020-09-04)
-
-
-### Bug Fixes
-
-* Fixed language mis match ([f8e4a91](https://github.com/pct-org/scraper/commit/f8e4a9126ebd74fb290ec03ee4987aa13ff3c0a9))
 
 
 
