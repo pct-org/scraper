@@ -1580,10 +1580,10 @@
   dependencies:
     debug "^3.1.0"
 
-"@pct-org/eztv-api-pt@^1.3.5":
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/@pct-org/eztv-api-pt/-/eztv-api-pt-1.3.5.tgz#386e7f15533e9daf5581c2417123d8453c6f1428"
-  integrity sha512-F8T3dsVBZsNf5dO/MKGAju+E4ApttacmDY7mQnopb2WbcEwY73nZTnWG8rcK2n92LIP4OTGdJMqCP5fo7vyQaQ==
+"@pct-org/eztv-api-pt@^1.3.6":
+  version "1.3.6"
+  resolved "https://registry.yarnpkg.com/@pct-org/eztv-api-pt/-/eztv-api-pt-1.3.6.tgz#eacc0d5c21048c1ba9a6cc880902da90a87a31b4"
+  integrity sha512-+oEBXmX2Jz4EPBYgcg5kZVTmZXGvG2X2pCQoLR1lXm9VyYL/k3D47dmtJQZWh3b2JI6ihXeqdt1iLVuqlz8/MQ==
   dependencies:
     bytes "^3.1.0"
     cheerio "^1.0.0-rc.2"
