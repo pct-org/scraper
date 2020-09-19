@@ -296,7 +296,12 @@ export default class ShowHelper extends AbstractHelper {
         logger.error(`ShowHelper._enhanceSeason: ${err.message || err}`)
       }
 
-      return season
+      // Only return the season if it's known (Aka trakt found it)
+      if (!season.isUnknown) {
+        return season
+      }
+
+      return false
     })
   }
 
@@ -368,11 +373,15 @@ export default class ShowHelper extends AbstractHelper {
         episodes: this.sortSeasonsOrEpisodes(formattedEpisodes),
         createdAt: Number(new Date()),
         updatedAt: Number(new Date()),
+
+        isUnknown: false,
       })
     })
 
     // If we still have some seasons left add them with what we can
     if (seasons.length > 0) {
+      // TODO:: Maybe check the titles and check if they match the
+      // name of the show, if that is a match then isUnknown can be false
       seasons.forEach((season) => {
         const formattedEpisodes = []
 
@@ -417,6 +426,8 @@ export default class ShowHelper extends AbstractHelper {
           episodes: this.sortSeasonsOrEpisodes(formattedEpisodes),
           createdAt: Number(new Date()),
           updatedAt: Number(new Date()),
+
+          isUnknown: true,
         })
       })
     }
@@ -443,6 +454,9 @@ export default class ShowHelper extends AbstractHelper {
       }, {
         concurrency: 1,
       })
+
+      // Remove all the falsy seasons
+      show.seasons = show.seasons.filter(Boolean)
 
       await this._updateShow(show)
       await this._updateShowSeasons(show)
@@ -780,7 +794,7 @@ export default class ShowHelper extends AbstractHelper {
           // Double check if the item is still being aired later then now
           // And if the previous item has not aired within the last 24 hours
           if (nextEpisodeAirs.getTime() > Date.now() && (
-              !lastEpisodeAired || lastEpisodeAired.getTime() < Date.now()
+            !lastEpisodeAired || lastEpisodeAired.getTime() < Date.now()
           )) {
             // Add it to the blacklist until the next episode is aired
             this._addToBlacklist(
