@@ -1,3 +1,12 @@
+## [3.7.3](https://github.com/pct-org/scraper/compare/v3.7.2...v3.7.3) (2020-09-19)
+
+
+### Bug Fixes
+
+* Season must be found on Trakt / Imdb now ([14fa64d](https://github.com/pct-org/scraper/commit/14fa64dbcb025611acbb3f292fcdd7932e7a5e1f))
+
+
+
 ## [3.7.2](https://github.com/pct-org/scraper/compare/v3.7.1...v3.7.2) (2020-09-18)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * Fixed that when no seasons where found the show was skipepd ([955b205](https://github.com/pct-org/scraper/commit/955b205a38e5cb5611813ef3a2c3a461160d3bfb))
-
-
-
-## [3.6.3](https://github.com/pct-org/scraper/compare/v3.6.2...v3.6.3) (2020-09-05)
-
-
-### Bug Fixes
-
-* Small fix for EZTV ([21af657](https://github.com/pct-org/scraper/commit/21af657923921563491dc0d2b4e98af87c213cef))
 
 
 
