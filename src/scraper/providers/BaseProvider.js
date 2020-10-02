@@ -78,11 +78,6 @@ export default class BaseProvider extends AbstractProvider {
       )
     }
 
-    // Delete specials
-    if (episodes && episodes[0]) {
-      delete episodes[0]
-    }
-
     return this.helper.getTraktInfo(content).then((res) => {
       if (res && res.imdbId) {
         return this.helper.addEpisodes(res, episodes, slug)

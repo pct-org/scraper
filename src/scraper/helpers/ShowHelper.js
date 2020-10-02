@@ -1,5 +1,4 @@
 // @flow
-import { BlacklistModel } from '@pct-org/mongo-models/dist/blacklist/blacklist.model'
 import pMap from 'p-map'
 import { NotFoundError } from 'tmdb'
 import type { Show, Season } from '@pct-org/mongo-models'
@@ -319,7 +318,7 @@ export default class ShowHelper extends AbstractHelper {
     let seasons = Object.keys(episodes)
 
     // If we don't have any episodes for specials then also remove it from trakt
-    if (!seasons.includes(0)) {
+    if (!seasons.includes('0') && !seasons.includes(0)) {
       traktSeasons = traktSeasons.filter(traktSeason => traktSeason.number !== 0)
     }
 
